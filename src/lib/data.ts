@@ -1,0 +1,14 @@
+CREATE TABLE sessions (  
+  id SERIAL PRIMARY KEY,  
+  session_token VARCHAR(255) NOT NULL UNIQUE,  
+  user_id INTEGER NOT NULL,  
+  expires TIMESTAMP WITH TIME ZONE NOT NULL,  
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP  
+);
+
+CREATE TABLE users (  
+  id SERIAL PRIMARY KEY,  
+  name VARCHAR(255) NOT NULL,  
+  email VARCHAR(255) NOT NULL UNIQUE,  
+  hashed_password VARCHAR(255)  
+);
