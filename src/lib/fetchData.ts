@@ -1,5 +1,5 @@
 import { mongoDbConnect } from "@/lib/dbConnect";  
-import UserProfile, { UserProfile as UserProfileType } from "@/model/UserProfile";  
+import UserProfile, { UserProfile as UserProfileType } from "@/model/ProfileModel";  
 
 export const fetchUserProfileData = async function (email: string): Promise<UserProfileType | null> {  
   await mongoDbConnect();  

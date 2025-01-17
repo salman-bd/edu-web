@@ -2,47 +2,33 @@ import { mongoDbConnect } from "@/lib/dbConnect";
 import SocialUserModel from "@/model/User.Social"; 
 
 
+
 export async function POST(request: Request) {
     await mongoDbConnect();
-    try {  
-        const { name, email } =await request.json(); 
-        console.log("Social data after receiving from client: ", name, email);  
+    try {
+        const { searchParams} = new URL(request.url);
+        const userSession = searchParams.get('userSession');
+        const userName = userSession.name;
+        const userEmail = userSession.email;
+
+        console.log('User session to make data base query: ', userSession);
         
-        const existingUserByEmail = await SocialUserModel.findOne({email});  
+
+        const existingUserByEmail = await SocialUserModel.findOne({userEmail});  
 
         if (existingUserByEmail) {  
-            return Response.json(
-                {
-                    success: false,
-                    message: "User already exist with this email"
-                },
-                {status: 500}
-            )
-        }   
+            return;
+        } 
         const newUser = new SocialUserModel({  
-            name,  
-            email,  
+            name: userName,  
+            email: userEmail,
             isVerified: true,  
         });  
-
         console.log("New user: ", newUser);  
-        await newUser.save();  
-        return Response.json(
-            {
-                success: true,
-                message: "User registered successfully. Please verify your email"
-            },
-            {status: 201}
-        )
+        await newUser.save();   ;
+        
     } catch (error) {  
-        return Response.json(
-            {
-                success: false,
-                message: "Error registering user"
-            },
-            {
-                status: 500
-            }
-        ) 
+        console.log('Error in social registering: ', error);
+        return;
     }  
 }

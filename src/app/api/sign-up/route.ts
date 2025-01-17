@@ -1,6 +1,6 @@
 import {mongoDbConnect} from "@/lib/dbConnect";
 import UserModel from "@/model/User";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
 
 
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
                 {status: 400}
             )
         } 
-
+                
         const existingUserByEmail = await UserModel.findOne({email});
         const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 

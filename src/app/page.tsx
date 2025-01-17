@@ -1,14 +1,33 @@
+'use client'
 
-import { Hero } from "@/components/hero";
+import dynamic from 'next/dynamic';  
+import Hero from '@/components/home/hero'
+import Features from '@/components/home/features';
 
-export default function Home() {
-  
+
+
+const LazyPrograms = dynamic(() => import('@/components/home/programs'), {  
+  loading: () => <p>Loading...</p>, // Optional: loading indication while the component is loading  
+  ssr: false // Optional: Disable server-side rendering for this component  
+});
+const LazyTestimonials = dynamic(() => import('@/components/home/testimonials'), {  
+  loading: () => <p>Loading...</p>, // Optional: loading indication while the component is loading  
+  ssr: false // Optional: Disable server-side rendering for this component  
+});
+const LazyCTA = dynamic(() => import('@/components/home/cta'), {  
+  loading: () => <p>Loading...</p>, // Optional: loading indication while the component is loading  
+  ssr: false // Optional: Disable server-side rendering for this component  
+});
+
+export default function HomePage() {
   return (
-    <div className="min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-   
-      <main className="">
-        <Hero />
-      </main>
+    <div className="bg-gray-50">
+      <Hero />
+      <Features />
+      <LazyPrograms />
+      <LazyTestimonials />
+      <LazyCTA />
     </div>
-  );
+  )
 }
+

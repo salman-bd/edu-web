@@ -12,7 +12,7 @@ export interface User extends Document {
     updatedAt?: Date;
 }
 
-const UserSchema: Schema<User> = new Schema({
+const UserSchema: Schema <User> = new Schema({
     name: {
         type: String,
         required: [true, 'Full name is required'],

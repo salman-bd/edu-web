@@ -1,24 +1,19 @@
-import { Metadata } from 'next'
-import ContactForm from '@/components/ContactForm'
-import ContactInfo from '@/components/ContactInfo'
-import Map from '@/components/Map'
-
-export const metadata: Metadata = {
-  title: 'Contact Us | Educational Platform',
-  description: 'Get in touch with our team for any questions or support.',
-}
+import ContactHero from './components/contact-hero'
+import ContactForm from './components/contact-form'
+import ContactInfo from './components/contact-info'
+import ContactMap from './components/contact-map'
 
 export default function ContactPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">Contact Us</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
+    <div className="bg-gray-50">
+      <ContactHero />
+      <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <ContactForm />
-        </div>
-        <div className="space-y-8">
-          <ContactInfo />
-          <Map />
+          <div>
+            <ContactInfo />
+            <ContactMap />
+          </div>
         </div>
       </div>
     </div>

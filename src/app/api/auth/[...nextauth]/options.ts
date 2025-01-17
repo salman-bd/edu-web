@@ -2,9 +2,10 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";  
 import GithubProvider from "next-auth/providers/github";  
 import GoogleProvider from "next-auth/providers/google";  
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcrypt';
 import { mongoDbConnect } from "@/lib/dbConnect";
 import UserModel from "@/model/User";
+
 
 
 export const authOptions: NextAuthOptions = {  
@@ -13,72 +14,69 @@ export const authOptions: NextAuthOptions = {
             id: "credentials",  
             name: "Credentials",  
             credentials: {  
-                email: { label: "Email", type: "text", placeholder: "Input email" },  
+                identifier: { label: "Identifier", type: "text" },  
                 password: { label: "Password", type: "password" }  
             },  
             async authorize(credentials: any): Promise<any> {  
                 await mongoDbConnect();  
+                // console.log("credentials: ", credentials);
                 try {  
                     const user = await UserModel.findOne({  
                         $or: [  
                             { email: credentials.identifier },  
-                            { username: credentials.identifier }  // Assuming the identifier is based on email input.  
+                            { username: credentials.identifier }  
                         ]  
                     });  
                     if (!user) {  
-                        throw new Error("No user found with this email");  
+                        throw new Error("No user found with this email or username");  
                     }  
                     if (!user.isVerified) {  
-                        throw new Error("Please verify your account before login");  
+                        throw new Error("Please verify your account before logging in");  
                     }  
-                    const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);  
-                    if (!isPasswordCorrect) {  
-                        throw new Error("Incorrect Password");  
-                    }  
-                    return user; // Return the user object  
-                    
+                    const isValidPassword  = await bcrypt.compare(credentials.password, user.password);  
+                    if (!isValidPassword ) {  
+                        throw new Error("Incorrect password");  
+                    }
+                    console.log("User in authorize: ", user);
+                    return user;   
                 } catch (error) {  
-                    throw new Error(error instanceof Error ? error.message : "An error occurred");  
+                    throw new Error(error instanceof Error ? error.message : "An error occurred during authorization");  
                 }  
             }  
         }),
-        
         GoogleProvider({  
             clientId: process.env.GOOGLE_CLIENT_ID,  
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,  
-    
         }),  
         GithubProvider({  
             clientId: process.env.GITHUB_ID,  
             clientSecret: process.env.GITHUB_SECRET,  
         }),  
-    ],  
+    ],
+
+    secret: process.env.NEXTAUTH_SECRET,
+
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
-                user.id = user.id?.toString() || ''; 
                 token._id = user._id?.toString();
                 token.username = user.username;
                 token.isVerified = user.isVerified;
-                
             }
             return token;
         },
         async session({ session, token }) {
             if (token) {
-                session.user.id = token.id?.toString() || ''; 
                 session.user._id = token._id?.toString();
                 session.user.username = token.username;
                 session.user.isVerified = token.isVerified;
-                
             }
-            // console.log("Data before return session: ", session);
-            
-            return session
+            // console.log("Session in options: ", session);
+            return session;
         }
     },
     pages: {  
-        signIn: '/sign-in', // Custom login page  
+        signIn: '/dashboard', // Custom login page  
         signOut: '/', // Custom sign-out page  
         error: '/auth/error', // Custom error page for any sign-in/out errors  
         verifyRequest: '/auth/verify', // Custom verification request page  

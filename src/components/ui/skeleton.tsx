@@ -1,15 +1,28 @@
-import { cn } from "@/lib/utils"
+// components/ui/skeleton.js  
+import React from 'react';  
 
-function Skeleton({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn("animate-pulse rounded-md bg-primary/10", className)}
-      {...props}
-    />
-  )
-}
+export const Skeleton = ({ className }) => {  
+  return (  
+    <div className={`skeleton ${className}`}>  
+      <style jsx>{`  
+        .skeleton {  
+          background-color: #e0e0e0;  
+          border-radius: 4px;  
+          animation: pulse 1.2s infinite ease-in-out;  
+        }  
 
-export { Skeleton }
+        @keyframes pulse {  
+          0% {  
+            opacity: 1;  
+          }  
+          50% {  
+            opacity: 0.5;  
+          }  
+          100% {  
+            opacity: 1;  
+          }  
+        }  
+      `}</style>  
+    </div>  
+  );  
+};  

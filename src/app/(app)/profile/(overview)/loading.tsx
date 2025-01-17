@@ -1,5 +1,5 @@
-import ProfileSkeleton from "@/components/ui/profile-skeleton";
+import PersonalInfoSkeleton from '@/components/profile/skeletons/personal-info-skeleton'
  
 export default function Loading() {
-  return <ProfileSkeleton />;
+  return <PersonalInfoSkeleton />;
 }

@@ -32,9 +32,9 @@ export function AchievementInput({ achievements, setAchievements }: AchievementI
         />
         <Button type="button" onClick={addAchievement}>Add</Button>
       </div>
-      <ul className="space-y-2">
+      <ul className="space-y-2 ">
         {achievements.map((achievement, index) => (
-          <li key={index} className="flex items-center space-x-2">
+          <li key={index} className="flex items-center space-x-2 ">
             <span className="flex-grow">{achievement}</span>
             <Button
               type="button"

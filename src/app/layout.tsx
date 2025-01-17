@@ -1,24 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Roboto  } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { roboto } from "@/components/ui/font";
+import Navbar from "@/components/root-layout/navbar/page";
+import Footer from "@/components/root-layout/footer/page";
 import AuthProvider from "@/app/context/AuthProvider";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const roboto = Roboto({
-  weight: '400',
-  subsets: ['latin'],
-})
 
 
 export const metadata: Metadata = {
@@ -35,9 +20,9 @@ export default function RootLayout({
   return (  
     <html lang="en">  
       <AuthProvider>  
-          <body className={`${geistSans.variable} ${geistMono.variable} ${roboto.className} antialiased`}>  
+          <body className={`${roboto.className} antialiased`}>  
             <div>  
-              <Header />  
+              <Navbar />  
               <div>{children}</div>   
               <Footer />  
             </div>  
