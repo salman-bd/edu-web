@@ -1,149 +1,120 @@
-'use client'
+"use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Overview } from "@/components/dashboard/overview"
 import { RecentActivity } from "@/components/dashboard/recent-activity"
 import { QuickActions } from "@/components/dashboard/quick-actions"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { motion } from "framer-motion"
 
 export function Dashboard() {
   return (
-    <div className="flex flex-col space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+    <motion.div
+      className="flex flex-col space-y-6 p-8 bg-gray-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h1 className="text-4xl font-bold tracking-tight text-indigo-600">Dashboard</h1>
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="bg-white shadow-md rounded-lg p-1">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+            Analytics
+          </TabsTrigger>
+          <TabsTrigger value="reports" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+            Reports
+          </TabsTrigger>
+          <TabsTrigger
+            value="notifications"
+            className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white"
+          >
+            Notifications
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">2,345</div>
-                <p className="text-xs text-muted-foreground">
-                  +180 from last month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Average Attendance</CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <rect width="20" height="14" x="2" y="5" rx="2" />
-                  <path d="M2 10h20" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">92.6%</div>
-                <p className="text-xs text-muted-foreground">
-                  +2.1% from last week
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Courses</CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">78</div>
-                <p className="text-xs text-muted-foreground">
-                  +12 new this semester
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Faculty Members</CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">142</div>
-                <p className="text-xs text-muted-foreground">
-                  +3 joined this month
-                </p>
-              </CardContent>
-            </Card>
+        <TabsContent value="overview" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                title: "Total Students",
+                value: "2,345",
+                change: "+180 from last month",
+                icon: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
+              },
+              {
+                title: "Average Attendance",
+                value: "92.6%",
+                change: "+2.1% from last week",
+                icon: "M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z",
+              },
+              {
+                title: "Active Courses",
+                value: "78",
+                change: "+12 new this semester",
+                icon: "M22 12h-4l-3 9L9 3l-3 9H2",
+              },
+              {
+                title: "Faculty Members",
+                value: "142",
+                change: "+3 joined this month",
+                icon: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
+              },
+            ].map((item, index) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Card className="hover:shadow-lg transition-shadow duration-300">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-indigo-600">{item.title}</CardTitle>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      className="h-4 w-4 text-indigo-600"
+                    >
+                      <path d={item.icon} />
+                    </svg>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{item.value}</div>
+                    <p className="text-xs text-muted-foreground">{item.change}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+            <Card className="col-span-4 hover:shadow-lg transition-shadow duration-300">
               <CardHeader>
-                <CardTitle>Overview</CardTitle>
+                <CardTitle className="text-indigo-600">Overview</CardTitle>
               </CardHeader>
               <CardContent className="pl-2">
                 <Overview />
               </CardContent>
             </Card>
-            <Card className="col-span-3">
+            <Card className="col-span-3 hover:shadow-lg transition-shadow duration-300">
               <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>
-                  You have 3 unread notifications
-                </CardDescription>
+                <CardTitle className="text-indigo-600">Recent Activity</CardTitle>
+                <CardDescription>You have 3 unread notifications</CardDescription>
               </CardHeader>
               <CardContent>
                 <RecentActivity />
               </CardContent>
             </Card>
           </div>
-          <Card>
+          <Card className="hover:shadow-lg transition-shadow duration-300">
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>
-                Frequently used actions and tools
-              </CardDescription>
+              <CardTitle className="text-indigo-600">Quick Actions</CardTitle>
+              <CardDescription>Frequently used actions and tools</CardDescription>
             </CardHeader>
             <CardContent>
               <QuickActions />
@@ -151,7 +122,7 @@ export function Dashboard() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+    </motion.div>
   )
 }
 

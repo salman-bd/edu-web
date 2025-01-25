@@ -1,53 +1,50 @@
-import Link from 'next/link'
+import Link from "next/link"
 import { ArrowRight } from 'lucide-react'
+import { motion } from "framer-motion"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../components/ui/card"
 
 const programs = [
-  { name: 'Elementary School', description: 'Grades K-5', href: '/programs/elementary' },
-  { name: 'Middle School', description: 'Grades 6-8', href: '/programs/middle' },
-  { name: 'High School', description: 'Grades 9-12', href: '/programs/high' },
-  { name: 'College', description: 'Associate and Bachelor\'s Degrees', href: '/programs/college' },
+  { name: "Elementary School", description: "Grades K-5", href: "/programs/elementary" },
+  { name: "Middle School", description: "Grades 6-8", href: "/programs/middle" },
+  { name: "High School", description: "Grades 9-12", href: "/programs/high" },
+  { name: "College", description: "Associate and Bachelor's Degrees", href: "/programs/college" },
 ]
 
 export default function Programs() {
   return (
-    <div className="py-24 bg-gray-50">
+    <div className="py-24 bg-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-            Our Programs
-          </h2>
-          <p className="mt-4 text-xl text-gray-600">
-            Explore our comprehensive educational offerings.
-          </p>
+          <h2 className="text-3xl font-extrabold text-indigo-600 sm:text-4xl">Our Programs</h2>
+          <p className="mt-4 text-xl text-gray-600">Explore our comprehensive educational offerings.</p>
         </div>
         <div className="mt-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {programs.map((program) => (
-            <div
+          {programs.map((program, index) => (
+            <motion.div
               key={program.name}
-              className="bg-white overflow-hidden shadow rounded-lg"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg font-medium text-gray-900">
-                  {program.name}
-                </h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  {program.description}
-                </p>
-                <div className="mt-4">
+              <Card className="border-indigo-600 border-2 hover:border-red-700 transition-colors duration-300">
+                <CardHeader>
+                  <CardTitle className="text-indigo-600">{program.name}</CardTitle>
+                  <CardDescription>{program.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
                   <Link
                     href={program.href}
-                    className="text-base font-medium text-blue-600 hover:text-blue-500 flex items-center"
+                    className="text-base font-medium text-red-700 hover:text-indigo-600 flex items-center transition-colors duration-300"
                   >
                     Learn more
                     <ArrowRight className="ml-1 h-5 w-5" />
                   </Link>
-                </div>
-              </div>
-            </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </div>
       </div>
     </div>
   )
 }
-

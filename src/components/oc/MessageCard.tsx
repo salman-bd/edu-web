@@ -20,7 +20,7 @@ import {
 import { Button } from '../ui/button';
 
 import { ApiResponse } from '@/types/ApiResponse';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 
 type MessageCardProps = {
   message: Message;

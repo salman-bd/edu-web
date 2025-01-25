@@ -55,7 +55,7 @@ export function CodeVerificationForm() {
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="text-sm text-gray-500">
             <p>Your student code should be in the format: STU-XXXXXX</p>
-            <p>If you haven't received your code, please contact the admissions office.</p>
+            <p>If you haven&apos;t received your code, please contact the admissions office.</p>
           </div>
         </div>
       </CardContent>

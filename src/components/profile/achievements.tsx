@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Award } from 'lucide-react'
-import type { AchievementsData } from './data'
+import type { AchievementsData } from '@/lib/achievementsData'
 
 interface AchievementsProps {
   getAchievements: () => Promise<AchievementsData | null>

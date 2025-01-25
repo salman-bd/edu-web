@@ -4,7 +4,7 @@ import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";  
 import bcrypt from 'bcrypt';
 import { mongoDbConnect } from "@/lib/dbConnect";
-import UserModel from "@/model/User";
+import UserModel, { User } from "@/model/User";
 
 
 
@@ -17,10 +17,13 @@ export const authOptions: NextAuthOptions = {
                 identifier: { label: "Identifier", type: "text" },  
                 password: { label: "Password", type: "password" }  
             },  
-            async authorize(credentials: any): Promise<any> {  
+            async authorize(credentials) {  
                 await mongoDbConnect();  
                 // console.log("credentials: ", credentials);
                 try {  
+                    if (!credentials) {
+                        throw new Error("Credentials are missing");
+                    }
                     const user = await UserModel.findOne({  
                         $or: [  
                             { email: credentials.identifier },  
@@ -38,7 +41,7 @@ export const authOptions: NextAuthOptions = {
                         throw new Error("Incorrect password");  
                     }
                     console.log("User in authorize: ", user);
-                    return user;   
+                    return user as unknown as User | null;   
                 } catch (error) {  
                     throw new Error(error instanceof Error ? error.message : "An error occurred during authorization");  
                 }  

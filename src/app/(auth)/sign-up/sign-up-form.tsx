@@ -7,7 +7,7 @@ import Link from "next/link"
 import axios, { AxiosError } from "axios"
 import { useEffect, useState } from "react"
 import { useDebounceCallback } from 'usehooks-ts'
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
 import { signUpSchema } from "@/schemas/signUpSchema"
 import { ApiResponse } from "@/types/ApiResponse"

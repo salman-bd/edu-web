@@ -1,4 +1,7 @@
-import Image from 'next/image'
+"use client"
+
+import Image from "next/image"
+import { motion } from "framer-motion"
 
 export default function Facilities() {
   const facilities = [
@@ -11,15 +14,27 @@ export default function Facilities() {
   return (
     <section className="py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">Our Facilities</h2>
+        <h2 className="text-3xl font-extrabold text-indigo-600 sm:text-4xl">Our Facilities</h2>
         <div className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {facilities.map((facility) => (
-            <div key={facility.name} className="bg-white rounded-lg overflow-hidden hover:shadow-md transition duration-300">
-              <Image src={facility.image} alt={facility.name} width={300} height={200} className="w-full" />
+          {facilities.map((facility, index) => (
+            <motion.div
+              key={facility.name}
+              className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <Image
+                src={facility.image || "/placeholder.svg"}
+                alt={facility.name}
+                width={300}
+                height={200}
+                className="w-full"
+              />
               <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-900">{facility.name}</h3>
+                <h3 className="text-lg font-semibold text-indigo-600">{facility.name}</h3>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

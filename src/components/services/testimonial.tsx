@@ -1,8 +1,8 @@
-import Image from 'next/image'
+import Image from "next/image"
 
 export default function Testimonial() {
   return (
-    <section className="bg-white overflow-hidden">
+    <section className="bg-gray-50 overflow-hidden">
       <div className="relative max-w-7xl mx-auto pt-20 pb-12 px-4 sm:px-6 lg:px-8 lg:py-20">
         <svg
           className="absolute top-full left-0 transform translate-x-80 -translate-y-24 lg:hidden"
@@ -63,7 +63,7 @@ export default function Testimonial() {
 
           <div className="relative lg:ml-10">
             <svg
-              className="absolute top-0 left-0 transform -translate-x-8 -translate-y-24 h-36 w-36 text-blue-200 opacity-50"
+              className="absolute top-0 left-0 transform -translate-x-8 -translate-y-24 h-36 w-36 text-indigo-200 opacity-50"
               stroke="currentColor"
               fill="none"
               viewBox="0 0 144 144"
@@ -77,9 +77,9 @@ export default function Testimonial() {
             <blockquote className="relative">
               <div className="text-2xl leading-9 font-medium text-gray-900">
                 <p>
-                  "The services provided by this institution have been instrumental in my academic success. 
-                  From the supportive faculty to the state-of-the-art facilities, every aspect of my 
-                  educational journey has been enriched."
+                  "The services provided by this institution have been instrumental in my academic success. From the
+                  supportive faculty to the state-of-the-art facilities, every aspect of my educational journey has been
+                  enriched."
                 </p>
               </div>
               <footer className="mt-8">
@@ -94,8 +94,8 @@ export default function Testimonial() {
                     />
                   </div>
                   <div className="ml-4 lg:ml-0">
-                    <div className="text-base font-medium text-gray-900">Sarah Johnson</div>
-                    <div className="text-base font-medium text-blue-600">Class of 2023, Computer Science Major</div>
+                    <div className="text-base font-medium text-indigo-600">Sarah Johnson</div>
+                    <div className="text-base font-medium text-red-700">Class of 2023, Computer Science Major</div>
                   </div>
                 </div>
               </footer>

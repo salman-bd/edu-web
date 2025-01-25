@@ -1,7 +1,0 @@
-CREATE TABLE IF NOT EXISTS sessions (  
-  id SERIAL PRIMARY KEY,  
-  session_token VARCHAR(255) NOT NULL UNIQUE,  
-  user_id INTEGER NOT NULL REFERENCES users(id),  
-  expires TIMESTAMP NOT NULL,  
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  
-);

@@ -1,11 +1,11 @@
 // utils/dateUtils.js  
 
 // Function to format Date to ISO string  
-export const formatDateToISOString = (date) => {  
+export const formatDateToISOString = (date: Date | string | null) => {  
   return date ? new Date(date).toISOString() : null;  
 };  
 
 // Function to parse ISO string to Date object  
-export const parseISOStringToDate = (isoString) => {  
+export const parseISOStringToDate = (isoString: string) => {  
   return isoString ? new Date(isoString) : null;  
 };

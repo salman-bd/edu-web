@@ -5,6 +5,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFoo
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { motion } from "framer-motion"
 
 interface ProfileAlertDialogProps {
   isOpen: boolean
@@ -31,66 +32,56 @@ export function ProfileAlertDialog({ isOpen, onClose, onContinue }: ProfileAlert
 
   return (
     <AlertDialog open={isOpen}>
-      <AlertDialogContent className="sm:max-w-[425px]">
-        <AlertDialogHeader>
-          <AlertDialogTitle>Please provide some answers before completing your profile</AlertDialogTitle>
-          <AlertDialogDescription>
-            We need a bit more information to tailor your profile experience.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <div className="space-y-6">
-          <div>
-            <Label className="text-base">What is your status?</Label>
-            <RadioGroup value={type} onValueChange={setType} className="mt-2">
-              <div className='flex flex-row gap-4'>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="student" id="status-student" />
-                  <Label htmlFor="status-student">Student</Label>
+      <AlertDialogContent className="sm:max-w-[425px] bg-white rounded-lg shadow-xl">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-bold text-indigo-600">Complete Your Profile</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600">
+              We need a bit more information to tailor your profile experience.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-6 my-6">
+            <div>
+              <Label className="text-base font-semibold text-gray-700">What is your status?</Label>
+              <RadioGroup value={type} onValueChange={setType} className="mt-2">
+                <div className='flex flex-row gap-4'>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="student" id="status-student" className="text-indigo-600" />
+                    <Label htmlFor="status-student" className="text-gray-600">Student</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="teacher" id="status-teacher" className="text-indigo-600" />
+                    <Label htmlFor="status-teacher" className="text-gray-600">Teacher</Label>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="teacher" id="status-teacher" />
-                  <Label htmlFor="status-teacher">Teacher</Label>
+              </RadioGroup>
+            </div>
+            <div>
+              <Label className="text-base font-semibold text-gray-700">Are you a student or teacher of CSC?</Label>
+              <RadioGroup value={isCSCAffiliated} onValueChange={setIsCSCAffiliated} className="mt-2">
+                <div className='flex flex-row gap-4'>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="yes" id="csc-yes" className="text-indigo-600" />
+                    <Label htmlFor="csc-yes" className="text-gray-600">Yes</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="no" id="csc-no" className="text-indigo-600" />
+                    <Label htmlFor="csc-no" className="text-gray-600">No</Label>
+                  </div>
                 </div>
-              </div>
-            </RadioGroup>
+              </RadioGroup>
+            </div>
           </div>
-          <div>
-            <Label className="text-base">Are you a student or teacher of CSC?</Label>
-            <RadioGroup value={isCSCAffiliated} onValueChange={setIsCSCAffiliated} className="mt-2">
-              <div className='flex flex-row gap-4'>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="yes" id="csc-yes" />
-                  <Label htmlFor="csc-yes">Yes</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="no" id="csc-no" />
-                  <Label htmlFor="csc-no">No</Label>
-                </div>
-              </div>
-            </RadioGroup>
-          </div>
-          {/* <div>
-            <Label className="text-base">What level are you studying in?</Label>
-            <RadioGroup value={studyLevel} onValueChange={setStudyLevel} className="mt-2">
-              <div className='flex flex-row gap-4'>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="school" id="level-school" />
-                  <Label htmlFor="level-school">School</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="college" id="level-college" />
-                  <Label htmlFor="level-college">College</Label>
-                </div>
-              </div>
-            </RadioGroup>
-          </div> */}
-        </div>
-        <AlertDialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleContinue}>Continue</Button>
-        </AlertDialogFooter>
+          <AlertDialogFooter>
+            <Button variant="outline" onClick={onClose} className="border-indigo-600 text-indigo-600 hover:bg-indigo-50">Cancel</Button>
+            <Button onClick={handleContinue} className="bg-red-700 text-white hover:bg-red-800">Continue</Button>
+          </AlertDialogFooter>
+        </motion.div>
       </AlertDialogContent>
     </AlertDialog>
   )
 }
-

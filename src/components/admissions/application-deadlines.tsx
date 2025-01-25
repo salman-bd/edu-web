@@ -1,12 +1,4 @@
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 interface SchoolDeadline {
   program: string
@@ -20,34 +12,34 @@ interface CollegeDeadline {
 }
 
 const schoolDeadlines: SchoolDeadline[] = [
-  { program: 'Elementary School (K-5)', deadline: 'March 1' },
-  { program: 'Middle School (6-8)', deadline: 'February 15' },
-  { program: 'High School (9-12)', deadline: 'January 31' },
-  { program: 'International Baccalaureate', deadline: 'December 15' },
+  { program: "Elementary School (K-5)", deadline: "March 1" },
+  { program: "Middle School (6-8)", deadline: "February 15" },
+  { program: "High School (9-12)", deadline: "January 31" },
+  { program: "International Baccalaureate", deadline: "December 15" },
 ]
 
 const collegeDeadlines: CollegeDeadline[] = [
-  { program: 'Undergraduate Programs', fall: 'May 1', spring: 'November 1' },
-  { program: 'Graduate Programs', fall: 'February 1', spring: 'September 1' },
-  { program: 'Transfer Students', fall: 'June 1', spring: 'November 15' },
-  { program: 'International Students', fall: 'March 1', spring: 'October 1' },
+  { program: "Undergraduate Programs", fall: "May 1", spring: "November 1" },
+  { program: "Graduate Programs", fall: "February 1", spring: "September 1" },
+  { program: "Transfer Students", fall: "June 1", spring: "November 15" },
+  { program: "International Students", fall: "March 1", spring: "October 1" },
 ]
 
 interface ApplicationDeadlinesProps {
-  level: 'school' | 'college'
+  level: "school" | "college"
 }
 
 export function ApplicationDeadlines({ level }: ApplicationDeadlinesProps) {
-  const isSchool = level === 'school'
+  const isSchool = level === "school"
   const deadlines = isSchool ? schoolDeadlines : collegeDeadlines
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-bold tracking-tight">Application Deadlines</h2>
+    <div className="space-y-8">
+      <h2 className="text-3xl font-bold tracking-tight text-indigo-600">Application Deadlines</h2>
       <Table>
         <TableCaption>Application deadlines for the upcoming academic year</TableCaption>
         <TableHeader>
-          <TableRow>
+          <TableRow className="bg-indigo-600 text-white">
             <TableHead className="w-[50%]">Program</TableHead>
             {isSchool ? (
               <TableHead>Deadline</TableHead>
@@ -60,9 +52,9 @@ export function ApplicationDeadlines({ level }: ApplicationDeadlinesProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {deadlines.map((deadline) => (
-            <TableRow key={deadline.program}>
-              <TableCell className="font-medium">{deadline.program}</TableCell>
+          {deadlines.map((deadline, index) => (
+            <TableRow key={deadline.program} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+              <TableCell className="font-medium text-indigo-600">{deadline.program}</TableCell>
               {isSchool ? (
                 <TableCell>{(deadline as SchoolDeadline).deadline}</TableCell>
               ) : (

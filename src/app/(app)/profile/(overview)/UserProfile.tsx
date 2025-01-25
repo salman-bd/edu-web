@@ -1,150 +1,100 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { ProfileAlertDialog } from '@/components/profile/ProfileAlertDialog'
-import { InfoIcon, MailIcon, ContactIcon, SchoolIcon, VerifiedIcon, CircleAlert, GraduationCap, CalendarCheck, CalendarClock, Calendar, School2, Medal, Loader2, } from "lucide-react"
-import TeacherProfileForm from './[type]/profile-completion/TeacherProfileForm'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { AvatarUpload } from '@/components/ui/Avatar-upload'
-import { useToast } from '@/hooks/use-toast'
-import { useForm } from 'react-hook-form'
-import { teacherProfileSchema } from '@/schemas/teacherProfileSchema'
-import * as z from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import axios, { AxiosError } from 'axios'
-import { ApiResponse } from '@/types/ApiResponse'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { DatePicker } from '@/components/ui/date-picker'
-import { AchievementInput } from '@/components/ui/achievement-input'
-import StudentProfileForm from './[type]/profile-completion/StudentProfileForm'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useRouter } from "next/navigation"
+import { ProfileAlertDialog } from "@/components/profile/ProfileAlertDialog"
+import TeacherProfileForm from "./[type]/profile-completion/TeacherProfileForm"
+import StudentProfileForm from "./[type]/profile-completion/StudentProfileForm"
+import { motion } from "framer-motion"
 
-
-export function UserProfile(profileData) {
-  const router = useRouter();  
-  const { query } = router;
-
-  const success = query?.success;
-
+export function UserProfile({ data }) {
+  const router = useRouter()
   const [isProfileEditing, setIsProfileEditing] = useState(false)
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-  const data = profileData?.data;
-  const profileType = data?.profileType;
-  // console.log("Fetched profile data: ", profileData);
-
-
-// console.log('Profile data int user profie page', profileData);
-
+  const profileType = data?.profileType
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false)
   }
 
-
-  // const detailsHandler = () => {
-    
-  // }
-
-  const handleContinue = (preData: { type: string; isCSCAffiliated: string; }) => {
-    // console.log('Profile data:', preData)
+  const handleContinue = (preData: { type: string; isCSCAffiliated: string }) => {
     setIsDialogOpen(false)
-    if (preData.type === 'student' && preData.isCSCAffiliated === 'yes') {
-      router.replace('profile/student')
-    } else if (preData.type === 'teacher' && preData.isCSCAffiliated === 'yes') {
-      router.replace('profile/teacher');
-    } else if (preData.type === 'student'  && preData.isCSCAffiliated === 'no') {
-      router.replace(`profile/student/profile-completion/`);
+    if (preData.type === "student" && preData.isCSCAffiliated === "yes") {
+      router.replace("profile/student")
+    } else if (preData.type === "teacher" && preData.isCSCAffiliated === "yes") {
+      router.replace("profile/teacher")
+    } else if (preData.type === "student" && preData.isCSCAffiliated === "no") {
+      router.replace(`profile/student/profile-completion/`)
     } else {
-      router.replace(`profile/teacher/profile-completion/`);
+      router.replace(`profile/teacher/profile-completion/`)
     }
   }
 
   const handleProfileComplete = () => {
-    setIsDialogOpen(true);
+    setIsDialogOpen(true)
   }
+
   const handleProfileEdit = () => {
-    // if (profileType === 'teacher') {
-    //   router.push('/profile/teacher/profile-completion')
-    // }
-    setIsProfileEditing(true);
+    setIsProfileEditing(true)
   }
+
   const handleProfileDelete = () => {
-    setIsDialogOpen(true);
+    // Implement profile deletion logic here
+    console.log("Profile deletion requested")
   }
-
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setdata(prevData => ({ ...prevData, [name]: value }))
-  }
-
- 
- 
-
-  /*
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would typically send the updated data to your backend
-    console.log('Updated user data:', data)
-    setIsEditing(false)
-  } */
-
-
-
 
   return (
-    <>
-      <div className='flex flex-col items-center'>
-          <ProfileAlertDialog 
-          isOpen={isDialogOpen} 
-          onClose={handleCloseDialog}
-          onContinue={handleContinue}
-        />
-        
-        { data && isProfileEditing && profileType === 'teacher' && (
-          <TeacherProfileForm dbData = {data} />
-        )}
-        { data && isProfileEditing && profileType === 'student' && (
-          <StudentProfileForm dbData = {data} />
-        )}
-      </div>
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <ProfileAlertDialog isOpen={isDialogOpen} onClose={handleCloseDialog} onContinue={handleContinue} />
 
-      <Card className="lg:w-1/2  mx-auto mt-4 flex flex-row justify-between p-4 ">
-        
+      {data && isProfileEditing && (
+        <Card className="w-full max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle>{profileType === "teacher" ? "Edit Teacher Profile" : "Edit Student Profile"}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {profileType === "teacher" ? <TeacherProfileForm dbData={data} /> : <StudentProfileForm dbData={data} />}
+          </CardContent>
+        </Card>
+      )}
 
-
-        {/* {isProfileEditing ? (
-          <div className="flex justify-end space-x-2 w-full">
-            <Button variant="outline" onClick={() => setIsProfileEditing(false)}>Cancel</Button>
-            <Button type="submit">Save Changes</Button>
-          </div>
-        ) : (
-          <Button onClick={() => setIsProfileEditing(true)}>Edit Profile</Button>
-        )} */}
-  
-        {data ? (
-          <>
-          {isProfileEditing ? (
-            <Button variant="outline" onClick={() => setIsProfileEditing(false)}>Cancel</Button>
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardContent className="flex justify-between items-center p-6">
+          {data ? (
+            <>
+              {isProfileEditing ? (
+                <Button
+                  variant="outline"
+                  onClick={() => setIsProfileEditing(false)}
+                  className="bg-gray-200 text-gray-800 hover:bg-gray-300"
+                >
+                  Cancel
+                </Button>
+              ) : (
+                <Button onClick={handleProfileEdit} className="bg-indigo-600 text-white hover:bg-indigo-700">
+                  Edit Profile
+                </Button>
+              )}
+              <Button onClick={handleProfileDelete} className="bg-red-600 text-white hover:bg-red-700">
+                Delete Profile
+              </Button>
+            </>
           ) : (
-            <Button onClick={() => handleProfileEdit()}>Edit Profile</Button>
+            <Button onClick={handleProfileComplete} className="bg-indigo-600 text-white hover:bg-indigo-700">
+              Complete Profile
+            </Button>
           )}
-            <Button onClick={() => handleProfileDelete()}>Delete Profile</Button>
-          </>
-        ) : (
-          <Button onClick={() => handleProfileComplete()}>Complete Profile</Button>
-        )}
+        </CardContent>
       </Card>
-
-    </>
+    </motion.div>
   )
 }
 
