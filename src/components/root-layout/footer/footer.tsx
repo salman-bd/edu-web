@@ -74,12 +74,12 @@ export default function Footer() {
             <h2 className="mb-4 text-lg font-bold text-indigo-600">Contact Us</h2>
             <ul className="space-y-2 text-sm">
               {[
-                { Icon: Mail, content: "info@educationsite.edu" },
-                { Icon: Phone, content: "+1 (555) 123-4567" },
-                { Icon: MapPin, content: "123 Education St, Knowledge City, ST 12345" },
+                { Icon: Mail, content: "cscedubd@gmail.com" },
+                { Icon: Phone, content: "+88 01784313268" },
+                { Icon: MapPin, content: "Block-D, Main Road, Shahjalal Upashahar, Sylhet" },
               ].map(({ Icon, content }, index) => (
                 <li key={index} className="flex items-center">
-                  <Icon className="mr-2 h-4 w-4 text-red-700" />
+                  <Icon className="mr-2 h-4 w-4 text-red-900" />
                   {content}
                 </li>
               ))}
@@ -94,7 +94,7 @@ export default function Footer() {
             <p className="mb-4 text-sm">Stay updated with our latest news and events.</p>
             <form className="space-y-2">
               <Input type="email" placeholder="Your email address" className="bg-white" />
-              <Button type="submit" className="w-full bg-red-700 hover:bg-red-800 text-white">
+              <Button type="submit" className="w-full bg-red-900 hover:bg-red-800 text-white">
                 Subscribe
               </Button>
             </form>

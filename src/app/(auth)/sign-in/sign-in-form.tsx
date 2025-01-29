@@ -14,9 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Eye, EyeOff, Loader2, LogInIcon,  GithubIcon, Facebook, Twitter} from "lucide-react"
-import { signIn, useSession } from "next-auth/react"  
-
-
+import { signIn } from "next-auth/react"  
 
 
 
@@ -26,13 +24,12 @@ export default function SignInForm() {
   const { toast } = useToast();  
   const router = useRouter();
 
-  const {data: session, status} = useSession();
   
   // zod implementation  
   const form = useForm<z.infer<typeof signInSchema>>({  
     resolver: zodResolver(signInSchema),  
     defaultValues: {  
-      identifier: '',  
+      email: '',  
       password: '',  
     }  
   })  
@@ -41,7 +38,7 @@ export default function SignInForm() {
     setIsSubmitting(true);  
     const result = await signIn('credentials', {  
       redirect: false,  
-      identifier: data.identifier,  
+      email: data.email,  
       password: data.password  
     });  
     
@@ -82,10 +79,10 @@ export default function SignInForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">  
             <FormField  
               control={form.control}  
-              name="identifier"  
+              name="email"  
               render={({ field }) => (  
                 <FormItem>  
-                  <FormLabel>Email/Username</FormLabel>  
+                  <FormLabel>Email</FormLabel>  
                   <FormControl>  
                     <Input placeholder="" {...field} />  
                   </FormControl>  

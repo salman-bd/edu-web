@@ -13,8 +13,8 @@ export default function ProgramsPage() {
     { value: "elementary", label: "Elementary School" },
     { value: "middle", label: "Middle School" },
     { value: "high", label: "High School" },
-    { value: "college", label: "College" },
-  ]
+    { value: "college", label: "College Preparation" },
+  ] as const
 
   return (
     <div className="container space-y-16 py-24 sm:py-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,7 +38,11 @@ export default function ProgramsPage() {
       >
         <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 max-w-2xl mx-auto">
           {tabs.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value} className="text-sm sm:text-base py-2 px-4">
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className={`text-sm sm:text-base py-2 px-4 ${activeTab === tab.value ? "bg-indigo-100" : ""}`}
+            >
               {tab.label}
             </TabsTrigger>
           ))}
@@ -47,7 +51,7 @@ export default function ProgramsPage() {
           <ProgramSearch />
           {tabs.map((tab) => (
             <TabsContent key={tab.value} value={tab.value}>
-              <ProgramList level={tab.value} />
+              <ProgramList level="school" />
             </TabsContent>
           ))}
         </div>

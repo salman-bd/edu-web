@@ -7,21 +7,21 @@ const testimonials = [
   {
     content:
       "The integrated school and college system provided me with a seamless educational journey. I felt well-prepared at every stage.",
-    author: "Alex Johnson",
+    author: "Name.....",
     role: "College Graduate",
     image: "/placeholder.svg?height=96&width=96",
   },
   {
     content:
       "As a parent, I appreciate the consistent quality of education from elementary through high school. It's made a real difference for my children.",
-    author: "Sarah Thompson",
+    author: "Name.....",
     role: "Parent",
     image: "/placeholder.svg?height=96&width=96",
   },
   {
     content:
       "The transition from high school to college was smooth thanks to the integrated curriculum. I felt ahead of the curve in my freshman year.",
-    author: "Michael Lee",
+    author: "Name.....",
     role: "College Student",
     image: "/placeholder.svg?height=96&width=96",
   },
@@ -37,7 +37,7 @@ export default function Testimonials() {
             Hear from our students, alumni, and parents about their experiences.
           </p>
         </div>
-        <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3">
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={index}

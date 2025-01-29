@@ -55,7 +55,7 @@ export function AdmissionSteps({ level }: AdmissionStepsProps) {
   const steps = level === "school" ? schoolSteps : collegeSteps
 
   return (
-    <section className="space-y-8">
+    <section className="space-y-8 py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 className="text-3xl font-bold tracking-tight text-indigo-600">Admission Process</h2>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {steps.map((step, index) => (

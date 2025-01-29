@@ -7,7 +7,7 @@ import { motion } from "framer-motion"
 export default function JoinTeam() {
   return (
     <div className="bg-gradient-to-r from-indigo-600 to-indigo-800">
-      <div className="py-24 sm:py-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="py-2 sm:py-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="mx-auto max-w-2xl text-center"
           initial={{ opacity: 0, y: 20 }}
@@ -32,7 +32,7 @@ export default function JoinTeam() {
               asChild
               variant="outline"
               size="lg"
-              className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-indigo-600"
+              className="w-full sm:w-auto border-white text-red-700 hover:bg-white hover:text-indigo-600"
             >
               <Link href="/contact">Contact Us</Link>
             </Button>

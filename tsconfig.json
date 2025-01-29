@@ -63,6 +63,10 @@
     }
   },
   "compilerOptions": {
+    "baseUrl": ".",  
+    "paths": {  
+      "@/*": ["src/*"]  
+    },
     "plugins": [
       {
         "name": "tailwindcss-animate"

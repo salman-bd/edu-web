@@ -34,15 +34,15 @@ export function ApplicationDeadlines({ level }: ApplicationDeadlinesProps) {
   const deadlines = isSchool ? schoolDeadlines : collegeDeadlines
 
   return (
-    <div className="space-y-8">
-      <h2 className="text-3xl font-bold tracking-tight text-indigo-600">Application Deadlines</h2>
-      <Table>
+    <div className="space-y-8 py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 className="text-3xl font-bold text-indigo-600">Application Deadlines</h2>
+      <Table className=" bg-indigo-600">
         <TableCaption>Application deadlines for the upcoming academic year</TableCaption>
         <TableHeader>
           <TableRow className="bg-indigo-600 text-white">
-            <TableHead className="w-[50%]">Program</TableHead>
+            <TableHead className="w-[50%] text-white">Program</TableHead>
             {isSchool ? (
-              <TableHead>Deadline</TableHead>
+              <TableHead className="text-white">Deadline</TableHead>
             ) : (
               <>
                 <TableHead>Fall Semester</TableHead>

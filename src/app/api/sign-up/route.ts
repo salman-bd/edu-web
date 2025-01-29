@@ -9,21 +9,8 @@ export async function POST(request: Request) {
     await mongoDbConnect();
 
     try {
-        const {name, username, email, password} = await request.json();
-        const existingUserVerifiedByUsername = await UserModel.findOne({
-            username,
-            isVerified: true
-        })
-        if (existingUserVerifiedByUsername) {
-            return Response.json(
-                {
-                    success: false,
-                    message: "Username is already taken"
-                }, 
-                {status: 400}
-            )
-        } 
-                
+        const {name, email, password} = await request.json();
+
         const existingUserByEmail = await UserModel.findOne({email});
         const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -51,7 +38,6 @@ export async function POST(request: Request) {
 
             const newUser = new UserModel({
                 name,
-                username,
                 email,
                 password: hashedPassword,
                 verifyCode,
@@ -63,7 +49,7 @@ export async function POST(request: Request) {
             await newUser.save();
         }
 
-        const emailResponse = await sendVerificationEmail(email, username, verifyCode);
+        const emailResponse = await sendVerificationEmail(email, name, verifyCode);
 
         if (!emailResponse.success) {
             return Response.json(

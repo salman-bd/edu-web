@@ -8,6 +8,7 @@ import clsx from 'clsx';
 import { Button } from '@/components/ui/button';  
 import { ProfilePopover } from '@/components/profile/Profile-popover'; 
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 const Navbar = () => {  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,11 +28,16 @@ const Navbar = () => {
   return (
     <header className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex">
+        <div className="flex items-center justify-between h-16 overflow-hidden">
+          <div className="flex overflow-hidden">
             <div className="flex-shrink-0 flex items-center">
               <Link href="/" className="text-2xl font-bold text-gray-800">
-                Logo
+                <Image 
+                  src='/CSC-LOGO-BR.png'
+                  width={36}
+                  height={36}
+                  alt='CSC Logo'
+                />
               </Link>
             </div>
           </div>
@@ -92,12 +98,12 @@ const Navbar = () => {
             ) : (  
               <>  
                 <Link href="/sign-in"   
-                  className={clsx("inline-flex items-center px-1 pt-1 border-b-2 ", {'border-indigo-500': pathName === '/sign-in'})}>  
-                  Sign in  
+                  className={clsx("inline-flex items-center px-1 pt-1 border-b-2 ", {'': pathName === '/sign-in'})}>  
+                  <Button className=' bg-indigo-700 hover:bg-indigo-600 text-white'>Sign in</Button>  
                 </Link>  
                 <Link href="/sign-up"   
                   className={clsx("inline-flex items-center justify-center px-1 pt-1 ",{'': pathName === '/sign-up'})}>  
-                  <Button>Sign Up</Button>  
+                  <Button className=' bg-red-900 hover:bg-red-800 text-white'>Sign Up</Button>  
                 </Link>  
               </>  
             )}

@@ -21,12 +21,12 @@ export default function History() {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <p>
-            Founded in 1975, our institution has been a beacon of academic excellence for over four decades. What
+            Founded in 2005, our institution has been a beacon of academic excellence for over four decades. What
             started as a small community college has grown into a comprehensive educational institution serving both
             school and college students.
           </p>
           <p className="mt-4">
-            Through the years, we've adapted to the changing educational landscape, consistently updating our curriculum
+            Through the years, we&apos;ve adapted to the changing educational landscape, consistently updating our curriculum
             and facilities to provide the best learning experience for our students.
           </p>
         </motion.div>

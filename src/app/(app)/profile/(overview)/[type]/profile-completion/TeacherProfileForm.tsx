@@ -12,16 +12,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";  
 import { AvatarUpload } from '@/components/ui/Avatar-upload';  
-import { AchievementInput } from '@/components/ui/achievement-input';  
+// import { AchievementInput } from '@/components/ui/achievement-input';  
 import axios, { AxiosError } from 'axios';  
 import {Loader2 } from 'lucide-react';  
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DatePicker from 'react-datepicker';  
 import 'react-datepicker/dist/react-datepicker.css';
 
+
 interface TeacherProfileFormProps {  
-  dbData: {  
-    data: any;  
+  dbData: {
+    profileType: string;
+    birthDate: string;
+    gender: string;
+    graduationYear: string;
+    university: string;
+    hscPassingYear: string;
+    college: string;
+    sscPassingYear: string;
+    school: string;
+    contactNo: string;
+    email: string;
+    designation: string;
+    institutionName: string;
+    name: string;
+    avatar: string;
+    isAffiliated: boolean;  
   };  
 }  
 
@@ -56,7 +72,7 @@ export default function TeacherProfileForm({ dbData }: TeacherProfileFormProps) 
       birthDate: dbData?.birthDate ? new Date(dbData.birthDate) : null,  
       isAffiliated: isAffiliated,  
       profileType: dbData?.profileType || profileType,  
-      achievements: dbData?.achievements || []  
+      // achievements: dbData?.achievements || []  
     },  
   });  
 
@@ -94,12 +110,12 @@ export default function TeacherProfileForm({ dbData }: TeacherProfileFormProps) 
 
 
   return (
-    <div className='flex justify-center items-center bg-gray-100 lg:w-1/2'>
-      <div className='w-full  p-8 space-y-8 bg-white rounded-lg shadow-md'>
+    <div className='flex justify-center items-center bg-gray-100 lg:w-1/2 max-w-7xl mx-auto '>
+      <div className='w-full p-6 space-y-8 bg-white rounded-lg shadow-md '>
 
         <div className='flex flex-col items-center gap-2'>
           <h1 className='font-bold'>Create Your Profile</h1>
-          <p>Enter your educational information to set up your profile.</p>
+          <p>Enter your necessary information to set up your profile.</p>
         </div>
         <hr />
 
@@ -115,7 +131,7 @@ export default function TeacherProfileForm({ dbData }: TeacherProfileFormProps) 
                     <FormControl>
                       <AvatarUpload
                         onChange={(file) => field.onChange(file)}
-                        value={field.value}
+                        value={field.value as File | null}
                       />
                     </FormControl>
                     <FormDescription>
@@ -355,7 +371,7 @@ export default function TeacherProfileForm({ dbData }: TeacherProfileFormProps) 
                       <div style={{ position: 'relative' }}>  
                         <DatePicker  
                           selected={field.value} // Controlled component  
-                          onChange={(date) => {  
+                          onChange={(date: Date | null) => {  
                             field.onChange(date);  // Update the field value  
                           }}  
                           // Set the min date to today to prevent future selection  
@@ -425,7 +441,7 @@ export default function TeacherProfileForm({ dbData }: TeacherProfileFormProps) 
                 )}
               />
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="achievements"
                 render={({ field }) => (
@@ -443,7 +459,7 @@ export default function TeacherProfileForm({ dbData }: TeacherProfileFormProps) 
                     <FormMessage />
                   </FormItem>
                 )}
-              />    
+              />     */}
               
               {/* <FormField  
                 control={form.control}  
@@ -476,12 +492,12 @@ export default function TeacherProfileForm({ dbData }: TeacherProfileFormProps) 
 
               <FormField
                 control={form.control}
-                name="affiliated"
+                name="isAffiliated"
                 render={({ field }) => (
                   <FormItem className='hidden'>
                     <FormLabel> Affiliated </FormLabel>
                     <FormControl>
-                    <Input placeholder="" {...field}/>
+                    <Input placeholder="" {...field} value={field.value.toString()}/>
                     </FormControl>
                     <FormDescription>
                     </FormDescription>
@@ -506,7 +522,7 @@ export default function TeacherProfileForm({ dbData }: TeacherProfileFormProps) 
               />
 
               {dbData ? (
-                  <Button type="submit" > 
+                  <Button type="submit" className='bg-indigo-700 hover:bg-indigo-600'> 
                   {
                   isSubmitting? (
                     <>

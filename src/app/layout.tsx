@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { roboto } from "@/components/ui/font";
+import { roboto, montserrat } from "@/components/ui/font";
 import Navbar from "@/components/root-layout/navbar/page";
 import Footer from "@/components/root-layout/footer/page";
 import AuthProvider from "@/app/context/AuthProvider";
@@ -20,7 +20,7 @@ export default function RootLayout({
   return (  
     <html lang="en">  
       <AuthProvider>  
-          <body className={`${roboto.className} antialiased`}>  
+          <body className={`${montserrat.className} antialiased`}>  
             <div>  
               <Navbar />  
               <div>{children}</div>   

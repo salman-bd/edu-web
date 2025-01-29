@@ -24,41 +24,23 @@ export function Dashboard() {
           <TabsTrigger value="analytics" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
             Analytics
           </TabsTrigger>
-          <TabsTrigger value="reports" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
-            Reports
-          </TabsTrigger>
-          <TabsTrigger
-            value="notifications"
-            className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white"
-          >
-            Notifications
-          </TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {[
               {
                 title: "Total Students",
-                value: "2,345",
-                change: "+180 from last month",
+                value: "345+",
                 icon: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
               },
               {
                 title: "Average Attendance",
-                value: "92.6%",
-                change: "+2.1% from last week",
+                value: "82.6%",
                 icon: "M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z",
               },
               {
-                title: "Active Courses",
-                value: "78",
-                change: "+12 new this semester",
-                icon: "M22 12h-4l-3 9L9 3l-3 9H2",
-              },
-              {
                 title: "Faculty Members",
-                value: "142",
-                change: "+3 joined this month",
+                value: "26+",
                 icon: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
               },
             ].map((item, index) => (
@@ -111,15 +93,7 @@ export function Dashboard() {
               </CardContent>
             </Card>
           </div>
-          <Card className="hover:shadow-lg transition-shadow duration-300">
-            <CardHeader>
-              <CardTitle className="text-indigo-600">Quick Actions</CardTitle>
-              <CardDescription>Frequently used actions and tools</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <QuickActions />
-            </CardContent>
-          </Card>
+          
         </TabsContent>
       </Tabs>
     </motion.div>

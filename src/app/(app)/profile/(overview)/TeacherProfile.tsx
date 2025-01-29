@@ -50,7 +50,7 @@ export function TeacherProfile(profileData) {
         { Verified ? (  
           <div className='flex flex-row gap-2 items-center text-center lg:text-2xl'>  
             <h2>Verified</h2>   
-            <VerifiedIcon className='text-blue-600' />  
+            <VerifiedIcon className='text-indigo-600' />  
           </div>  
         ) : (  
           <div className='flex flex-row gap-2 items-center text-center lg:text-2xl'>  
@@ -64,7 +64,7 @@ export function TeacherProfile(profileData) {
           <AvatarFallback className="bg-violet-600 text-white text-4xl">{data?.name.charAt(0)}</AvatarFallback>
         </Avatar>
         <h1 className="text-2xl font-bold">{data.name}</h1>
-        <h4 className='text-white p-4 py-2 bg-blue-700 rounded-full'>{data.designation} </h4>
+        <h4 className='text-white p-4 py-2 bg-indigo-600 rounded-full'>{data.designation} </h4>
       </CardHeader>
       
       <CardContent>
@@ -115,9 +115,9 @@ export function TeacherProfile(profileData) {
 
           )}
           {showDetails ? (
-            <Button onClick={toggleShowDetalis} className='bg-blue-700'>View Short</Button>
+            <Button onClick={toggleShowDetalis} className='bg-indigo-600 hover:bg-indigo-700'>View Short</Button>
           ) : (
-            <Button onClick={toggleShowDetalis} className='bg-blue-700'>View Full</Button>
+            <Button onClick={toggleShowDetalis} className='bg-indigo-600 hover:bg-indigo-700'>See Details</Button>
           )}
         
         </div>

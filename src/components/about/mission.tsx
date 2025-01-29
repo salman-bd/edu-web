@@ -5,9 +5,9 @@ import { motion } from "framer-motion"
 export default function Mission() {
   const listItems = [
     "Foster a love for lifelong learning",
-    "Develop critical thinking and problem-solving skills",
     "Prepare students for the challenges of the 21st century",
     "Promote diversity, inclusivity, and global awareness",
+    "Develop critical thinking and problem-solving skills",
   ]
 
   return (

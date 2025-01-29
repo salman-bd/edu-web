@@ -5,41 +5,12 @@ import { motion } from "framer-motion"
 
 const teachers = [
   {
-    name: "Dr. Emily Johnson",
+    name: "Mr. Name",
     role: "Elementary Education Specialist",
-    image: "/placeholder.svg?height=400&width=400",
-    bio: "With over 15 years of experience in early childhood education, Dr. Johnson leads our elementary school program with enthusiasm and expertise.",
+    image: "/teachers/demo-avatar.png",
+    bio: "With over 15 years of experience in early childhood education, Mr. Name leads our elementary school program with enthusiasm and expertise.",
   },
-  {
-    name: "Prof. Michael Chen",
-    role: "High School Science Department Head",
-    image: "/placeholder.svg?height=400&width=400",
-    bio: "An award-winning educator, Prof. Chen brings cutting-edge science and technology into our high school classrooms.",
-  },
-  {
-    name: "Dr. Sarah Patel",
-    role: "College Mathematics Professor",
-    image: "/placeholder.svg?height=400&width=400",
-    bio: "Dr. Patel's research in applied mathematics enriches our college-level courses and inspires students to explore the world of numbers.",
-  },
-  {
-    name: "Mr. David Rodriguez",
-    role: "Middle School English Teacher",
-    image: "/placeholder.svg?height=400&width=400",
-    bio: "With a background in creative writing, Mr. Rodriguez makes literature come alive for our middle school students.",
-  },
-  {
-    name: "Ms. Olivia Thompson",
-    role: "Physical Education Coordinator",
-    image: "/placeholder.svg?height=400&width=400",
-    bio: "A former professional athlete, Ms. Thompson promotes health and wellness across all grade levels.",
-  },
-  {
-    name: "Dr. James Lee",
-    role: "College History Professor",
-    image: "/placeholder.svg?height=400&width=400",
-    bio: "Dr. Lee's engaging teaching style and extensive research make history relevant and exciting for our college students.",
-  },
+ 
 ]
 
 export default function TeachersList() {

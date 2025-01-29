@@ -84,7 +84,7 @@ export function ProfilePopover() {
             <span>Contact Us</span>
           </Link>
 
-          <Button className="w-full bg-red-700 hover:bg-red-800 text-white" onClick={() => {handleSignOut(); setIsOpen(false)}}>
+          <Button className="w-full bg-red-900 hover:bg-red-800 text-white" onClick={() => {handleSignOut(); setIsOpen(false)}}>
             Sign out
           </Button>
           <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white" onClick={() => {profilePageRedirect(); setIsOpen(false)}}>

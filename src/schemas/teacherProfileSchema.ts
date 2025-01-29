@@ -67,7 +67,7 @@ export const teacherProfileSchema = z.object({
   graduationYear: z.string().regex(/^\d{4}$/, {  
     message: "Please enter a valid year (YYYY).",  
   }),  
-  achievements: z.array(z.string()).optional(),  
+  // achievements: z.array(z.string()).optional(),  
   profileType: z.string(),  
   isAffiliated: z.boolean(),  
 });

@@ -13,21 +13,19 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"  
 import { Loader2, LogInIcon, GithubIcon} from "lucide-react"
 import { FaGoogle } from 'react-icons/fa';  
-import { signIn, useSession } from "next-auth/react"  
+import { signIn } from "next-auth/react"  
 
 
 function SignIn() {  
   const [isSubmitting, setIsSubmitting] = useState(false);  
   const { toast } = useToast();  
   const router = useRouter();
-
-  const {data: session, status} = useSession();
   
   // zod implementation  
   const form = useForm<z.infer<typeof signInSchema>>({  
     resolver: zodResolver(signInSchema),  
     defaultValues: {  
-      identifier: '',  
+      email: '',  
       password: '',  
     }  
   })  
@@ -36,7 +34,7 @@ function SignIn() {
     setIsSubmitting(true);  
     const result = await signIn('credentials', {  
       redirect: false,  
-      identifier: data.identifier,  
+      email: data.email,  
       password: data.password  
     });  
     
@@ -79,10 +77,10 @@ function SignIn() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">  
             <FormField  
               control={form.control}  
-              name="identifier"  
+              name="email"  
               render={({ field }) => (  
                 <FormItem>  
-                  <FormLabel>Email/Username</FormLabel>  
+                  <FormLabel>Email</FormLabel>  
                   <FormControl>  
                     <Input placeholder="" {...field} />  
                   </FormControl>  

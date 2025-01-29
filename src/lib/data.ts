@@ -1,6 +1,6 @@
 import { cache } from 'react'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/app/api/auth/[...nextauth]/options'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { mongoDbConnect } from './dbConnect'
 import ProfileModel from '@/model/ProfileModel'
 

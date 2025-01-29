@@ -29,7 +29,7 @@ export async function POST(request: Request) {
         const graduationYear = formData.get('graduationYear') as string;  
         const gender = formData.get('gender') as string;  
         const birthDateString = formData.get('birthDate') as string;  
-        const achievements = formData.get('achievements') as string[]; 
+        // const achievements = formData.get('achievements') as string[]; 
         const isAffiliated = formData.get('isAffiliated') === 'true'; // Ensure this is a boolean  
         const profileType = formData.get('profileType') as string;  
 
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
             birthDate: new Date(birthDateString), // Ensure date is stored as Date  
             profileType,  
             isAffiliated,  
-            achievements: Array.isArray(achievements) ? achievements : [],  
+            // achievements: Array.isArray(achievements) ? achievements : [],  
         };   
 
         if (existingProfile) {  

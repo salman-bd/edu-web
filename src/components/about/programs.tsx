@@ -7,9 +7,7 @@ export default function Programs() {
     { name: "Elementary School", description: "Grades K-5" },
     { name: "Middle School", description: "Grades 6-8" },
     { name: "High School", description: "Grades 9-12" },
-    { name: "Associate Degrees", description: "2-year college programs" },
-    { name: "Bachelor's Degrees", description: "4-year college programs" },
-    { name: "Continuing Education", description: "Adult learning courses" },
+    { name: "College Degree", description: "2-year college programs" },
   ]
 
   return (

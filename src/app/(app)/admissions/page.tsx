@@ -24,7 +24,7 @@ export default function AdmissionsPage() {
   ]
 
   return (
-    <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 space-y-16">
+    <div className="container space-y-16 pt-24  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <motion.header
         className="text-center space-y-6"
         initial={{ opacity: 0, y: 20 }}
@@ -74,7 +74,7 @@ export default function AdmissionsPage() {
       </motion.section>
 
       <Tabs defaultValue="school" className="w-full">
-        <TabsList className="flex justify-center mb-8">
+        <TabsList className="flex flex-col md:flex-row justify-center items-center mb-8">
           <TabsTrigger value="school" className="text-lg px-6 py-3">
             School Admissions
           </TabsTrigger>

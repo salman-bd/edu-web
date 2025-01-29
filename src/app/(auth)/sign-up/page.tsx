@@ -1,4 +1,4 @@
-import SignUpForm  from './sign-up-form'
+import SignUpForm  from './SignUpForm'
 import { GraduationCap } from 'lucide-react'
 
 export default function SignUpPage() {
@@ -7,9 +7,9 @@ export default function SignUpPage() {
       <div className="w-full max-w-md space-y-8">
         <header className="text-center">
           <div className="mx-auto h-12 w-12 text-primary">
-            <GraduationCap className="h-12 w-12" />
+            <GraduationCap className="h-12 w-12 text-indigo-600" />
           </div>
-          <h1 className="mt-6 text-3xl font-extrabold text-gray-900">
+          <h1 className="mt-6 text-3xl font-extrabold text-indigo-600">
             Create Your Account
           </h1>
           <p className="mt-2 text-sm text-gray-600">

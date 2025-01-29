@@ -1,5 +1,16 @@
 // next.config.js  
 const nextConfig = {  
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/salmanbd/image/upload/**',
+        search: '',
+      },
+    ],
+  },
   webpack: (config, { isServer }) => {  
     // Example: Exclude unnecessary modules or libraries  
     if (!isServer) {  

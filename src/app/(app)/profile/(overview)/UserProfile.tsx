@@ -1,20 +1,27 @@
 "use client"
 
-import { useState } from "react"
+import {  useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useRouter } from "next/navigation"
+import { Card, CardContent } from "@/components/ui/card"
+import { useRouter, useSearchParams } from "next/navigation"
 import { ProfileAlertDialog } from "@/components/profile/ProfileAlertDialog"
 import TeacherProfileForm from "./[type]/profile-completion/TeacherProfileForm"
 import StudentProfileForm from "./[type]/profile-completion/StudentProfileForm"
 import { motion } from "framer-motion"
+import { Cross, X } from "lucide-react"
 
 export function UserProfile({ data }) {
-  const router = useRouter()
+  const router = useRouter();
+  const searchParams = useSearchParams();  
+  const success = searchParams.get('success');
+  console.log("success: ", success);
+  
   const [isProfileEditing, setIsProfileEditing] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-  const profileType = data?.profileType
+  const profileType = data?.profileType;
+
+
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false)
@@ -33,9 +40,12 @@ export function UserProfile({ data }) {
     }
   }
 
+
+
   const handleProfileComplete = () => {
     setIsDialogOpen(true)
   }
+
 
   const handleProfileEdit = () => {
     setIsProfileEditing(true)
@@ -55,18 +65,31 @@ export function UserProfile({ data }) {
     >
       <ProfileAlertDialog isOpen={isDialogOpen} onClose={handleCloseDialog} onContinue={handleContinue} />
 
-      {data && isProfileEditing && (
-        <Card className="w-full max-w-2xl mx-auto">
-          <CardHeader>
-            <CardTitle>{profileType === "teacher" ? "Edit Teacher Profile" : "Edit Student Profile"}</CardTitle>
-          </CardHeader>
-          <CardContent>
+      <div>
+        <div className="relative lg:w-1/2 mx-auto">
+          {isProfileEditing && (
+            <Button
+              variant="outline"
+              onClick={() => setIsProfileEditing(false)}
+              className="bg-indigo-100 text-red-500 hover:bg-indigo-200 absolute top-0 left-0 rounded-md "
+            >
+              Close
+              {/* <X /> */}
+            </Button>
+          )}
+        </div>
+        
+        {data && isProfileEditing && (
+          <div className="">
             {profileType === "teacher" ? <TeacherProfileForm dbData={data} /> : <StudentProfileForm dbData={data} />}
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )}
 
-      <Card className="w-full max-w-2xl mx-auto">
+       
+      </div>
+
+
+      <Card className="lg:w-1/2  mx-auto">
         <CardContent className="flex justify-between items-center p-6">
           {data ? (
             <>

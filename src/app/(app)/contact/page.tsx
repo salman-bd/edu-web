@@ -1,7 +1,7 @@
-import ContactHero from './components/contact-hero'
-import ContactForm from './components/contact-form'
-import ContactInfo from './components/contact-info'
-import ContactMap from './components/contact-map'
+import ContactHero from '../../../components/contact/contact-hero'
+import ContactForm from '../../../components/contact/contact-form'
+import ContactInfo from '../../../components/contact/contact-info'
+import ContactMap from '../../../components/contact/contact-map'
 
 export default function ContactPage() {
   return (

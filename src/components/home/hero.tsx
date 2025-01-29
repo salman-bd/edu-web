@@ -16,7 +16,7 @@ export default function Hero() {
             Welcome to Our School & College
           </motion.h1>
           <motion.p
-            className="mt-6 text-xl md:text-2xl max-w-3xl mx-auto text-red-300"
+            className="mt-6 text-xl md:text-2xl max-w-3xl mx-auto text-white"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -36,7 +36,7 @@ export default function Hero() {
               asChild
               variant="outline"
               size="lg"
-              className="bg-transparent text-white border-white hover:bg-white/10"
+              className="bg-transparent text-white border-white hover:bg-white/10 hover:text-white"
             >
               <Link href="/about">Learn More</Link>
             </Button>

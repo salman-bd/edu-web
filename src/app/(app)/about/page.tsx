@@ -10,10 +10,7 @@ const LazyPrograms = dynamic(() => import('@/components/about/programs'), {
   loading: () => <p>Loading...</p>, // Optional: loading indication while the component is loading  
   ssr: false // Optional: Disable server-side rendering for this component  
 });
-const LazyFacilities = dynamic(() => import('@/components/about/facilities'), {  
-  loading: () => <p>Loading...</p>, // Optional: loading indication while the component is loading  
-  ssr: false // Optional: Disable server-side rendering for this component  
-});
+
 const LazyContactCTA = dynamic(() => import('@/components/about/contact-cta'), {  
   loading: () => <p>Loading...</p>, // Optional: loading indication while the component is loading  
   ssr: false // Optional: Disable server-side rendering for this component  
@@ -26,7 +23,6 @@ export default function AboutPage() {
       <History />
       <Mission />
       <LazyPrograms />
-      <LazyFacilities />
       <LazyContactCTA />
     </div>
   )

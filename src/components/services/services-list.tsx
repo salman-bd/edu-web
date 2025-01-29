@@ -26,30 +26,10 @@ const services = [
     icon: ChalkboardTeacher,
   },
   {
-    name: "Science Labs",
-    description: "State-of-the-art facilities for hands-on learning.",
-    icon: Microscope,
-  },
-  {
-    name: "Arts Programs",
-    description: "Diverse offerings in visual and performing arts.",
-    icon: Music,
-  },
-  {
-    name: "Sports Programs",
-    description: "Competitive and recreational athletic opportunities.",
-    icon: Basketball,
-  },
-  {
     name: "Language Programs",
     description: "Multilingual education and ESL support.",
     icon: Globe,
-  },
-  {
-    name: "Technology Courses",
-    description: "Cutting-edge tech and computer science education.",
-    icon: Code,
-  },
+  }
 ]
 
 export default function ServicesList() {
