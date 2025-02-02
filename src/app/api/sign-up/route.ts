@@ -1,5 +1,5 @@
 import {mongoDbConnect} from "@/lib/dbConnect";
-import UserModel from "@/model/User";
+import UserModel from "@/models/User";
 import bcrypt from "bcrypt";
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
 

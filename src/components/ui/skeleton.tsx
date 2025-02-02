@@ -1,7 +1,11 @@
 // components/ui/skeleton.js  
 import React from 'react';  
 
-export const Skeleton = ({ className }) => {  
+interface SkeletonProps {
+  className?: string;
+}
+
+export const Skeleton: React.FC<SkeletonProps> = ({ className }) => {  
   return (  
     <div className={`skeleton ${className}`}>  
       <style jsx>{`  

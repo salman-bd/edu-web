@@ -1,5 +1,5 @@
 import { mongoDbConnect } from '@/lib/dbConnect';
-import UserModel from '@/model/User';
+import UserModel from '@/models/User';
 
 export async function POST(request: Request) {
   // Connect to the database

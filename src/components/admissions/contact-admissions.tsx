@@ -13,7 +13,7 @@ export function ContactAdmissions() {
           <CardTitle className="text-2xl text-indigo-600">
             Have questions? Get in touch with our admissions team.
           </CardTitle>
-          <CardDescription className="text-lg">We're here to help you through the application process.</CardDescription>
+          <CardDescription className="text-lg">We&apos;re here to help you through the application process.</CardDescription>
         </CardHeader>
         <CardContent>
           <form>
@@ -49,7 +49,7 @@ export function ContactAdmissions() {
           </form>
         </CardContent>
         <CardFooter>
-          <Button className="bg-red-700 hover:bg-red-600 text-white">Send Message</Button>
+          <Button className="bg-red-800 hover:bg-red-700 text-white">Send Message</Button>
         </CardFooter>
       </Card>
     </section>

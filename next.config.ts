@@ -1,5 +1,7 @@
-// next.config.js  
-const nextConfig = {  
+import { NextConfig } from 'next';
+import { Configuration } from 'webpack';
+
+const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
@@ -7,36 +9,33 @@ const nextConfig = {
         hostname: 'res.cloudinary.com',
         port: '',
         pathname: '/salmanbd/image/upload/**',
-        search: '',
       },
     ],
   },
-  webpack: (config, { isServer }) => {  
-    // Example: Exclude unnecessary modules or libraries  
-    if (!isServer) {  
-      // Remove certain modules for the client  
-      config.resolve.alias['cloudinary'] = false;  
-      config.resolve.alias['bcrypt'] = false;   
-      config.resolve.alias['mongoose'] = false;   
-      config.resolve.alias['pg'] = false;   
-      config.resolve.alias['resend'] = false;   
-      config.resolve.alias['aws-amplify'] = false;   
-    }  
+  webpack: (config: Configuration, { isServer }: { isServer: boolean }) => {
+    // Example: Exclude unnecessary modules or libraries
+    if (!isServer) {
+      // Remove certain modules for the client
+      config.resolve = config.resolve || {};
+      config.resolve.alias = config.resolve.alias || {};
+      (config.resolve.alias as { [key: string]: string | false })['cloudinary'] = false;
+      (config.resolve.alias as { [key: string]: string | false })['bcrypt'] = false;
+      (config.resolve.alias as { [key: string]: string | false })['mongoose'] = false;
+      (config.resolve.alias as { [key: string]: string | false })['resend'] = false;
+    }
 
-    // Example: Add optimization options  
-    config.optimization.splitChunks.maxSize = 200000; 
+    // Example: Add optimization options
+    config.optimization = config.optimization || {};
+    config.optimization.splitChunks = config.optimization.splitChunks || {};
+    config.optimization.splitChunks.maxSize = 200 * 1024; // 200 KB
 
+    // Example: Minimize output for production
+    if (process.env.NODE_ENV === 'production') {
+      config.optimization.minimize = true;
+    }
 
-    
+    return config;
+  },
+};
 
-    // Example: Minimize output for production  
-    if (process.env.NODE_ENV === 'production') {  
-      config.optimization.minimize = true;  
-    }  
-
-    return config;  
-  },  
-};  
-
-
-module.exports = nextConfig;
+export default nextConfig;

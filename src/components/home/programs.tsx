@@ -15,7 +15,7 @@ export default function Programs() {
     <div className="py-12 bg-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-indigo-600 sm:text-4xl">Our Programs</h2>
+          <h2 className="text-3xl font-extrabold text-indigo-600 sm:text-4xl ">Our Programs</h2>
           <p className="mt-4 text-xl text-gray-600">Explore our comprehensive educational offerings.</p>
         </div>
         <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -26,7 +26,7 @@ export default function Programs() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="border-indigo-600 border-2 hover:border-red-700 transition-colors duration-300">
+              <Card className="border-indigo-600 border-2 hover:border-red-700 transition-colors duration-300 h-full">
                 <CardHeader>
                   <CardTitle className="text-indigo-600">{program.name}</CardTitle>
                   <CardDescription>{program.description}</CardDescription>

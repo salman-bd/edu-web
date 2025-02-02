@@ -1,80 +1,76 @@
-import { cache } from 'react'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
-import { mongoDbConnect } from './dbConnect'
-import ProfileModel from '@/model/ProfileModel'
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { mongoDbConnect } from './dbConnect';
+import ProfileModel from '@/models/ProfileModel';
 
-export interface ProfilelInfoData {
-  avatar: string
-  name: string
-  designation: string
-  isAffiliated: boolean
-  email: string
-  contactNo: string
-  birthDate: string
-  profileType: string
-  institutionName: string
-  
-  gender: string
-  grade: string
-  school: string
-  sscPassingYear: string
-  college: string
-  hscPassingYear: string
-  university: string
-  graduationYear: string
-  achievements: [string]
+export interface ProfileInfoData {
+  id: string;
+  avatar: string;
+  name: string;
+  designation: string;
+  isAffiliated: boolean;
+  email: string;
+  contactNo: string;
+  birthDate: string;
+  profileType: string;
+  institutionName: string;
+  gender: string;
+  grade: string;
+  school: string;
+  sscPassingYear: string;
+  college: string;
+  hscPassingYear: string;
+  university: string;
+  graduationYear: string;
+  achievements: string[];
 }
-
-
 
 async function getSession() {
-  return await getServerSession(authOptions)
+  try {
+    return await getServerSession(authOptions);
+  } catch (error) {
+    console.error("Error fetching session:", (error as Error).message);
+    return null;
+  }
 }
 
-export const getProfileInfo = cache(async (): Promise<ProfilelInfoData | null> => {  
+export async function getProfileInfo(): Promise<ProfileInfoData | null> {  
   try {  
     const session = await getSession();  
     if (!session?.user?.email) return null;  
 
     const email = session.user.email;  
-    console.log("\nSession email: ", email);  
-  
-    await mongoDbConnect(); 
-    const profile = await ProfileModel.findOne({ email });
-    
+    await mongoDbConnect();  
+    const profile = await ProfileModel.findOne({ email });  
 
-    if (!profile) return null; 
-    
+    if (!profile) return null;  
 
-    const ProfileInfo = {  
+    const profileInfo: ProfileInfoData = {  
+      id: profile._id.toString(), // Now correctly inferred  
       avatar: profile.avatar,  
       name: profile.name,  
       designation: profile.designation,  
       isAffiliated: profile.isAffiliated,  
       email: profile.email,  
       contactNo: profile.contactNo,  
-      birthDate: profile.birthDate,  
+      birthDate: profile.birthDate.toISOString(),  
       gender: profile.gender,  
       profileType: profile.profileType,  
       institutionName: profile.institutionName,  
-      grade: profile.grade || '',  
-      school: profile.school || 'Not Provided',  
-      sscPassingYear: profile.sscPassingYear || 'Not Provided',  
-      college: profile.college || 'Not Provided',  
-      hscPassingYear: profile.hscPassingYear || 'Not Provided',  
-      university: profile.university || 'Not Provided',  
-      graduationYear: profile.graduationYear || 'Not Provided',  
-      achievements: Array.isArray(profile.achievements) ? profile.achievements.map((achievement) => achievement) : []  
-  };
-    console.log("Personal info after fetching: ", ProfileInfo );  
-    return ProfileInfo;  
-  
+      grade: profile.grade || 'not added',  
+      school: profile.school || 'not added',  
+      sscPassingYear: profile.sscPassingYear || 'not added',  
+      college: profile.college || 'not added',  
+      hscPassingYear: profile.hscPassingYear || 'not added',  
+      university: profile.university || 'not added',  
+      graduationYear: profile.graduationYear || 'not added',  
+      achievements: Array.isArray(profile.achievements) ? profile.achievements : [],  
+    };  
+
+    return profileInfo;  
+
   } catch (error) {  
-      console.error("Error fetching personal info:", error);  
-      return null; // Or handle the error according to your app's logic  
+    console.error("Error fetching personal info:", (error as Error).message);  
+    return null;  
   }  
-});
-
-
-
+}

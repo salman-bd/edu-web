@@ -13,10 +13,10 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            Welcome to Our School & College
+            Welcome to Classic School And College
           </motion.h1>
           <motion.p
-            className="mt-6 text-xl md:text-2xl max-w-3xl mx-auto text-white"
+            className="mt-6 text-xl md:text-2xl max-w-3xl mx-auto text-white px-4 text-left"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -24,19 +24,19 @@ export default function Hero() {
             Empowering minds and shaping futures through quality education from elementary to college level.
           </motion.p>
           <motion.div
-            className="mt-10 flex justify-center gap-4"
+            className="mt-10 flex justify-center gap-4 px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <Button asChild size="lg" className="bg-red-700 text-white hover:bg-red-600">
+            <Button asChild size="lg" className="bg-red-800 text-white hover:bg-red-700 px-6">
               <Link href="/programs">Explore Programs</Link>
             </Button>
             <Button
               asChild
               variant="outline"
               size="lg"
-              className="bg-transparent text-white border-white hover:bg-white/10 hover:text-white"
+              className="bg-transparent text-white border-white hover:bg-white/10 hover:text-white px-6"
             >
               <Link href="/about">Learn More</Link>
             </Button>

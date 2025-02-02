@@ -7,7 +7,7 @@ export default function CTA() {
     <div className="bg-indigo-600">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-          <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
+          <h2 className="text-3xl font-extrabold text-white sm:text-4xl ">
             <span className="">Ready to start your educational journey?</span> <br />
             <span className=" text-white">Join our school and college community today.</span>
           </h2>
@@ -18,7 +18,7 @@ export default function CTA() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <Button asChild size="lg" className="bg-red-700 text-white hover:bg-red-600">
+          <Button asChild size="lg" className="bg-red-800 text-white hover:bg-red-700">
             <Link href="/apply">Apply Now</Link>
           </Button>
           <Button

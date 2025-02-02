@@ -14,7 +14,7 @@ export default function Programs() {
     <section className="py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.h2
-          className="text-3xl font-extrabold text-indigo-600 sm:text-4xl"
+          className="text-3xl font-extrabold text-indigo-600 sm:text-4xl px-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}

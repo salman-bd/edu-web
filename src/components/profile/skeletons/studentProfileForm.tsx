@@ -2,7 +2,7 @@
 
 import React from 'react';  
 import { Skeleton } from "@/components/ui/skeleton"; // Assuming you have a Skeleton component for loading effect  
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";  
+import { Card, CardContent, CardHeader, CardDescription } from "@/components/ui/card";  
 
 const StudentProfileSkeleton = () => {  
   return (  

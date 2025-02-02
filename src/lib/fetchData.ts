@@ -1,15 +1,15 @@
 import { mongoDbConnect } from "@/lib/dbConnect";  
-import UserProfile, { UserProfile as UserProfileType } from "@/model/ProfileModel";  
+import ProfileModel from "@/models/ProfileModel";  
 
-export const fetchUserProfileData = async function (email: string): Promise<UserProfileType | null> {  
+export const fetchProfileData = async function (email: string) {  
   await mongoDbConnect();  
 
   try {  
-    const userProfileData = await UserProfile.findOne({ email });  
+    const profileData = await ProfileModel.findOne({ email });  
 
-    if (userProfileData) {  
-      console.log("Fetched user profile data: ", userProfileData);  
-      return userProfileData;  
+    if (profileData) {  
+      console.log("Fetched user profile data: ", profileData);  
+      return profileData;  
     }
   } catch (error) {  
     console.error("Error during fetching user profile data: ", error);  

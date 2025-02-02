@@ -1,18 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Loader2 } from 'lucide-react'
 
 import { useToast } from '@/components/ui/use-toast';
 import { ApiResponse } from '@/types/ApiResponse';
-import { zodResolver } from '@hookform/resolvers/zod';
 import axios, { AxiosError } from 'axios';
 import { useParams, useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+
 import * as z from 'zod';
 import { verifySchema } from '@/schemas/verifySchema';
 
@@ -27,10 +25,6 @@ export default function VerifyAccount() {
   const router = useRouter();
   const params = useParams<{ username: string }>();
   const { toast } = useToast();
-
-  const form = useForm<z.infer<typeof verifySchema>>({
-    resolver: zodResolver(verifySchema),
-  });
 
   
   const handleChange = (element: HTMLInputElement, index: number) => {
@@ -47,7 +41,6 @@ export default function VerifyAccount() {
     setIsResending(true)
     // Simulate API call to resend OTP
     await new Promise(resolve => setTimeout(resolve, 2000))
-    setTimeLeft(300)
     setIsResending(false)
   }
 
@@ -85,7 +78,7 @@ export default function VerifyAccount() {
       <CardHeader>
         <CardTitle>Enter Verification Code</CardTitle>
         <CardDescription>
-          We've sent a 6-digit code to your email. Enter it below to verify your account.
+          We&apos;ve sent a 6-digit code to your email. Enter it below to verify your account.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -110,7 +103,7 @@ export default function VerifyAccount() {
       </CardContent>
       <CardFooter className="flex flex-col gap-4">
         <Button 
-          onClick={handleVerifyCode} 
+          onClick={() => handleVerifyCode({ code: verifyCode.join('') })} 
           className="w-full bg-blue-600" 
           disabled={verifyCode.some(digit => digit === '') || isVerifying}
         >
@@ -148,3 +141,5 @@ export default function VerifyAccount() {
     </Card>
   );
 }
+
+

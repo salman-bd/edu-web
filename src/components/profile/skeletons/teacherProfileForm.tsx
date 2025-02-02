@@ -1,6 +1,6 @@
 // components/TeacherProfileSkeleton.js  
 import React from 'react';  
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";  
+import { Card, CardContent, CardHeader, CardDescription } from "@/components/ui/card";  
 import { Skeleton } from "@/components/ui/skeleton";  
 
 const TeacherProfileSkeleton = () => {  

@@ -1,177 +1,143 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-interface StudentData {
-  name: string
-  email: string
-  avatar: string
-  institution: 'school' | 'college'
-  gradeOrYear: string
-  majorOrSubjects: string
-  achievements: string
+import { MailIcon, ContactIcon, SchoolIcon, VerifiedIcon, CircleAlert, CalendarClock, User } from "lucide-react"
+
+
+interface ProfileData {
+  data: {
+    isAffiliated: boolean;
+    birthDate: string | number | Date;
+    avatar: string;
+    name: string;
+    profileType: string;
+    institutionName: string;
+    grade: string;
+    email: string;
+    contactNo: string;
+    // Add other fields as necessary
+  };
 }
 
-export function StudentProfile() {
-  const [isEditing, setIsEditing] = useState(false)
-  const [studentData, setStudentData] = useState<StudentData>({
-    name: 'Jane Doe',
-    email: 'jane.doe@example.edu',
-    avatar: 'https://github.com/shadcn.png',
-    institution: 'school',
-    gradeOrYear: '10th Grade',
-    majorOrSubjects: 'Mathematics, Science, Literature',
-    achievements: 'Honor Roll (2022-2023), Science Fair Winner (2023), Debate Team Captain',
-  })
+export function StudentProfile(profileData: ProfileData) {
+  // const [showDetails, setShowDetails] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setStudentData(prevData => ({ ...prevData, [name]: value }))
-  }
+  const data = profileData.data;
+  const Verified = data.isAffiliated;
 
-  const handleSelectChange = (name: string, value: string) => {
-    setStudentData(prevData => ({ ...prevData, [name]: value }))
-  }
+  function calculateAge(birthDateString: string | number | Date) {  
+    const birthDate = new Date(birthDateString);  
+    const today = new Date();  
+    
+    let years = today.getFullYear() - birthDate.getFullYear();  
+    let months = today.getMonth() - birthDate.getMonth();  
+    let days = today.getDate() - birthDate.getDate();  
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would typically send the updated data to your backend
-    console.log('Updated student data:', studentData)
-    setIsEditing(false)
-  }
+    // Adjust for negative days  
+    if (days < 0) {  
+        months--;  
+        days += new Date(today.getFullYear(), today.getMonth(), 0).getDate(); // Last day of previous month  
+    }  
+    // Adjust for negative months  
+    if (months < 0) {  
+        years--;  
+        months += 12;  
+    }  
+    return `${years} Years ${months} Months ${days} Days`;  
+  }  
+  const birthDate = data.birthDate; 
+  const age = calculateAge(birthDate);
+
+  // const toggleShowDetalis = () => {
+  //   setShowDetails(!showDetails);
+  // }
+
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Student Profile</CardTitle>
+    <Card className="md:w-1/2  mx-auto">
+      <CardHeader className='flex flex-col justify-center items-center'>
+        
+        { Verified ? (  
+          <div className='flex flex-row gap-2 items-center text-center lg:text-2xl'>  
+            <h2>Verified</h2>   
+            <VerifiedIcon className='text-blue-600' />  
+          </div>  
+        ) : (  
+          <div className='flex flex-row gap-2 items-center text-center lg:text-2xl'>  
+            <h2>Not Verified</h2>   
+            <CircleAlert className='text-red-600' />  
+          </div>  
+        )}
+
+        <Avatar className="w-32 h-32 mx-auto mb-4">
+          <AvatarImage src={data.avatar} alt={data.name} />
+          <AvatarFallback className="bg-violet-600 text-white text-4xl">{data?.name.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <h1 className="text-2xl font-bold">{data.name}</h1>
+        <h4 className='text-white p-4 py-2 bg-blue-700 rounded-full'>{data.profileType} </h4>
+        
+
       </CardHeader>
       <CardContent>
-        <div className="flex items-center space-x-4 mb-6">
-          <Avatar className="h-20 w-20">
-            <AvatarImage src={studentData.avatar} alt={studentData.name} />
-            <AvatarFallback>{studentData.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-          </Avatar>
-          <div>
-            <h2 className="text-2xl font-bold">{studentData.name}</h2>
-            <p className="text-gray-500">{studentData.email}</p>
+        <div className="flex flex-col">
+          <div className='text-gray-800'>
+            <div className='flex flex-row gap-2'>
+              <SchoolIcon /><p className="0 mb-4">{data.institutionName}</p>
+            </div>
+            <div className='flex flex-row gap-2'>
+              <User /><p className="0 mb-4"> <strong>Class: </strong>{data.grade}</p>
+            </div>
+            <div className='flex flex-row gap-2'>
+              <MailIcon /> <p className="mb-4">{data.email}</p>
+            </div>
+            <div className='flex flex-row gap-2'>
+              <ContactIcon /> <p className=" mb-4">{data.contactNo}</p>
+            </div>
+            <div className='flex flex-row gap-2'>
+              <CalendarClock />
+              <p className=" mb-4"><strong className='text-gray-950'>Age: </strong>{age}</p>
+            </div>
+            <hr />
+            <br />
           </div>
+          
+          {/* {showDetails && (
+            <div className=' flex flex-col'>
+              <div className='flex flex-row gap-2'>
+              <GraduationCap />
+                <p className="0 mb-4"><strong className='text-gray-950'>Graduated From: </strong>{data.university}</p>
+              </div>
+              <div className='flex flex-row gap-2'>
+                <Calendar /> <p className="mb-4"> <strong className='text-gray-950'>Graduation Year: </strong>{data.graduationYear}</p>
+              </div>
+              <div className='flex flex-row gap-2'>
+                <School2 /> <p className="mb-4"> <strong className='text-gray-950'>College: </strong>{data.college}</p>
+              </div>
+              <div className='flex flex-row gap-2'>
+                <Calendar /> <p className="mb-4"><strong className='text-gray-950'>Passing Year: </strong>{data.hscPassingYear}</p>
+              </div>
+              <div className='flex flex-row gap-2'>
+                <School2 /> <p className="mb-4"><strong className='text-gray-950'>High School: </strong>{data.school}</p>
+              </div>
+              <div className='flex flex-row gap-2'>
+                <Calendar /> <p className="mb-4"><strong className='text-gray-950'>Graduation Year: </strong>{data.sscPassingYear}</p>
+              </div>
+              <div className='flex flex-row gap-2'>
+                <Medal /> <p className="mb-4"><strong className='text-gray-950'>Achievements: </strong>{data.achievements || ['Not included']}</p>
+              </div>
+            </div>
+
+          )}
+          {showDetails ? (
+            <Button onClick={toggleShowDetalis} className='bg-blue-700'>View Short</Button>
+          ) : (
+            <Button onClick={toggleShowDetalis} className='bg-blue-700'>View Full</Button>
+          )}
+         */}
         </div>
-        {isEditing ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                value={studentData.name}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={studentData.email}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="institution">Institution</Label>
-              <Select
-                name="institution"
-                value={studentData.institution}
-                onValueChange={(value) => handleSelectChange('institution', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select institution" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="school">School</SelectItem>
-                  <SelectItem value="college">College</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="gradeOrYear">
-                {studentData.institution === 'school' ? 'Grade' : 'Year'}
-              </Label>
-              <Input
-                id="gradeOrYear"
-                name="gradeOrYear"
-                value={studentData.gradeOrYear}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="majorOrSubjects">
-                {studentData.institution === 'school' ? 'Subjects' : 'Major'}
-              </Label>
-              <Input
-                id="majorOrSubjects"
-                name="majorOrSubjects"
-                value={studentData.majorOrSubjects}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="achievements">Achievements</Label>
-              <Textarea
-                id="achievements"
-                name="achievements"
-                value={studentData.achievements}
-                onChange={handleInputChange}
-                rows={4}
-              />
-            </div>
-          </form>
-        ) : (
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-semibold">Institution</h3>
-              <p className="capitalize">{studentData.institution}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold">
-                {studentData.institution === 'school' ? 'Grade' : 'Year'}
-              </h3>
-              <p>{studentData.gradeOrYear}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold">
-                {studentData.institution === 'school' ? 'Subjects' : 'Major'}
-              </h3>
-              <p>{studentData.majorOrSubjects}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold">Achievements</h3>
-              <p>{studentData.achievements}</p>
-            </div>
-          </div>
-        )}
-      </CardContent>
-      <CardFooter>
-        {isEditing ? (
-          <div className="flex justify-end space-x-2 w-full">
-            <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
-            <Button onClick={handleSubmit}>Save Changes</Button>
-          </div>
-        ) : (
-          <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
-        )}
-      </CardFooter>
+      </CardContent> 
     </Card>
   )
 }

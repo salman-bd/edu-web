@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { roboto, montserrat } from "@/components/ui/font";
-import Navbar from "@/components/root-layout/navbar/page";
-import Footer from "@/components/root-layout/footer/page";
+import { montserrat } from "@/components/ui/font";
+import Navbar from "@/components/root-layout/Navbar";
+import Footer from "@/components/root-layout/Footer";
 import AuthProvider from "@/app/context/AuthProvider";
 
 

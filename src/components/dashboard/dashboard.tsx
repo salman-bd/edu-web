@@ -3,7 +3,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Overview } from "@/components/dashboard/overview"
 import { RecentActivity } from "@/components/dashboard/recent-activity"
-import { QuickActions } from "@/components/dashboard/quick-actions"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
 
@@ -68,7 +67,6 @@ export function Dashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{item.value}</div>
-                    <p className="text-xs text-muted-foreground">{item.change}</p>
                   </CardContent>
                 </Card>
               </motion.div>

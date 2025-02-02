@@ -38,12 +38,12 @@ export default function Features() {
           {features.map((feature, index) => (
             <motion.div
               key={feature.name}
-              className="pt-6"
+              className="pt-6 "
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <div className="flow-root rounded-lg bg-indigo-600 px-6 pb-8">
+              <div className="flow-root rounded-lg bg-indigo-600 px-6 pb-8 h-full">
                 <div className="-mt-6">
                   <div>
                     <span className="inline-flex items-center justify-center rounded-md bg-red-700 p-3 shadow-lg">

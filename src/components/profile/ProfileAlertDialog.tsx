@@ -7,32 +7,30 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { motion } from "framer-motion"
 
+
 interface ProfileAlertDialogProps {
   isOpen: boolean
   onClose: () => void
-  onContinue: (data: ProfileData) => void
+  onContinue: (type: string, isCSCAffiliated: string) => void
 }
 
-interface ProfileData {
-  type: string
-  isCSCAffiliated: string
-}
 
 export function ProfileAlertDialog({ isOpen, onClose, onContinue }: ProfileAlertDialogProps) {
+
   const [type, setType] = useState<string>('')
   const [isCSCAffiliated, setIsCSCAffiliated] = useState<string>('')
 
   const handleContinue = () => {
     if (type && isCSCAffiliated) {
-      onContinue({ type, isCSCAffiliated })
+      onContinue(type, isCSCAffiliated);
     } else {
       alert('Please answer all questions before proceeding.')
     }
   }
 
   return (
-    <AlertDialog open={isOpen}>
-      <AlertDialogContent className="sm:max-w-[425px] bg-white rounded-lg shadow-xl">
+    <AlertDialog open={isOpen} >
+      <AlertDialogContent className="sm:max-w-[425px] bg-white rounded-lg shadow-xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -76,10 +74,12 @@ export function ProfileAlertDialog({ isOpen, onClose, onContinue }: ProfileAlert
               </RadioGroup>
             </div>
           </div>
-          <AlertDialogFooter>
-            <Button variant="outline" onClick={onClose} className="border-indigo-600 text-indigo-600 hover:bg-indigo-50">Cancel</Button>
-            <Button onClick={handleContinue} className="bg-red-700 text-white hover:bg-red-800">Continue</Button>
+
+          <AlertDialogFooter className='gap-2'>
+            <Button variant="outline" onClick={onClose} className="bg-red-700 text-white hover:bg-red-600 hover:text-white">Cancel</Button>
+            <Button onClick={handleContinue} className="bg-indigo-600 text-white hover:bg-indigo-500">Continue</Button>
           </AlertDialogFooter>
+
         </motion.div>
       </AlertDialogContent>
     </AlertDialog>

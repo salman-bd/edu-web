@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from 'lucide-react'
+import Image from "next/image"
 
 export default function FeaturedService() {
   return (
@@ -18,8 +19,8 @@ export default function FeaturedService() {
           <div>
             <p className="mb-4">
               Our premium online courses offer in-depth learning experiences crafted by leading experts in various fields. 
-              With interactive content, real-world projects, and personalized feedback, you'll gain practical skills that 
-              are highly valued in today's job market.
+              With interactive content, real-world projects, and personalized feedback, you&apos;ll gain practical skills that 
+              are highly valued in today&apos;s job market.
             </p>
             <ul className="list-disc list-inside mb-4">
               <li>Access to 500+ courses</li>
@@ -32,7 +33,7 @@ export default function FeaturedService() {
             </Button>
           </div>
           <div className="flex items-center justify-center">
-            <img 
+            <Image 
               src="/placeholder.svg?height=200&width=300" 
               alt="Online learning illustration" 
               className="rounded-lg shadow-md"

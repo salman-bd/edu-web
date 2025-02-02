@@ -39,8 +39,7 @@ export default function ContactForm() {
     
     console.log(values)
     Toast({
-      title: "Message sent!",
-      description: "We'll get back to you as soon as possible.",
+      title: "Message sent!"
     })
     form.reset()
   }
@@ -49,7 +48,7 @@ export default function ContactForm() {
     <Card>
       <CardHeader>
         <CardTitle>Send us a message</CardTitle>
-        <CardDescription>We'll get back to you as soon as possible.</CardDescription>
+        <CardDescription>We&apos;ll get back to you as soon as possible.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>

@@ -30,7 +30,7 @@ export default function ContactCTA() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          <Button asChild size="lg" className="bg-white text-red-700 hover:bg-red-50">
+          <Button asChild size="lg" className="bg-white text-red-700 hover:bg-red-100">
             <Link href="/contact">Contact Us</Link>
           </Button>
         </motion.div>

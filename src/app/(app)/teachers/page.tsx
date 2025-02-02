@@ -1,6 +1,6 @@
-import TeachersHero from '@/components/teachers/teachers-hero'
-import TeachersList from '@/components/teachers/teachers-list'
-import JoinTeam from '@/components/teachers/join-team'
+import TeachersHero from '@/components/teachers/TeachersHero'
+import TeachersList from '@/components/teachers/TeachersList'
+import JoinTeam from '@/components/teachers/JoinTeam'
 
 export default function TeachersPage() {
   return (
