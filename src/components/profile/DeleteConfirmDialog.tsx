@@ -8,11 +8,17 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog"
-import { Loader, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useState } from "react"
 
 
-export const DeleteConfirmDialog = ({ isOpen, onClose, onConfirm }) => {
+interface DeleteConfirmDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => Promise<void>;
+}
+
+export const DeleteConfirmDialog = ({ isOpen, onClose, onConfirm }: DeleteConfirmDialogProps) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const handleDeleteConfirm = async () => {
     setIsDeleting(true)

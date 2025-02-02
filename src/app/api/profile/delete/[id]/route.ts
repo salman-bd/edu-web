@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";  
-
 import { mongoDbConnect } from "@/lib/dbConnect";  
-
 import ProfileModel from "@/models/ProfileModel";  
 
+export const dynamic = 'force-dynamic';
 
 export async function DELETE(request: Request) {  
 
@@ -16,6 +15,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json(  
       { message: "Profile ID is required" },  
       { status: 400 }  
+
     );  
   }  
 
