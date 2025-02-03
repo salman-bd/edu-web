@@ -1,8 +1,6 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import Overview from "@/components/dashboard/Overview"
-import RecentActivity from "@/components/dashboard/RecentActivity"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
 
@@ -78,7 +76,7 @@ export default function Dashboard() {
                 <CardTitle className="text-indigo-600">Overview</CardTitle>
               </CardHeader>
               <CardContent className="pl-2">
-                <Overview />
+                {/* <Overview /> */}
               </CardContent>
             </Card>
             <Card className="col-span-3 hover:shadow-lg transition-shadow duration-300">
@@ -87,7 +85,7 @@ export default function Dashboard() {
                 <CardDescription>You have 3 unread notifications</CardDescription>
               </CardHeader>
               <CardContent>
-                <RecentActivity />
+                {/* <RecentActivity /> */}
               </CardContent>
             </Card>
           </div>
