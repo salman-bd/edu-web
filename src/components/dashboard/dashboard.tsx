@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
 
-export default function Dashboard() {
+export function Dashboard() {
   return (
     <motion.div
       className="flex flex-col space-y-6 p-8 bg-gray-50"
