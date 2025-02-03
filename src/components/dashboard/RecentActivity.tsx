@@ -34,7 +34,7 @@ const activities = [
   },
 ]
 
-export function RecentActivity() {
+export default function RecentActivity() {
   return (
     <div className="space-y-8">
       {activities.map((activity, index) => (

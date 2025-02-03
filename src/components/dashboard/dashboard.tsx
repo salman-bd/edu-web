@@ -1,12 +1,12 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Overview } from "@/components/dashboard/overview"
-import { RecentActivity } from "@/components/dashboard/recent-activity"
+import Overview from "@/components/dashboard/Overview"
+import RecentActivity from "@/components/dashboard/RecentActivity"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
 
-export function Dashboard() {
+export default function Dashboard() {
   return (
     <motion.div
       className="flex flex-col space-y-6 p-8 bg-gray-50"

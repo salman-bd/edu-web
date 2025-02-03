@@ -17,7 +17,7 @@ const data = [
   { name: "Dec", total: 4600 },
 ]
 
-export function Overview() {
+export default function Overview() {
   return (
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={data}>

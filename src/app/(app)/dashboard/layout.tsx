@@ -1,7 +1,11 @@
+import { ErrorBoundary } from "react-error-boundary"
+import type React from "react" // Added import for React
 
- 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-      <div >{children}</div>
-  );
+    <ErrorBoundary fallback={<div>Something went wrong in the dashboard layout</div>}>
+      <div>{children}</div>
+    </ErrorBoundary>
+  )
 }
+
