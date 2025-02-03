@@ -2,6 +2,8 @@ import ProfileDataFetch from "@/components/profile/ProfileDataFetch"
 import PersonalInfoSkeleton from '@/components/profile/skeletons/personal-info-skeleton'
 import { Suspense } from "react"
 
+export const dynamic = "force-dynamic"
+
 export default async function ProfilePage() {
   
   

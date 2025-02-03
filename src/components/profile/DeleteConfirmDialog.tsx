@@ -21,7 +21,7 @@ interface DeleteConfirmDialogProps {
 export const DeleteConfirmDialog = ({ isOpen, onClose, onConfirm }: DeleteConfirmDialogProps) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const handleDeleteConfirm = async () => {
-    setIsDeleting(true)
+    setIsDeleting(true);
     await onConfirm();
     setIsDeleting(false);
     onClose();

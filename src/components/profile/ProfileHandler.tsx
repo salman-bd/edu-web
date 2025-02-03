@@ -68,12 +68,10 @@ export function ProfileHandler({ data }: UserProfileHandlerProps) {
   const profileDeleteConfirm = async () => {
     if (!data) return
     try {
-      console.log('ID to be deleted: ', data.id);
-      
+      // console.log('ID to be deleted: ', data.id);
       const response = await fetch(`/api/profile/delete/?id=${data.id}`, {
         method: "DELETE",
       })
-
       if (response.ok) {
         toast({
           title: "Profile Deletion",

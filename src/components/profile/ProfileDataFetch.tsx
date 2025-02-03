@@ -5,6 +5,7 @@ import { StudentProfile } from "@/components/profile/StudentProfile"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
 
+
 export default async function ProfileDataFetch() {
   const profileData = await getProfileInfo()
 
@@ -18,10 +19,10 @@ export default async function ProfileDataFetch() {
           <CardContent className="p-6">
             <div className="space-y-4">
               <p className="text-gray-600">
-                Probably you didn&apos;t complete your profile or signed in with a different email.
+                It seems you haven&apos;t completed your profile yet or you might be signed in with a different email.
               </p>
               <p className="text-gray-600">
-                If you are a student of CSC, please enter your student identification number to access your profile.
+                If you&apos;re a student of CSC, please enter your student identification number to access your profile.
               </p>
             </div>
             <ProfileHandler data={null} />
@@ -31,7 +32,7 @@ export default async function ProfileDataFetch() {
     )
   }
 
-  const profileType = profileData?.profileType
+  const profileType = profileData.profileType
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
