@@ -67,6 +67,9 @@ export const teacherProfileSchema = z.object({
   graduationYear: z.string().regex(/^\d{4}$/, {  
     message: "Please enter a valid year (YYYY).",  
   }),  
+  career: z.string().min(150, {  
+    message: "You need to describe your career with at least 150 characters.",  
+  }).max(400, {message: "You need to describe your career within 400 characters."}), 
   // achievements: z.array(z.string()).optional(),  
   profileType: z.string(),  
   isAffiliated: z.boolean(),  

@@ -101,7 +101,7 @@ export default function Programs() {
               Apply Now
             </Link>
             <Link
-              href="/contact"
+              href="/admissions/contact"
               className="bg-indigo-700 text-white hover:bg-indigo-800 px-6 py-2 rounded-md transition-colors duration-300"
             >
               Contact Us

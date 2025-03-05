@@ -18,6 +18,7 @@ import {Loader2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DatePicker from 'react-datepicker';  
 import 'react-datepicker/dist/react-datepicker.css';
+import { Textarea } from '../ui/textarea';
 
 
 interface TeacherProfileFormProps {  
@@ -38,6 +39,7 @@ interface TeacherProfileFormProps {
     name: string;
     avatar: string;
     isAffiliated: boolean;  
+    career:string;
   };  
 }  
 
@@ -72,6 +74,7 @@ export default function TeacherProfileForm({ data }: TeacherProfileFormProps) {
       birthDate: data?.birthDate ? new Date(data.birthDate) : null,  
       isAffiliated: isAffiliated,  
       profileType: data?.profileType || profileType,  
+      career: data?.career || ''
       // achievements: data?.achievements || []  
     },  
   });  
@@ -110,7 +113,7 @@ export default function TeacherProfileForm({ data }: TeacherProfileFormProps) {
 
 
   return (
-    <div className='flex justify-center items-center bg-gray-100 lg:w-1/2 max-w-7xl mx-auto '>
+    <div className='flex justify-center items-center bg-gray-100 lg:w-1/2 py-8 max-w-7xl mx-auto '>
       <div className='w-full p-6 space-y-8 bg-white rounded-lg shadow-md '>
 
         <div className='flex flex-col items-center gap-2'>
@@ -488,6 +491,23 @@ export default function TeacherProfileForm({ data }: TeacherProfileFormProps) {
                     </FormItem>  
                 )}  
               /> */}
+
+              <FormField  
+                control={form.control}  
+                name="career"  
+                render={({ field }) => (  
+                  <FormItem>  
+                    <FormLabel>Describe Your Career</FormLabel>  
+                    <FormControl>  
+                      <Textarea placeholder="" {...field} />  
+                    </FormControl>  
+                    <FormDescription>
+                    You should start like <br /> <b>"For 5 years I am in Elementary Education .... / I am in the teaching profession for 5 years expertise in ....."</b> <br /> Don't need to mention your name.
+                    </FormDescription>  
+                    <FormMessage />  
+                  </FormItem>  
+                )}  
+              /> 
 
               <FormField
                 control={form.control}

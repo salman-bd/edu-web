@@ -86,10 +86,10 @@ const Navbar = () => {
           <div className="hidden justify-between sm:ml-6 sm:flex sm:space-x-8">
             {userSession ? (  
               <>  
-                <Link href="/dashboard" 
+                <Link href="/profile" 
                 className={clsx("inline-flex items-center px-1 pt-1 border-b-2 ",
-                  {'border-indigo-500': pathName === '/dashboard'})}>
-                  Dashboard
+                  {'border-indigo-500': pathName === '/profile'})}>
+                  Profile
                 </Link>
 
                 <ProfilePopover />
@@ -181,12 +181,12 @@ const Navbar = () => {
  
             {userSession ? (  
               <>  
-                <Link href="/dashboard" 
+                <Link href="/profile" 
                 className={clsx(
                   "block pl-3 pr-4 py-2 border-l-4 text-base font-medium ",
-                  {'border-indigo-500 text-indigo-700 bg-indigo-50': pathName === '/dashboard'}
+                  {'border-indigo-500 text-indigo-700 bg-indigo-50': pathName === '/profile'}
                   )}>
-                  Dashboard
+                  Profile
                 </Link>
               </>  
             ) : (  

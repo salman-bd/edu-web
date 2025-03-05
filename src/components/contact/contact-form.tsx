@@ -9,6 +9,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
+import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -26,6 +28,7 @@ const formSchema = z.object({
 })
 
 export default function ContactForm() {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
   const form = useForm<z.infer<typeof formSchema>>({
@@ -53,7 +56,8 @@ export default function ContactForm() {
         title: "Message sent!",
         description: "We'll get back to you as soon as possible.",
       })
-      form.reset()
+      form.reset();
+      router.push('/');
     } catch {
       toast({
         title: "Error",

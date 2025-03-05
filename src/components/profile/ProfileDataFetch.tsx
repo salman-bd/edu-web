@@ -11,10 +11,10 @@ export default async function ProfileDataFetch() {
 
   if (!profileData) {
     return (
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-165">
         <Card className="bg-white shadow-lg rounded-lg overflow-hidden">
           <CardHeader className="bg-indigo-600 text-white p-6">
-            <CardTitle className="text-2xl font-bold">No Personal Information Available</CardTitle>
+            <CardTitle className="text-2xl font-bold">No Profile Information Available With This Email</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             <div className="space-y-4">
@@ -35,8 +35,8 @@ export default async function ProfileDataFetch() {
   const profileType = profileData.profileType
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-      <h1 className="text-4xl font-bold mb-12 text-center text-indigo-600">Your Profile</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+      <h1 className="text-4xl font-bold mb-8 text-center text-indigo-600">Your Profile</h1>
 
       <div className="space-y-6">
         {profileType === "teacher" && (

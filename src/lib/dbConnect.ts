@@ -10,14 +10,14 @@ const connection: ConnectionObject = {};
 // MongoDB Connection  
 export async function mongoDbConnect(): Promise<void> {  
     if (connection.isConnected) {  
-        console.log("Already connected to MongoDB");  
+        // console.log("Already connected to MongoDB");  
         return;  
     }
     try {  
         const db = await mongoose.connect(process.env.MONGODB_URI || '');  
 
         connection.isConnected = db.connections[0].readyState;  
-        console.log("MongoDB Connected Successfully");  
+        // console.log("MongoDB Connected Successfully");  
         
     } catch (error) {  
         console.log("MongoDB Connection Failed, and ERROR: ", error);  

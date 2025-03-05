@@ -32,7 +32,7 @@ export default function AdmissionsHero() {
                 size="lg"
                 className="bg-transparent text-white border-white hover:bg-white/10 hover:text-white"
               >
-                <Link href="#contact-admissions">Contact Admissions</Link>
+                <Link href="/admissions/contact">Contact Admissions</Link>
               </Button>
             </div>
           </motion.div>

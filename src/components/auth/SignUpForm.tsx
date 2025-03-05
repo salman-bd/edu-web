@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-
 import { Icons } from "@/components/ui/icons"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import Link from "next/link"
@@ -66,7 +65,7 @@ function SignUp() {
           // })
           // Alert({variant: 'default'}) 
         }  
-        router.replace(`/verify/${data.name}`);  
+        router.replace(`/verify/${data.email}`);  
 
     } catch (error) {  
         const axiosError = error as AxiosError<ApiResponse>;  
@@ -192,7 +191,7 @@ function SignUp() {
 
         <div className='flex flex-row gap-2 pt-4'>  
           <p>Already have an account?</p>  
-          <Link href="/signin"><span className='text-indigo-700'>Sign ip</span></Link>  
+          <Link href="/signin"><span className='text-indigo-700'>Sign In</span></Link>  
         </div>
 
         <div className="relative">
@@ -209,11 +208,11 @@ function SignUp() {
             <Image src="/icons/icons8-google.svg" width={24} height={24} alt="Google Icon" />
             <span className="sr-only">Google</span>
           </Button>
-          <Button variant="outline" onClick={() => signIn("facebook", { callbackUrl: "/dashboard" })}>
+          <Button variant="outline" onClick={() => signIn("facebook", { callbackUrl: "/" })}>
             <Image src="/icons/icons8-facebook.svg" width={24} height={24} alt="Facebook Icon" />
             <span className="sr-only">Facebook</span>
           </Button>
-          <Button variant="outline" onClick={() => signIn("github", { callbackUrl: "/dashboard" })}>
+          <Button variant="outline" onClick={() => signIn("github", { callbackUrl: "/" })}>
             <Image src="/icons/icons8-github.svg" width={24} height={24} alt="GitHub Icon" />
             <span className="sr-only">GitHub</span>
           </Button>

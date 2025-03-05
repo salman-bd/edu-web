@@ -2,7 +2,7 @@
 
 import { AdmissionSteps } from "@/components/admissions/AdmissionSteps"
 import { ApplicationDeadlines } from "@/components/admissions/AdmissionDeadlines"
-import { ContactAdmissions } from "@/components/admissions/contact-admissions"
+import { AdmissionsContact } from "@/components/admissions/AdmissionsContact"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
 import { GraduationCap, Users, Award, Globe } from "lucide-react"
@@ -25,7 +25,7 @@ export default function Admissions() {
   ]
 
   return (
-    <div className="container space-y-16 pt-24  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="container space-y-16 py-24 md:py-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <motion.header
         className="text-center space-y-6 px-4"
         initial={{ opacity: 0, y: 20 }}
@@ -38,18 +38,18 @@ export default function Admissions() {
           both our school and college programs.
         </p>
         <div className="flex justify-center space-x-4 mt-8">
-          <a
+          <Link
             href="#apply-now"
             className="bg-red-800 hover:bg-red-700 text-white px-6 py-3 rounded-md transition-colors duration-300 text-lg font-semibold"
           >
             Apply Now
-          </a>
-          <a
-            href="#contact-admissions"
+          </Link>
+          <Link
+            href="/admissions/contact"
             className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-6 py-3 rounded-md transition-colors duration-300 text-lg font-semibold"
           >
             Contact Admissions
-          </a>
+          </Link>
         </div>
       </motion.header>
 
@@ -108,7 +108,7 @@ export default function Admissions() {
               Start Application
             </Link>
             <Link
-              href="#contact-admissions"
+              href="/admissions/contact"
               className="bg-white text-indigo-600 hover:bg-indigo-100 px-6 py-3 rounded-md transition-colors duration-300 text-lg font-semibold"
             >
               Contact Admissions
@@ -117,7 +117,7 @@ export default function Admissions() {
         </div>
       </section>
 
-      <ContactAdmissions />
+      <AdmissionsContact />
     </div>
   )
 }

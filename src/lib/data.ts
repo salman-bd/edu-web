@@ -22,6 +22,7 @@ export interface ProfileInfoData {
   hscPassingYear: string;
   university: string;
   graduationYear: string;
+  career: string;
   achievements: string[];
 }
 
@@ -64,6 +65,7 @@ export async function getProfileInfo(): Promise<ProfileInfoData | null> {
       hscPassingYear: profile.hscPassingYear || 'not added',  
       university: profile.university || 'not added',  
       graduationYear: profile.graduationYear || 'not added',  
+      career: profile.career || '',  
       achievements: Array.isArray(profile.achievements) ? profile.achievements : [],  
     };  
 

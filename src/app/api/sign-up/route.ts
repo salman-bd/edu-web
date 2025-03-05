@@ -1,7 +1,7 @@
 import {mongoDbConnect} from "@/lib/dbConnect";
 import UserModel from "@/models/User";
-import bcrypt from "bcrypt";
-import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
+import bcryptjs from "bcryptjs";
+import { sendVerificationEmail } from "@/helpers/sendEmails";
 
 
 
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
                     {status: 500}
                 )
             } else {
-                const hashedPassword = await bcrypt.hash(password, 10);
+                const hashedPassword = await bcryptjs.hash(password, 10);
                 existingUserByEmail.password = hashedPassword;
                 existingUserByEmail.verifyCode = verifyCode;
                 existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 360000);
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
             await existingUserByEmail.save();
             
         } else {
-            const hashedPassword = await bcrypt.hash(password, 10);
+            const hashedPassword = await bcryptjs.hash(password, 10);
             const expiryDate = new Date();
             expiryDate.setHours(expiryDate.getHours() + 1);
 

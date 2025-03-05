@@ -34,6 +34,8 @@ export async function POST(request: Request) {
     const graduationYear = formData.get("graduationYear") as string
     const gender = formData.get("gender") as string
     const birthDateString = formData.get("birthDate") as string
+    const career = formData.get("career") as string
+
     const isAffiliated = formData.get("isAffiliated") === "true"
     const profileType = formData.get("profileType") as string
 
@@ -74,6 +76,7 @@ export async function POST(request: Request) {
       graduationYear: graduationYear || undefined,
       gender,
       birthDate: new Date(birthDateString), // Ensure date is stored as Date
+      career: career || undefined,
       profileType,
       isAffiliated,
     }
@@ -82,7 +85,6 @@ export async function POST(request: Request) {
 
     // Find existing profile or create new one
     const existingProfile = await ProfileModel.findOne({ email: data.email })
-
     if (existingProfile) {
       Object.assign(existingProfile, data)
       await existingProfile.save()

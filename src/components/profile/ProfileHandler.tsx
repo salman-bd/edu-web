@@ -30,6 +30,7 @@ interface profileData {
   school: string
   contactNo: string
   isAffiliated: boolean
+  career: string
 }
 
 interface UserProfileHandlerProps {

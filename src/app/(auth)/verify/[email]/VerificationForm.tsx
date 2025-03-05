@@ -23,7 +23,7 @@ export default function VerifyAccount() {
 
 
   const router = useRouter();
-  const params = useParams<{ username: string }>();
+  const params = useParams<{ email: string }>();
   const { toast } = useToast();
 
   
@@ -49,7 +49,7 @@ export default function VerifyAccount() {
     setIsVerifying(true)
     try {
       const response = await axios.post<ApiResponse>(`/api/verify-code`, {
-        username: params.username,
+        email: params.email,
         code: data.code,
       });
 
@@ -58,7 +58,7 @@ export default function VerifyAccount() {
         description: response.data.message,
       });
 
-      router.replace('/sign-in');
+      router.replace('/signin');
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
@@ -104,7 +104,7 @@ export default function VerifyAccount() {
       <CardFooter className="flex flex-col gap-4">
         <Button 
           onClick={() => handleVerifyCode({ code: verifyCode.join('') })} 
-          className="w-full bg-blue-600" 
+          className="w-full bg-indigo-600 hover:bg-indigo-500" 
           disabled={verifyCode.some(digit => digit === '') || isVerifying}
         >
           {isVerifying ? (

@@ -145,7 +145,7 @@ export default function SignInForm() {
 
         <div className='flex flex-row gap-2 pt-4'>  
           <p>Don&apos;t have an account?</p>  
-          <Link href="/signup"><span className='text-indigo-700'>Sign up</span></Link>  
+          <Link href="/signup"><span className='text-indigo-700'>Sign Up</span></Link>  
         </div>
 
         <div className="relative">
@@ -158,15 +158,15 @@ export default function SignInForm() {
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          <Button variant="outline" onClick={() => signIn("google", { callbackUrl: "/" })}>
+          <Button variant="outline" onClick={() => signIn("google", { callbackUrl: "/profile" })}>
             <Image src="/icons/icons8-google.svg" width={24} height={24} alt="Google Icon" />
             <span className="sr-only">Google</span>
           </Button>
-          <Button variant="outline" onClick={() => signIn("github", { callbackUrl: "/dashboard" })}>
+          <Button variant="outline" onClick={() => signIn("github", { callbackUrl: "/profile" })}>
             <Image src="/icons/icons8-github.svg" width={24} height={24} alt="GitHub Icon" />
             <span className="sr-only">GitHub</span>
           </Button>
-          <Button variant="outline" onClick={() => signIn("facebook", { callbackUrl: "/dashboard" })}>
+          <Button variant="outline" onClick={() => signIn("facebook", { callbackUrl: "/profile" })}>
             <Image src="/icons/icons8-facebook.svg" width={24} height={24} alt="Facebook Icon" />
             <span className="sr-only">Facebook</span>
           </Button>

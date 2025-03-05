@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
 
-export function Dashboard() {
+export default function Dashboard() {
   return (
     <motion.div
       className="flex flex-col space-y-6 p-8 bg-gray-50"
@@ -70,13 +70,13 @@ export function Dashboard() {
               </motion.div>
             ))}
           </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+          {/* <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
             <Card className="col-span-4 hover:shadow-lg transition-shadow duration-300">
               <CardHeader>
                 <CardTitle className="text-indigo-600">Overview</CardTitle>
               </CardHeader>
               <CardContent className="pl-2">
-                {/* <Overview /> */}
+                <Overview />
               </CardContent>
             </Card>
             <Card className="col-span-3 hover:shadow-lg transition-shadow duration-300">
@@ -85,10 +85,10 @@ export function Dashboard() {
                 <CardDescription>You have 3 unread notifications</CardDescription>
               </CardHeader>
               <CardContent>
-                {/* <RecentActivity /> */}
+                <RecentActivity />
               </CardContent>
             </Card>
-          </div>
+          </div> */}
           
         </TabsContent>
       </Tabs>

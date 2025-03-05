@@ -20,6 +20,7 @@ export interface Profile extends Document {
   birthDate: Date;
   profileType: string;
   isAffiliated: boolean;
+  career: string;
   achievements: string[];
 }
 
@@ -92,6 +93,10 @@ const ProfileSchema: Schema<Profile> = new Schema({
     type: Boolean,  
     required: true,  
   },  
+  career: {  
+    type: String,  
+    trim: true,  
+  },
   achievements: {  
     type: [String], // Specify this as an array of strings  
     default: [], // Optional: Set a default value to an empty array  

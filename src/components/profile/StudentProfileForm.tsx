@@ -103,7 +103,7 @@ function StudentProfileForm({ data }: StudentProfileFormProps) {
   // console.log("Profile input form rendered");
 
   return (
-    <div className='flex justify-center items-center bg-gray-100 lg:w-1/2 max-w-7xl mx-auto '>
+    <div className='flex justify-center items-center bg-gray-100 lg:w-1/2 py-8 max-w-7xl mx-auto '>
       <div className='w-full p-6 space-y-8 bg-white rounded-lg shadow-md '>
 
         <div className='flex flex-col items-center gap-2'>

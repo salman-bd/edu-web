@@ -7,17 +7,17 @@ export default function ContactInfo() {
       <div className="space-y-4">
         <div className="flex items-center">
           <Phone className="h-6 w-6 text-red-400 mr-2" />
-          <span className="text-indigo-600">(123) 456-7890</span>
+          <span className="text-indigo-600">+88 01784313268</span>
         </div>
         <div className="flex items-center">
           <Mail className="h-6 w-6 text-red-400 mr-2" />
           <a href="mailto:info@schoolcollege.edu" className="text-indigo-600 hover:text-indigo-400 hover:underline">
-            info@schoolcollege.edu
+            cscedubd@gmail.com
           </a>
         </div>
         <div className="flex items-center">
           <MapPin className="h-6 w-6 text-red-400 mr-2" />
-          <span className="text-indigo-600">123 Education Lane, Learning City, ST 12345</span>
+          <span className="text-indigo-600">Block-D, Main Road, Shahjalal Upashahar, Sylhet</span>
         </div>
       </div>
     </div>

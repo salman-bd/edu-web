@@ -1,15 +1,26 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from "next/server"
+import { sendAdminNotificationEmail } from '@/helpers/sendEmails'
+import { sendConfirmationEmail } from '@/helpers/sendEmails'
 
-export async function POST(req: Request) {
-  const body = await req.json()
-  
-  // Here you would typically send an email or save to a database
-  console.log('Received contact form submission:', body)
 
-  // Simulate a delay
-  await new Promise(resolve => setTimeout(resolve, 1000))
 
-  // Return a success response
-  return NextResponse.json({ message: 'Form submitted successfully' })
+export async function POST(request: Request) {
+  try {
+    const { name, email, subject, message } = await request.json()
+
+    // Send notification to admin
+    sendAdminNotificationEmail(name, email, subject, message)
+
+    // Send confirmation to user
+    sendConfirmationEmail(email, name)
+
+    return NextResponse.json({ success: true }, { status: 200 })
+
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "An error occurred while sending the email." },
+      { status: 500 },
+    )
+  }
 }
 

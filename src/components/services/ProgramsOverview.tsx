@@ -11,12 +11,12 @@ const programs = [
   {
     name: "Middle School",
     description: "Nurturing critical thinking and personal growth.",
-    href: "/programs/middle-school",
+    href: "/programs/middle",
   },
   {
     name: "High School",
     description: "Preparing students for college and beyond.",
-    href: "/programs/high-school",
+    href: "/programs/high",
   },
   {
     name: "College Programs",
