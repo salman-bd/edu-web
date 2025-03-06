@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb"
 
-const uri = process.env.MONGODB_URI || "your_mongodb_uri"
+const uri = process.env.MONGODB_URI || "mongodb+srv://csc:cscDb@cluster0.gfz6t.mongodb.net/"
 const options = {}
 
 // Extend the NodeJS global type to include our client promise

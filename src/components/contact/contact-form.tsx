@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/components/ui/use-toast"
+import toast, { Toaster } from "react-hot-toast"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -28,9 +28,9 @@ const formSchema = z.object({
 })
 
 export default function ContactForm() {
-  const router = useRouter();
+  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,18 +52,17 @@ export default function ContactForm() {
       if (!response.ok) {
         throw new Error("Failed to submit the form")
       }
-      toast({
-        title: "Message sent!",
-        description: "We'll get back to you as soon as possible.",
-      })
-      form.reset();
-      router.push('/');
-    } catch {
-      toast({
-        title: "Error",
-        description: "There was a problem sending your message. Please try again.",
-        variant: "destructive"
-      })
+
+      toast.success("Message sent! We'll get back to you as soon as possible.")
+      form.reset()
+      router.push("/")
+      
+    } catch (error) {
+      let errorMessage = "There was a problem sending your message. Please try again.";  
+      if (error instanceof Error) {  
+        errorMessage = `Error: ${error.message}. Please try again.`;  
+      }  
+      toast.error(errorMessage); 
     } finally {
       setIsSubmitting(false)
     }
@@ -71,6 +70,7 @@ export default function ContactForm() {
 
   return (
     <div className="bg-white p-8 rounded-lg shadow-md border border-indigo-100">
+      <Toaster position="top-center" />
       <h2 className="text-2xl font-bold mb-6 text-indigo-600">Send us a message</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -140,7 +140,14 @@ export default function ContactForm() {
             )}
           />
           <Button type="submit" disabled={isSubmitting} className="bg-red-900 hover:bg-red-800 text-white">
-            {isSubmitting ? <Loader2>&quot;Sending...&quot;</Loader2> : "Send Message"}
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Sending...
+              </>
+            ) : (
+              "Send Message"
+            )}
           </Button>
         </form>
       </Form>

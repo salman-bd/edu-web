@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Upload } from "lucide-react"
-import { useToast } from "@/components/ui/use-toast"
+import toast, { Toaster } from "react-hot-toast"
 import { Checkbox } from "@/components/ui/checkbox"
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -60,7 +60,6 @@ interface TeacherApplicationFormProps {
 
 export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -120,19 +119,15 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
       if (!response.ok) {
         throw new Error("Failed to submit application")
       }
-
-      toast({
-        title: "Application submitted successfully!",
-        description: "We'll review your application and contact you soon.",
-      })
-
+      toast.success("Application submitted successfully! We'll review your application and contact you soon.")
       onSubmitSuccess()
+
     } catch (error) {
-      toast({
-        title: "Error submitting application",
-        description: error instanceof Error ? error.message : `Please try again later or contact our HR department.`,
-        variant: "destructive",
-      })
+      let errorMessage = "There was a problem submitting your application. Please try again.";  
+      if (error instanceof Error) {  
+        errorMessage = `Error: ${error.message}. Please try again.`;  
+      }  
+      toast.error(errorMessage); 
     } finally {
       setIsSubmitting(false)
     }
@@ -150,6 +145,7 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
       transition={{ duration: 0.5, delay: 0.2 }}
     >
       <Card className="border-indigo-600 border-t-4 shadow-lg">
+      <Toaster position="top-center" />
         <CardHeader>
           <CardTitle className="text-2xl text-indigo-600">Teacher Application Form</CardTitle>
           <CardDescription>

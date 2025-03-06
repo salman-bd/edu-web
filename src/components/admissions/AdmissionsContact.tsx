@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/components/ui/use-toast"
+import toast, { Toaster } from "react-hot-toast"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { useRouter } from "next/navigation"
+import { Loader2 } from "lucide-react"
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -31,7 +32,7 @@ const formSchema = z.object({
 export function AdmissionsContact() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,18 +54,16 @@ export function AdmissionsContact() {
       if (!response.ok) {
         throw new Error("Failed to submit the form")
       }
-      toast({
-        title: "Message sent!",
-        description: "We'll get back to you as soon as possible.",
-      })
+      toast.success("Message sent! We'll get back to you as soon as possible.")
       form.reset();
       router.push('/admissions')
-    } catch {
-      toast({
-        title: "Error",
-        description: "There was a problem sending your message. Please try again.",
-        variant: "destructive"
-      })
+
+    } catch (error) {
+      let errorMessage = "There was a problem sending your message. Please try again.";  
+      if (error instanceof Error) {  
+        errorMessage = `Error: ${error.message}. Please try again.`;  
+      }  
+      toast.error(errorMessage); 
     } finally {
       setIsSubmitting(false)
     }
@@ -72,6 +71,7 @@ export function AdmissionsContact() {
 
   return (
     <section className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Toaster position="top-center" />
       <h2 className="text-3xl font-bold tracking-tight text-indigo-600 text-center">Contact Admissions</h2>
       <Card className="border-indigo-600 border-t-4">
         <CardHeader>
@@ -148,9 +148,16 @@ export function AdmissionsContact() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isSubmitting} className="bg-red-800 hover:bg-red-700 text-white">
-                {isSubmitting ? "Sending..." : "Send Message"}
-              </Button>
+          <Button type="submit" disabled={isSubmitting} className="bg-red-900 hover:bg-red-800 text-white">
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Sending...
+              </>
+            ) : (
+              "Send Message"
+            )}
+          </Button>
             </form>
           </Form>
         </CardContent>

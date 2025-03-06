@@ -13,7 +13,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, CheckCircle2 } from "lucide-react"
-import { useToast } from "@/components/ui/use-toast"
+import toast, { Toaster } from "react-hot-toast"
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "First name must be at least 2 characters" }),
@@ -42,7 +42,6 @@ interface ApplicationFormProps {
 export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -97,20 +96,15 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
       if (!response.ok) {
         throw new Error("Failed to submit application")
       }
-
-      toast({
-        title: "Application submitted successfully!",
-        description: "We'll review your application and contact you soon.",
-      })
-
+      toast.success("Message sent! We'll get back to you as soon as possible.")
       onSubmitSuccess()
-    } catch (error: unknown) {
-      toast({
-        title: "Error submitting application",
-        description:
-          error instanceof Error ? error.message : `Please try again later or contact our admissions office.`,
-        variant: "destructive",
-      })
+
+    } catch (error) {
+      let errorMessage = "There was a problem submitting your application. Please try again.";  
+      if (error instanceof Error) {  
+        errorMessage = `Error: ${error.message}. Please try again.`;  
+      }  
+      toast.error(errorMessage); 
     } finally {
       setIsSubmitting(false)
     }
@@ -129,6 +123,7 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
+      <Toaster position="top-center" />
       <Card className="border-indigo-600 border-t-4 shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl text-indigo-600">Application Form</CardTitle>

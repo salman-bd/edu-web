@@ -109,7 +109,7 @@ export async function POST(request: Request) {
       updatedAt: new Date(),
     }
 
-    // console.log('Teacher application data to be inserted: ', application);
+    console.log('Teacher application data to be inserted: ', application);
     
 
     // Insert into MongoDB
