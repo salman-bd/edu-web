@@ -7,7 +7,7 @@ import { mongoDbConnect } from "@/lib/dbConnect";
 import { compare } from "bcryptjs";  
 import UserModel from "@/models/User";  
 import { User as NextAuthUser } from "next-auth";  
-import { sendWelcomeEmail } from "@/helpers/sendEmails";
+import { sendWelcomeEmail } from "@/lib/sendEmails";
 
 interface User extends NextAuthUser {  
   _id: string;  

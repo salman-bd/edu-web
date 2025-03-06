@@ -27,7 +27,8 @@ export default function ProfileCompletionPage() {
     avatar: '',
     isAffiliated: false,
     designation: '',
-    institutionName: ''
+    institutionName: '',
+    career: '',
   };
 
   const studentProfileData = {

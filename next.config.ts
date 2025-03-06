@@ -1,6 +1,16 @@
 import { NextConfig } from 'next';
 import { Configuration } from 'webpack';
 
+/** @type {import('next').NextConfig} */
+ 
+module.exports = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '5mb',
+    },
+  },
+}
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [

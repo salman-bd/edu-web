@@ -39,7 +39,7 @@ export default function Admissions() {
         </p>
         <div className="flex justify-center space-x-4 mt-8">
           <Link
-            href="#apply-now"
+            href="application"
             className="bg-red-800 hover:bg-red-700 text-white px-6 py-3 rounded-md transition-colors duration-300 text-lg font-semibold"
           >
             Apply Now
@@ -102,7 +102,7 @@ export default function Admissions() {
           </p>
           <div className="flex justify-center space-x-4 mt-6">
             <Link
-              href="/apply"
+              href="/application"
               className="bg-red-800 hover:bg-red-700 text-white px-6 py-3 rounded-md transition-colors duration-300 text-lg font-semibold"
             >
               Start Application

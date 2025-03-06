@@ -1,4 +1,3 @@
-"use client"
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -24,7 +23,7 @@ export default function AdmissionsHero() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg" className="bg-red-800 text-white hover:bg-red-700">
-                <Link href="#application-process">Start Application</Link>
+                <Link href="/application">Start Application</Link>
               </Button>
               <Button
                 asChild

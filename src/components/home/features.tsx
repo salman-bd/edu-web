@@ -1,3 +1,5 @@
+'use client'
+
 import { Book, Users, Trophy, Lightbulb } from 'lucide-react'
 import { motion } from "framer-motion"
 

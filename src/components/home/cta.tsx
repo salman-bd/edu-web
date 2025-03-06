@@ -1,3 +1,5 @@
+'use client'
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
@@ -19,7 +21,7 @@ export default function CTA() {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <Button asChild size="lg" className="bg-red-800 text-white hover:bg-red-700">
-            <Link href="/apply">Apply Now</Link>
+            <Link href="/application">Apply Now</Link>
           </Button>
           <Button
             asChild

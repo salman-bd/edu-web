@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-import { sendAdminNotificationEmail } from '@/helpers/sendEmails'
-import { sendConfirmationEmail } from '@/helpers/sendEmails'
+import { sendAdminNotificationEmail } from '@/lib/sendEmails'
+import { sendConfirmationEmail } from '@/lib/sendEmails'
 
 
 

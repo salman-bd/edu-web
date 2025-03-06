@@ -1,7 +1,7 @@
 import {mongoDbConnect} from "@/lib/dbConnect";
 import UserModel from "@/models/User";
 import bcryptjs from "bcryptjs";
-import { sendVerificationEmail } from "@/helpers/sendEmails";
+import { sendVerificationEmail } from "@/lib/sendEmails";
 
 
 

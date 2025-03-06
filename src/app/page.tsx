@@ -1,4 +1,3 @@
-'use client'
 
 import Hero from '@/components/home/hero'
 import Features from '@/components/home/features';
