@@ -502,7 +502,7 @@ export default function TeacherProfileForm({ data }: TeacherProfileFormProps) {
                       <Textarea placeholder="" {...field} />  
                     </FormControl>  
                     <FormDescription>
-                    You should start like <br /> <b>"For 5 years I am in Elementary Education .... / I am in the teaching profession for 5 years expertise in ....."</b> <br /> Don't need to mention your name.
+                    You should start like <br /> <b>&quot;For 5 years I am in Elementary Education .... / I am in the teaching profession for 5 years expertise in .....&quot;</b> <br /> Don&apos;t need to mention your name.
                     </FormDescription>  
                     <FormMessage />  
                   </FormItem>  

@@ -74,7 +74,7 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
           ? ["address", "city", "state", "zipCode", "programLevel", "programType"]
           : []
 
-    form.trigger(fieldsToValidate as any).then((isValid) => {
+    form.trigger(fieldsToValidate as Array<keyof FormValues>).then((isValid) => {
       if (isValid) setCurrentStep((prev) => Math.min(prev + 1, totalSteps))
     })
   }
@@ -104,10 +104,11 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
       })
 
       onSubmitSuccess()
-    } catch (error) {
+    } catch (error: unknown) {
       toast({
         title: "Error submitting application",
-        description: "Please try again later or contact our admissions office.",
+        description:
+          error instanceof Error ? error.message : `Please try again later or contact our admissions office.`,
         variant: "destructive",
       })
     } finally {

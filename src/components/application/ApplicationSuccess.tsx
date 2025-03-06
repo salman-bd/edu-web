@@ -35,9 +35,9 @@ export function ApplicationSuccess() {
             <h3 className="font-medium text-indigo-600 mb-2">What happens next?</h3>
             <ol className="list-decimal list-inside text-left text-gray-600 space-y-2">
               <li>Our admissions team will review your application (typically within 5-7 business days)</li>
-              <li>You'll receive an email confirmation with your application reference number</li>
+              <li>You&apos;ll receive an email confirmation with your application reference number</li>
               <li>We may contact you for additional information or to schedule an interview</li>
-              <li>You'll receive a decision regarding your application status</li>
+              <li>You&apos;ll receive a decision regarding your application status</li>
             </ol>
           </div>
           <p className="text-gray-600">

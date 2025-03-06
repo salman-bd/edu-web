@@ -140,7 +140,7 @@ export default function ContactForm() {
             )}
           />
           <Button type="submit" disabled={isSubmitting} className="bg-red-900 hover:bg-red-800 text-white">
-            {isSubmitting ? "Sending..." : "Send Message"}
+            {isSubmitting ? <Loader2>&quot;Sending...&quot;</Loader2> : "Send Message"}
           </Button>
         </form>
       </Form>

@@ -22,7 +22,8 @@ const ACCEPTED_FILE_TYPES = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ]
 
-const formSchema = z.object({
+// Create a schema without the FileList validation for server-side
+const baseSchema = {
   firstName: z.string().min(2, { message: "First name must be at least 2 characters" }),
   lastName: z.string().min(2, { message: "Last name must be at least 2 characters" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -34,13 +35,21 @@ const formSchema = z.object({
   subjectSpecialization: z.string().min(2, { message: "Please enter your subject specialization" }),
   teachingLevel: z.array(z.string()).min(1, { message: "Please select at least one teaching level" }),
   coverLetter: z.string().min(100, { message: "Cover letter must be at least 100 characters" }),
-  resume: z
-    .instanceof(FileList)
-    .refine((files) => files.length > 0, { message: "CV/Resume is required" })
-    .refine((files) => files[0]?.size <= MAX_FILE_SIZE, { message: "File size must be less than 5MB" })
-    .refine((files) => ACCEPTED_FILE_TYPES.includes(files[0]?.type), {
-      message: "Only PDF and Word documents are accepted",
-    }),
+}
+
+// Create the form schema dynamically based on environment
+const formSchema = z.object({
+  ...baseSchema,
+  resume:
+    typeof window === "undefined"
+      ? z.any() // Use a placeholder during SSR
+      : z
+          .instanceof(FileList)
+          .refine((files) => files.length > 0, { message: "CV/Resume is required" })
+          .refine((files) => files[0]?.size <= MAX_FILE_SIZE, { message: "File size must be less than 5MB" })
+          .refine((files) => ACCEPTED_FILE_TYPES.includes(files[0]?.type), {
+            message: "Only PDF and Word documents are accepted",
+          }),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -99,7 +108,7 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
       formData.append("coverLetter", data.coverLetter)
 
       // Append the file
-      if (data.resume[0]) {
+      if (data.resume instanceof FileList && data.resume[0]) {
         formData.append("resume", data.resume[0])
       }
 
@@ -121,7 +130,7 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
     } catch (error) {
       toast({
         title: "Error submitting application",
-        description: "Please try again later or contact our HR department.",
+        description: error instanceof Error ? error.message : `Please try again later or contact our HR department.`,
         variant: "destructive",
       })
     } finally {
@@ -129,9 +138,9 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
     }
   }
 
-  const { errors } = form.formState;  
-  if (Object.keys(errors).length > 0) {  
-      console.log("Validation errors:", errors);  
+  const { errors } = form.formState
+  if (Object.keys(errors).length > 0) {
+    console.log("Validation errors:", errors)
   }
 
   return (
@@ -260,8 +269,8 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="bachelor">Bachelor's Degree</SelectItem>
-                            <SelectItem value="master">Master's Degree</SelectItem>
+                            <SelectItem value="bachelor">Bachelor&apos;s Degree</SelectItem>
+                            <SelectItem value="master">Master&apos;s Degree</SelectItem>
                             <SelectItem value="phd">Ph.D.</SelectItem>
                             <SelectItem value="other">Other</SelectItem>
                           </SelectContent>
@@ -392,8 +401,8 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
                         />
                       </FormControl>
                       <FormDescription>
-                        Please write a brief statement about your teaching approach and why you're interested in joining
-                        our team.
+                        Please write a brief statement about your teaching approach and why you&apos;re interested in
+                        joining our team.
                       </FormDescription>
                       <FormMessage className="text-red-700" />
                     </FormItem>

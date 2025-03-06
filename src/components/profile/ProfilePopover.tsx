@@ -9,7 +9,7 @@ import { Mail, Search, ExternalLink, MessageCircleCode } from 'lucide-react'
 import { useSession, signOut } from "next-auth/react"
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { motion } from "framer-motion"
-import SearchProfile from './SearchProfile';
+// import SearchProfile from './SearchProfile';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
 import { useDebouncedCallback } from 'use-debounce';
@@ -17,7 +17,6 @@ import { useDebouncedCallback } from 'use-debounce';
 export function ProfilePopover() {
   const { data: session } = useSession(); 
   const userSession = session?.user;
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const searchParams = useSearchParams();
@@ -41,9 +40,9 @@ export function ProfilePopover() {
   const handleSignOut = () => {
     signOut({callbackUrl:'/'});
   }
-  const profilePageRedirect = () => {  
-    router.push('/profile');  
-  }
+  // const profilePageRedirect = () => {  
+  //   router.push('/profile');  
+  // }
 
   // const handleSearch = (e: React.FormEvent) => {
   //   e.preventDefault()
