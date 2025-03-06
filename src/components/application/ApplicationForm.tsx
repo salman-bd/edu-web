@@ -119,8 +119,8 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
   const programOptions = {
     elementary: ["Elementary Education (K-5)"],
     middle: ["Middle School Program (6-8)"],
-    high: ["High School Program (9-12)", "College Preparation Program (11-12)"],
-    college: ["Science Group", "Humanities Group", "Business Studies Group"],
+    high: ["High School (9-10) Science Group", "High School (9-10) Humanities Group", "High School (9-10) Business Studies Group",],
+    college: ["(11-12) Science Group", "(11-12) Humanities Group", "(11-12) Business Studies Group"],
   }
 
   return (
@@ -358,7 +358,7 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
                               <FormControl>
                                 <RadioGroupItem value="high" />
                               </FormControl>
-                              <FormLabel className="font-normal">High School (9-12)</FormLabel>
+                              <FormLabel className="font-normal">High School (9-10)</FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-3 space-y-0">
                               <FormControl>

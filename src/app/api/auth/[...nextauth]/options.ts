@@ -96,7 +96,7 @@ export const authOptions: NextAuthOptions = {
           try {  
             const newUser = await user.save();  
             sendWelcomeEmail(newUser.email, newUser.name);
-            // console.log("New user created: ", newUser);  
+            console.log("New user created by a social media provider: ", newUser);  
           } catch (err) {  
             console.error("Error saving new user:", err);  
             return false; // Return false if user creation fails  

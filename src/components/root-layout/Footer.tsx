@@ -11,7 +11,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-100 text-gray-800">
       <div className="container py-12  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <motion.div
             className="space-y-4"
             initial={{ opacity: 0, y: 20 }}
@@ -54,9 +54,9 @@ export default function Footer() {
                 { href: "/about", label: "About Us" },
                 { href: "/programs", label: "Academic Programs" },
                 { href: "/admissions", label: "Admissions" },
-                { href: "/campus-life", label: "Campus Life" },
-                { href: "/research", label: "Research" },
-                { href: "/alumni", label: "Alumni" },
+                { href: "/gallery", label: "Gallery" },
+                { href: "/magazine", label: "Magazine" },
+
               ].map(({ href, label }) => (
                 <li key={href}>
                   <Link href={href} className="hover:text-indigo-600 transition-colors">
@@ -85,7 +85,7 @@ export default function Footer() {
               ))}
             </ul>
           </motion.div>
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
@@ -98,7 +98,7 @@ export default function Footer() {
                 Subscribe
               </Button>
             </form>
-          </motion.div>
+          </motion.div> */}
         </div>
         <Separator className="my-8" />
         <div className="flex flex-col items-center justify-between space-y-4 text-sm md:flex-row md:space-y-0">
