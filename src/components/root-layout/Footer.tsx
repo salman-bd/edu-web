@@ -2,8 +2,6 @@
 
 import Link from "next/link"
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { motion } from "framer-motion"
 
@@ -25,7 +23,7 @@ export default function Footer() {
             </p>
             <div className="flex space-x-4">
               {[
-                { href: "https://facebook.com", Icon: Facebook },
+                { href: "https://www.facebook.com/cscedubd/", Icon: Facebook },
                 { href: "https://twitter.com", Icon: Twitter },
                 { href: "https://instagram.com", Icon: Instagram },
                 { href: "https://linkedin.com", Icon: Linkedin },
