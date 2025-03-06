@@ -21,11 +21,17 @@ const applicationSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    console.log("Received student application request")
+
     const client = await clientPromise
     const db = client.db("education_app")
     const collection = db.collection("applications")
 
     const body = await request.json()
+    console.log("Received application data:", {
+      ...body,
+      personalStatement: body.personalStatement ? `${body.personalStatement.substring(0, 20)}...` : undefined,
+    })
 
     // Validate the request body
     const validatedData = applicationSchema.parse(body)
@@ -50,8 +56,11 @@ export async function POST(request: Request) {
       updatedAt: new Date(),
     }
 
+    console.log("Inserting application into MongoDB")
+
     // Insert the application into MongoDB
     const result = await collection.insertOne(application)
+    console.log("Application inserted with ID:", result.insertedId)
 
     // Send confirmation email
     const fullName = `${validatedData.firstName} ${validatedData.lastName}`
@@ -96,6 +105,7 @@ export async function POST(request: Request) {
       {
         success: false,
         message: "Failed to submit application",
+        error: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 },
     )

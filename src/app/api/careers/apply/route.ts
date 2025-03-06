@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/lib/mongodb"
 import { sendTeacherApplicationConfirmationEmail, sendTeacherApplicationAdminNotificationEmail } from "@/lib/sendEmails"
-import { writeFile } from "fs/promises"
-import { join } from "path"
-import { mkdir } from "fs/promises"
 
 export async function POST(request: Request) {
   try {
     // Parse the multipart form data
     const formData = await request.formData()
-   
+    console.log("Received form data in API route")
 
     // Extract file
     const resumeFile = formData.get("resume") as File
@@ -51,25 +48,8 @@ export async function POST(request: Request) {
       )
     }
 
-    // Create unique filename
-    const timestamp = Date.now()
-    const fileName = `${timestamp}-${resumeFile.name.replace(/\s+/g, "-")}`
-
-    // Ensure uploads directory exists
-    const uploadDir = join(process.cwd(), "public", "uploads", "resumes")
-    try {
-      await mkdir(uploadDir, { recursive: true })
-    } catch (error) {
-      console.error("Error creating directory:", error)
-    }
-
-    // Save file to server
-    const filePath = join(uploadDir, fileName)
+    // Instead of saving to filesystem, store file as Buffer in MongoDB
     const fileBuffer = Buffer.from(await resumeFile.arrayBuffer())
-    await writeFile(filePath, fileBuffer)
-
-    // Save relative path for database
-    const dbFilePath = `/uploads/resumes/${fileName}`
 
     // Extract other form fields
     const firstName = formData.get("firstName") as string
@@ -103,17 +83,30 @@ export async function POST(request: Request) {
       subjectSpecialization,
       teachingLevel,
       coverLetter,
-      resumePath: dbFilePath,
+      resume: {
+        filename: resumeFile.name,
+        contentType: resumeFile.type,
+        size: resumeFile.size,
+        data: fileBuffer,
+      },
       status: "PENDING",
       submittedAt: new Date(),
       updatedAt: new Date(),
     }
 
-    console.log('Teacher application data to be inserted: ', application);
-    
+    console.log("Teacher application data to be inserted: ", {
+      ...application,
+      resume: {
+        filename: application.resume.filename,
+        contentType: application.resume.contentType,
+        size: application.resume.size,
+        data: "Buffer data (not shown)",
+      },
+    })
 
     // Insert into MongoDB
     const result = await collection.insertOne(application)
+    console.log("Application inserted with ID:", result.insertedId)
 
     // Send confirmation email
     const fullName = `${firstName} ${lastName}`
@@ -141,6 +134,7 @@ export async function POST(request: Request) {
       {
         success: false,
         message: "Failed to submit application",
+        error: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 },
     )

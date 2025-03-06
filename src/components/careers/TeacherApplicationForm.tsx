@@ -60,6 +60,7 @@ interface TeacherApplicationFormProps {
 
 export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -88,6 +89,7 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
 
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true)
+    setSubmitError(null)
 
     try {
       // Create FormData object to handle file upload
@@ -111,27 +113,35 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
         formData.append("resume", data.resume[0])
       }
 
+      console.log("Submitting form data...")
+
       const response = await fetch("/api/careers/apply", {
         method: "POST",
         body: formData,
       })
 
+      const responseData = await response.json()
+
       if (!response.ok) {
-        throw new Error("Failed to submit application")
+        console.error("Server response error:", responseData)
+        throw new Error(responseData.message || "Failed to submit application")
       }
+
+      console.log("Form submitted successfully:", responseData)
       toast.success("Application submitted successfully! We'll review your application and contact you soon.", {
-        duration: 2000,
+        duration: 4000,
       })
       onSubmitSuccess()
-
     } catch (error) {
-      let errorMessage = "There was a problem submitting your application. Please try again.";  
-      if (error instanceof Error) {  
-        errorMessage = `Error: ${error.message}. Please try again.`;  
-      }  
+      console.error("Error submitting form:", error)
+      let errorMessage = "There was a problem submitting your application. Please try again."
+      if (error instanceof Error) {
+        errorMessage = `Error: ${error.message}. Please try again.`
+      }
+      setSubmitError(errorMessage)
       toast.error(errorMessage, {
-        duration: 2000,
-      }); 
+        duration: 4000,
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -149,7 +159,7 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
       transition={{ duration: 0.5, delay: 0.2 }}
     >
       <Card className="border-indigo-600 border-t-4 shadow-lg">
-      <Toaster position="top-center" />
+        <Toaster position="top-center" />
         <CardHeader>
           <CardTitle className="text-2xl text-indigo-600">Teacher Application Form</CardTitle>
           <CardDescription>
@@ -157,8 +167,13 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {submitError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md">{submitError}</div>
+          )}
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Form fields remain the same */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-indigo-600">Personal Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

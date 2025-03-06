@@ -42,6 +42,7 @@ interface ApplicationFormProps {
 export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -84,7 +85,11 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
 
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true)
+    setSubmitError(null)
+
     try {
+      console.log("Submitting application data:", data)
+
       const response = await fetch("/api/apply", {
         method: "POST",
         headers: {
@@ -93,22 +98,28 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
         body: JSON.stringify(data),
       })
 
+      const responseData = await response.json()
+
       if (!response.ok) {
-        throw new Error("Failed to submit application")
+        console.error("Server response error:", responseData)
+        throw new Error(responseData.message || "Failed to submit application")
       }
-      toast.success("Message sent! We'll get back to you as soon as possible.", {
-        duration: 2000,
+
+      console.log("Application submitted successfully:", responseData)
+      toast.success("Application submitted successfully! We'll review your application and contact you soon.", {
+        duration: 4000,
       })
       onSubmitSuccess()
-
     } catch (error) {
-      let errorMessage = "There was a problem submitting your application. Please try again.";  
-      if (error instanceof Error) {  
-        errorMessage = `Error: ${error.message}. Please try again.`;  
-      }  
+      console.error("Error submitting application:", error)
+      let errorMessage = "There was a problem submitting your application. Please try again."
+      if (error instanceof Error) {
+        errorMessage = `Error: ${error.message}. Please try again.`
+      }
+      setSubmitError(errorMessage)
       toast.error(errorMessage, {
-        duration: 2000,
-      }); 
+        duration: 4000,
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -117,7 +128,11 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
   const programOptions = {
     elementary: ["Elementary Education (K-5)"],
     middle: ["Middle School Program (6-8)"],
-    high: ["High School (9-10) Science Group", "High School (9-10) Humanities Group", "High School (9-10) Business Studies Group",],
+    high: [
+      "High School (9-10) Science Group",
+      "High School (9-10) Humanities Group",
+      "High School (9-10) Business Studies Group",
+    ],
     college: ["(11-12) Science Group", "(11-12) Humanities Group", "(11-12) Business Studies Group"],
   }
 
@@ -152,6 +167,10 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
           </div>
         </CardHeader>
         <CardContent>
+          {submitError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md">{submitError}</div>
+          )}
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {currentStep === 1 && (

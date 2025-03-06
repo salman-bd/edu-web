@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-import { sendAdminNotificationEmail } from '@/lib/sendEmails'
-import { sendConfirmationEmail } from '@/lib/sendEmails'
+import { sendAdminContactNotificationEmail } from '@/lib/sendEmails'
+import { sendContactConfirmationEmail } from '@/lib/sendEmails'
 
 
 
@@ -9,10 +9,10 @@ export async function POST(request: Request) {
     const { name, email, subject, message } = await request.json()
 
     // Send notification to admin
-    sendAdminNotificationEmail(name, email, subject, message)
+    sendAdminContactNotificationEmail(name, email, subject, message)
 
     // Send confirmation to user
-    sendConfirmationEmail(email, name)
+    sendContactConfirmationEmail(email, name)
 
     return NextResponse.json({ success: true }, { status: 200 })
 

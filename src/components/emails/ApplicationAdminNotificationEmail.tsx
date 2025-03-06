@@ -1,20 +1,20 @@
 import { Body, Container, Head, Heading, Html, Preview, Section, Text, Hr, Button } from "@react-email/components"
 import { Tailwind } from "@react-email/tailwind"
 
-interface TeacherApplicationAdminNotificationEmailProps {
+interface ApplicationAdminNotificationEmailProps {
   applicantName: string
   applicantEmail: string
-  subject: string
+  programType: string
   applicationId: string
 }
 
-export default function TeacherApplicationAdminNotificationEmail({
+export default function ApplicationAdminNotificationEmail({
   applicantName,
   applicantEmail,
-  subject,
+  programType,
   applicationId,
-}: TeacherApplicationAdminNotificationEmailProps) {
-  const previewText = `New teacher application received: ${applicantName} for ${subject}`
+}: ApplicationAdminNotificationEmailProps) {
+  const previewText = `New application received: ${applicantName} for ${programType}`
 
   return (
     <Html>
@@ -26,13 +26,13 @@ export default function TeacherApplicationAdminNotificationEmail({
             <Section className="bg-white rounded-lg shadow-md overflow-hidden">
               {/* Header */}
               <Section className="bg-indigo-600 p-6 text-center">
-                <Heading className="text-white text-2xl font-bold m-0">New Teacher Application Received</Heading>
+                <Heading className="text-white text-2xl font-bold m-0">New Application Received</Heading>
               </Section>
 
               {/* Content */}
               <Section className="px-8 py-6">
                 <Text className="text-gray-700 text-base">
-                  A new teaching application has been submitted to the HR system.
+                  A new application has been submitted to the admissions system.
                 </Text>
 
                 <Hr className="border-gray-200 my-4" />
@@ -47,7 +47,7 @@ export default function TeacherApplicationAdminNotificationEmail({
                     <span className="font-semibold">Email:</span> {applicantEmail}
                   </Text>
                   <Text className="text-gray-700 m-0">
-                    <span className="font-semibold">Subject:</span> {subject}
+                    <span className="font-semibold">Program:</span> {programType}
                   </Text>
                   <Text className="text-gray-700 m-0">
                     <span className="font-semibold">Application ID:</span> {applicationId}
@@ -60,7 +60,7 @@ export default function TeacherApplicationAdminNotificationEmail({
                 <Section className="text-center mt-6">
                   <Button
                     className="bg-indigo-600 text-white font-bold px-6 py-3 rounded-md"
-                    href={`${process.env.NEXT_PUBLIC_APP_URL}/admin/careers/${applicationId}`}
+                    href={`${process.env.NEXT_PUBLIC_APP_URL}/admin/applications/${applicationId}`}
                   >
                     Review Application
                   </Button>
@@ -70,7 +70,7 @@ export default function TeacherApplicationAdminNotificationEmail({
               {/* Footer */}
               <Section className="bg-gray-50 px-8 py-4 text-center">
                 <Text className="text-gray-500 text-xs">
-                  © {new Date().getFullYear()} Educational Institution. All rights reserved.
+                  © {new Date().getFullYear()} Classic School And College. All rights reserved.
                 </Text>
               </Section>
             </Section>
