@@ -119,7 +119,9 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
       if (!response.ok) {
         throw new Error("Failed to submit application")
       }
-      toast.success("Application submitted successfully! We'll review your application and contact you soon.")
+      toast.success("Application submitted successfully! We'll review your application and contact you soon.", {
+        duration: 2000,
+      })
       onSubmitSuccess()
 
     } catch (error) {
@@ -127,7 +129,9 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
       if (error instanceof Error) {  
         errorMessage = `Error: ${error.message}. Please try again.`;  
       }  
-      toast.error(errorMessage); 
+      toast.error(errorMessage, {
+        duration: 2000,
+      }); 
     } finally {
       setIsSubmitting(false)
     }

@@ -54,7 +54,9 @@ export function AdmissionsContact() {
       if (!response.ok) {
         throw new Error("Failed to submit the form")
       }
-      toast.success("Message sent! We'll get back to you as soon as possible.")
+      toast.success("Message sent! We'll get back to you as soon as possible.",{
+        duration: 4000,
+      })
       form.reset();
       router.push('/admissions')
 
@@ -63,7 +65,9 @@ export function AdmissionsContact() {
       if (error instanceof Error) {  
         errorMessage = `Error: ${error.message}. Please try again.`;  
       }  
-      toast.error(errorMessage); 
+      toast.error(errorMessage, {
+        duration: 4000,
+      }); 
     } finally {
       setIsSubmitting(false)
     }
