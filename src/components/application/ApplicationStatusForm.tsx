@@ -49,7 +49,6 @@ export function ApplicationStatusForm({ type }: ApplicationStatusFormProps) {
   const [applicationData, setApplicationData] = useState<ApplicationDetail | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [status, setStatus] = useState<ApplicationStatus | "">("")
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -82,8 +81,12 @@ export function ApplicationStatusForm({ type }: ApplicationStatusFormProps) {
       setApplicationData(applicationData)
       setSubmitted(true)
 
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred")
+      }
       setSubmitted(false)
     } finally {
       setIsLoading(false)
@@ -194,7 +197,7 @@ export function ApplicationStatusForm({ type }: ApplicationStatusFormProps) {
       <Card className="w-full max-w-md mx-auto border-red-200">
         <CardHeader>
           <CardTitle className="text-xl text-red-600">Error</CardTitle>
-          <CardDescription>We couldn't find your application.</CardDescription>
+          <CardDescription>We couldn&apos;t find your application.</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-red-500">{error}</p>

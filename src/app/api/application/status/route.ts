@@ -28,11 +28,8 @@ export async function GET(request: NextRequest) {
     let objectId
     if (!id) {
       return NextResponse.json({ error: "Application ID is required" }, { status: 400 })
-    }
-    try {
+    } else {
       objectId = new ObjectId(id)
-    } catch (error) {
-      return NextResponse.json({ error: "Invalid application ID format" }, { status: 400 })
     }
 
     const application = await collection.findOne({ _id: objectId })
@@ -65,23 +62,27 @@ export async function GET(request: NextRequest) {
 }
 
 // Admin route to update application status
-export async function PATCH(request: Request, { params }: { params: { type: string; id: string } }) {
+export async function PATCH(request: Request) {
   try {
-    const { type, id } = params
-    const body = await request.json()
+    const fullUrl = request.url;  
+    const urlParts = new URL(fullUrl).pathname.split('/'); 
+    const body = await request.json() 
     const { status, notes } = body
-
-    // Validate application type
-    if (type !== "teacher" && type !== "student") {
-      return NextResponse.json({ error: "Invalid application type" }, { status: 400 })
-    }
+  
+    const type = urlParts[4];   
+    const id = urlParts[5]; 
+  
+    console.log("\nType:", type);  
+    console.log("ID:", id);
+    console.log("Status: ", status);
+    console.log("Notes: ", notes);
+    
 
     // Validate status
     const validStatuses = ["PENDING", "UNDER_REVIEW", "INTERVIEW_SCHEDULED", "ACCEPTED", "REJECTED", "WAITLISTED"]
     if (!validStatuses.includes(status)) {
       return NextResponse.json({ error: "Invalid status value" }, { status: 400 })
     }
-
     // Connect to MongoDB
     const client = await clientPromise
     const db = client.db("education_app")
@@ -92,18 +93,17 @@ export async function PATCH(request: Request, { params }: { params: { type: stri
 
     // Try to convert the ID to ObjectId
     let objectId
-    try {
+    if (!id) {
+      return NextResponse.json({ error: "Application ID is required" }, { status: 400 })
+    } else {
       objectId = new ObjectId(id)
-    } catch (error) {
-      return NextResponse.json({ error: "Invalid application ID format" }, { status: 400 })
     }
 
     // Update the application
-    const updateData: any = {
+    const updateData: { status: string; updatedAt: Date; notes?: string } = {
       status,
       updatedAt: new Date(),
     }
-
     if (notes !== undefined) {
       updateData.notes = notes
     }

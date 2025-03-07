@@ -39,16 +39,12 @@ export async function GET(request: NextRequest ) {
     let objectId
     if (!id) {
       return NextResponse.json({ error: "Application ID is required" }, { status: 400 })
-    }
-    try {
+    } else {
       objectId = new ObjectId(id)
-    } catch (error) {
-      return NextResponse.json({ error: "Invalid application ID format" }, { status: 400 })
     }
-    
+  
     const application = await collection.findOne({ _id: objectId })
     // console.log('Application form MongoDB: ', application);
-
 
     return NextResponse.json({ application })
     
@@ -105,16 +101,13 @@ export async function PATCH(request: NextRequest) {
     let objectId
     if (!id) {
       return NextResponse.json({ error: "Application ID is required" }, { status: 400 })
-    }
-    try {
+    } else {
       objectId = new ObjectId(id)
-    } catch (error) {
-      return NextResponse.json({ error: "Invalid application ID format" }, { status: 400 })
     }
 
 
     // Update the application
-    const updateData: any = {
+    const updateData: { status: string; updatedAt: Date; notes?: string } = {
       status,
       updatedAt: new Date(),
     }

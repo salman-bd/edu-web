@@ -15,13 +15,13 @@ import {
 import { Tailwind } from "@react-email/tailwind"
 
 interface ApplicationConfirmationEmailProps {
-  name: string
+  applicantName: string
   programType: string
   applicationId: string
 }
 
 export default function ApplicationConfirmationEmail({
-  name,
+  applicantName,
   programType,
   applicationId,
 }: ApplicationConfirmationEmailProps) {
@@ -54,7 +54,7 @@ export default function ApplicationConfirmationEmail({
               {/* Content */}
               <Section className="px-8 py-6">
                 <Text className="text-gray-700 text-base">
-                  Dear <span className="font-semibold">{name}</span>,
+                  Dear <span className="font-semibold">{applicantName}</span>,
                 </Text>
                 <Text className="text-gray-700 text-base">
                   Thank you for submitting your application to our{" "}
@@ -88,13 +88,13 @@ export default function ApplicationConfirmationEmail({
                       <span className="inline-block w-6 h-6 rounded-full bg-indigo-600 text-white text-center mr-2">
                         3
                       </span>
-                      You'll receive a decision regarding your application status
+                      You&apos;ll receive a decision regarding your application status
                     </Text>
                     <Text className="text-gray-700 text-base flex items-center">
                       <span className="inline-block w-6 h-6 rounded-full bg-indigo-600 text-white text-center mr-2">
                         4
                       </span>
-                      If accepted, you'll receive information about enrollment and orientation
+                      If accepted, you&apos;ll receive information about enrollment and orientation
                     </Text>
                   </Section>
                 </Section>
@@ -109,8 +109,8 @@ export default function ApplicationConfirmationEmail({
                 </Section>
 
                 <Text className="text-gray-700 text-base mt-6">
-                  Please keep your application ID safe as you'll need it to check your application status. If you have
-                  any questions or need assistance, please don't hesitate to contact us.
+                  Please keep your application ID safe as you&apos;ll need it to check your application status. If you have
+                  any questions or need assistance, please don&apos;t hesitate to contact us.
                 </Text>
               </Section>
 

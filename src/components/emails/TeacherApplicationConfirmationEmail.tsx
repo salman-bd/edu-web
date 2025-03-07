@@ -81,7 +81,7 @@ export default function TeacherApplicationConfirmationEmail({
                       <span className="inline-block w-6 h-6 rounded-full bg-indigo-600 text-white text-center mr-2">
                         2
                       </span>
-                      If your qualifications match our requirements, we'll contact you to schedule an interview
+                      If your qualifications match our requirements, we&apos;ll contact you to schedule an interview
                     </Text>
                     <Text className="text-gray-700 text-base flex items-center">
                       <span className="inline-block w-6 h-6 rounded-full bg-indigo-600 text-white text-center mr-2">
@@ -122,8 +122,8 @@ export default function TeacherApplicationConfirmationEmail({
                 </Section>
 
                 <Text className="text-gray-700 text-base mt-6">
-                  Please keep your application ID safe as you'll need it to check your application status. If you have
-                  any questions or need assistance, please don't hesitate to contact our HR department.
+                  Please keep your application ID safe as you&apos;ll need it to check your application status. If you have
+                  any questions or need assistance, please don&apos;t hesitate to contact our HR department.
                 </Text>
               </Section>
 
