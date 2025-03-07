@@ -14,14 +14,14 @@ export function ApplicationSuccess() {
             Application Submitted Successfully!
           </CardTitle>
           <CardDescription>
-            Thank you for your interest in joining our team. We have received your application and will review it
+            Thank you for your interest in our institution. We have received your application and will review it
             carefully. We will contact you if you are selected for an interview.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-gray-600">
             We appreciate you taking the time to apply. If you have any questions, please don&apos;t hesitate to contact
-            our HR department.
+            our Admission Department.
           </p>
         </CardContent>
       </Card>

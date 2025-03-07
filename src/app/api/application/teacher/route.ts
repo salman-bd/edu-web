@@ -1,25 +1,19 @@
 import { NextResponse } from "next/server"
-import clientPromise from "@/lib/mongodb"
+import {mongoDbConnect} from "@/lib/dbConnect";
+import TeacherApplication from "@/models/TeacherApplication";
 import { sendTeacherApplicationConfirmationEmail, sendTeacherApplicationAdminNotificationEmail } from "@/lib/sendEmails"
+
 
 export async function POST(request: Request) {
   try {
     // Parse the multipart form data
     const formData = await request.formData()
-    console.log("Received form data in API route")
 
     // Extract file
     const resumeFile = formData.get("resume") as File
 
     if (!resumeFile) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Resume file is required",
-        },
-        { status: 400 },
-      )
-    }
+      return NextResponse.json({ success: false, message: "Resume file is required" }, { status: 400 })}
 
     // Validate file type
     const validTypes = [
@@ -28,25 +22,13 @@ export async function POST(request: Request) {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ]
     if (!validTypes.includes(resumeFile.type)) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid file type. Only PDF and Word documents are accepted.",
-        },
-        { status: 400 },
-      )
-    }
+      return NextResponse.json({ success: false, message: "Invalid file type. Only PDF and Word documents are accepted." }, { status: 400 })}
 
     // Validate file size (5MB max)
     if (resumeFile.size > 5 * 1024 * 1024) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "File size exceeds 5MB limit",
-        },
-        { status: 400 },
-      )
-    }
+      return NextResponse.json({ success: false, message: "File size exceeds 5MB limit" }, { status: 400 })}
+
+    await mongoDbConnect()
 
     // Instead of saving to filesystem, store file as Buffer in MongoDB
     const fileBuffer = Buffer.from(await resumeFile.arrayBuffer())
@@ -65,13 +47,9 @@ export async function POST(request: Request) {
     const teachingLevel = JSON.parse(teachingLevelJson)
     const coverLetter = formData.get("coverLetter") as string
 
-    // Connect to MongoDB
-    const client = await clientPromise
-    const db = client.db("education_app")
-    const collection = db.collection("teacher_applications")
 
     // Create application document
-    const application = {
+    const applicationData = {
       firstName,
       lastName,
       email,
@@ -95,36 +73,45 @@ export async function POST(request: Request) {
     }
 
     console.log("Teacher application data to be inserted: ", {
-      ...application,
+      ...applicationData,
       resume: {
-        filename: application.resume.filename,
-        contentType: application.resume.contentType,
-        size: application.resume.size,
+        filename: applicationData.resume.filename,
+        contentType: applicationData.resume.contentType,
+        size: applicationData.resume.size,
         data: "Buffer data (not shown)",
       },
     })
 
     // Insert into MongoDB
-    const result = await collection.insertOne(application)
-    console.log("Application inserted with ID:", result.insertedId)
+    let application
+    const existingApplication = await TeacherApplication.findOne({ email: email });  
+    if (!existingApplication) {  
+      const newApplication = new TeacherApplication(applicationData); 
+      application = await newApplication.save()
+    } else {
+      application = await existingApplication.save()
+      return Response.json({success: true, message: "Application updated successfully", application: application}, { status: 200 })
+    }
+
+    // console.log("Application inserted data in MongoDB:", application)
 
     // Send confirmation email
     const fullName = `${firstName} ${lastName}`
-    await sendTeacherApplicationConfirmationEmail(email, fullName, subjectSpecialization, result.insertedId.toString())
+    await sendTeacherApplicationConfirmationEmail(email, fullName, subjectSpecialization, application._id.toString())
 
     // Send admin notification
     await sendTeacherApplicationAdminNotificationEmail(
       fullName,
       email,
       subjectSpecialization,
-      result.insertedId.toString(),
+      application._id.toString(),
     )
 
     return NextResponse.json(
       {
         success: true,
         message: "Application submitted successfully",
-        applicationId: result.insertedId,
+        applicationId: application._id,
       },
       { status: 201 },
     )

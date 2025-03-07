@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from "cloudinary"
 import { mongoDbConnect } from "@/lib/dbConnect"
-import ProfileModel from "@/models/ProfileModel"
+import Profile from "@/models/ProfileModel"
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     console.log("Data to be saved:", data)
 
     // Find existing profile or create new one
-    const existingProfile = await ProfileModel.findOne({ email: data.email })
+    const existingProfile = await Profile.findOne({ email: data.email })
     if (existingProfile) {
       Object.assign(existingProfile, data)
       await existingProfile.save()
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
         { status: 200 },
       )
     } else {
-      const newProfile = new ProfileModel(data)
+      const newProfile = new Profile(data)
       await newProfile.save()
       console.log("Created new profile: ", newProfile)
       return Response.json(
