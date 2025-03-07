@@ -95,7 +95,7 @@ export default function Programs() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
             <Link
-              href="/application"
+              href="/application/student"
               className="bg-white text-red-600 hover:bg-indigo-100 px-6 py-2 rounded-md transition-colors duration-300"
             >
               Apply Now

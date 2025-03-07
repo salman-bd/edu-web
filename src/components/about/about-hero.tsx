@@ -23,7 +23,7 @@ export default function AdmissionsHero() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg" className="bg-red-800 text-white hover:bg-red-700">
-                <Link href="/application">Start Application</Link>
+                <Link href="/application/student">Start Application</Link>
               </Button>
               <Button
                 asChild
