@@ -33,7 +33,7 @@ const Navbar = () => {
             <div className="flex-shrink-0 flex items-center">
               <Link href="/" className="text-2xl font-bold text-gray-800">
                 <Image 
-                  src='/CSC-LOGO-BR.png'
+                  src='/logo.png'
                   width={36}
                   height={36}
                   alt='CSC Logo'

@@ -22,37 +22,37 @@ interface StatusInfo {
 }
 
 const statusInfo: Record<ApplicationStatus, StatusInfo> = {
-  pending: {
+  PENDING: {
     title: "Application Received",
     description: "Your application has been received and is waiting to be reviewed.",
     icon: <Clock className="h-8 w-8" />,
     color: "text-yellow-500",
   },
-  under_review: {
+  UNDER_REVIEW: {
     title: "Under Review",
     description: "Your application is currently being reviewed by our team.",
     icon: <AlertCircle className="h-8 w-8" />,
     color: "text-blue-500",
   },
-  interview_scheduled: {
+  INTERVIEW_SCHEDULED: {
     title: "Interview Scheduled",
     description: "We'd like to meet you! Check your email for interview details.",
     icon: <Calendar className="h-8 w-8" />,
     color: "text-purple-500",
   },
-  accepted: {
+  ACCEPTED: {
     title: "Application Accepted",
     description: "Congratulations! Your application has been accepted.",
     icon: <CheckCircle2 className="h-8 w-8" />,
     color: "text-green-500",
   },
-  rejected: {
+  REJECTED: {
     title: "Application Not Accepted",
     description: "We regret to inform you that your application was not accepted at this time.",
     icon: <XCircle className="h-8 w-8" />,
     color: "text-red-500",
   },
-  waitlisted: {
+  WAITLISTED: {
     title: "Waitlisted",
     description: "You've been placed on our waitlist. We'll contact you if a spot becomes available.",
     icon: <Clock className="h-8 w-8" />,
@@ -63,7 +63,19 @@ const statusInfo: Record<ApplicationStatus, StatusInfo> = {
 export function ApplicationStatusCard({ id, type }: ApplicationStatusCardProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [applicationData, setApplicationData] = useState<any>(null)
+  interface ApplicationData {
+    status: ApplicationStatus;
+    firstName: string;
+    lastName: string;
+    email: string;
+    programType?: string;
+    subject?: string;
+    createdAt: string;
+    updatedAt: string;
+    notes?: string;
+  }
+
+  const [applicationData, setApplicationData] = useState<ApplicationData | null>(null)
 
   useEffect(() => {
     const fetchApplicationStatus = async () => {

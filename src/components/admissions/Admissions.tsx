@@ -39,14 +39,14 @@ export default function Admissions() {
         </p>
         <div className="flex justify-center space-x-4 mt-8">
           <Link
-            href="application"
-            className="bg-red-800 hover:bg-red-700 text-white px-6 py-3 rounded-md transition-colors duration-300 text-lg font-semibold"
+            href="application/student"
+            className="bg-red-800 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors duration-300 text-lg "
           >
             Apply Now
           </Link>
           <Link
             href="/admissions/contact"
-            className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-6 py-3 rounded-md transition-colors duration-300 text-lg font-semibold"
+            className="bg-indigo-100 text-indigo-600 hover:bg-indigo-200 px-4 py-2 rounded-md transition-colors duration-300 text-lg "
           >
             Contact Admissions
           </Link>

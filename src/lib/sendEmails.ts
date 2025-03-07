@@ -4,8 +4,8 @@ import WelcomeEmail from "@/components/emails/WelcomeEmail"
 import ContactConfirmationEmail from "@/components/emails/ContactConfirmationEmail"
 import AdminContactNotificationEmail from "@/components/emails/AdminContactNotificationEmail"
 
-import ApplicationConfirmationEmail from "@/components/emails/ApplicationConfirmationEmail"
-import ApplicationAdminNotificationEmail from "@/components/emails/ApplicationAdminNotificationEmail"
+import StudentApplicationConfirmationEmail from "@/components/emails/StudentApplicationConfirmationEmail"
+import StudentApplicationAdminNotificationEmail from "@/components/emails/StudentApplicationAdminNotificationEmail"
 import TeacherApplicationConfirmationEmail from "@/components/emails/TeacherApplicationConfirmationEmail"
 import TeacherApplicationAdminNotificationEmail from "@/components/emails/TeacherApplicationAdminNotificationEmail"
 import { ApiResponse } from "@/types/ApiResponse"
@@ -13,7 +13,6 @@ import { ApiResponse } from "@/types/ApiResponse"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const adminEmail = process.env.ADMIN_EMAIL || "cscedubd@gmail.com"
-const fromEmail = process.env.FROM_EMAIL || "cscedubd@gmail.com"
 
 
 export async function sendVerificationEmail(email: string, name: string, verifyCode: string): Promise<ApiResponse> {
@@ -91,109 +90,86 @@ export async function sendAdminContactNotificationEmail(
 
 
 
-export async function sendApplicationConfirmationEmail(
-  to: string,
+// Student application confirmation email
+export async function sendStudentApplicationConfirmationEmail(
+  email: string,
   name: string,
   programType: string,
   applicationId: string,
 ) {
   try {
-    console.log(`Sending application confirmation email to ${to}`)
-
-    const { data, error } = await resend.emails.send({
+    const data = await resend.emails.send({
       from: "Admissions <admissions@cscsylhet.com>",
-      to,
-      subject: "Your Application Has Been Received",
-      react: ApplicationConfirmationEmail({
+      to: email,
+      subject: "Application Received - Classic School And College",
+      react: StudentApplicationConfirmationEmail({
         name,
         programType,
         applicationId,
       }),
     })
-
-    if (error) {
-      console.error("Error sending application confirmation email:", error)
-      throw new Error(`Failed to send confirmation email: ${error.message}`)
-    }
-
-    console.log("Application confirmation email sent successfully:", data)
-    return data
+    console.log("Student confirmation email sent:", data)
+    return { success: true, data }
   } catch (error) {
-    console.error("Exception sending application confirmation email:", error)
-    // Don't throw here to prevent API failure if email sending fails
-    return null
+    console.error("Error sending student confirmation email:", error)
+    return { success: false, error }
   }
 }
 
-export async function sendApplicationAdminNotificationEmail(
+// Student application admin notification email
+export async function sendStudentApplicationAdminNotificationEmail(
   applicantName: string,
   applicantEmail: string,
   programType: string,
   applicationId: string,
 ) {
   try {
-    console.log(`Sending admin notification email to ${adminEmail}`)
-
-    const { data, error } = await resend.emails.send({
+    const data = await resend.emails.send({
       from: "Admissions System <admissions@cscsylhet.com>",
       to: adminEmail,
-      subject: `New Application: ${applicantName} for ${programType}`,
-      react: ApplicationAdminNotificationEmail({
+      subject: `New Student Application: ${applicantName}`,
+      react: StudentApplicationAdminNotificationEmail({
         applicantName,
         applicantEmail,
         programType,
         applicationId,
       }),
     })
-
-    if (error) {
-      console.error("Error sending admin notification email:", error)
-      throw new Error(`Failed to send admin notification: ${error.message}`)
-    }
-
-    console.log("Admin notification email sent successfully:", data)
-    return data
+    console.log("Admin notification email sent:", data)
+    return { success: true, data }
   } catch (error) {
-    console.error("Exception sending admin notification email:", error)
-    // Don't throw here to prevent API failure if email sending fails
-    return null
+    console.error("Error sending admin notification email:", error)
+    return { success: false, error }
   }
 }
 
+// Teacher application confirmation email
 export async function sendTeacherApplicationConfirmationEmail(
-  to: string,
+  email: string,
   name: string,
   subject: string,
   applicationId: string,
 ) {
   try {
-    console.log(`Sending teacher application confirmation email to ${to}`)
-
-    const { data, error } = await resend.emails.send({
+    const data = await resend.emails.send({
       from: "Careers <careers@cscsylhet.com>",
-      to,
-      subject: "Your Teaching Application Has Been Received",
+      to: email,
+      subject: "Teaching Application Received - Classic School And College",
       react: TeacherApplicationConfirmationEmail({
         name,
         subject,
         applicationId,
       }),
     })
-
-    if (error) {
-      console.error("Error sending teacher application confirmation email:", error)
-      throw new Error(`Failed to send confirmation email: ${error.message}`)
-    }
-
-    console.log("Teacher application confirmation email sent successfully:", data)
-    return data
+    console.log("Teacher confirmation email sent:", data)
+    return { success: true, data }
   } catch (error) {
-    console.error("Exception sending teacher application confirmation email:", error)
-    // Don't throw here to prevent API failure if email sending fails
-    return null
+    console.error("Error sending teacher confirmation email:", error)
+    return { success: false, error }
   }
 }
 
+// Teacher application admin notification email
 export async function sendTeacherApplicationAdminNotificationEmail(
   applicantName: string,
   applicantEmail: string,
@@ -201,12 +177,10 @@ export async function sendTeacherApplicationAdminNotificationEmail(
   applicationId: string,
 ) {
   try {
-    console.log(`Sending teacher admin notification email to ${adminEmail}`)
-
-    const { data, error } = await resend.emails.send({
+    const data = await resend.emails.send({
       from: "HR System <careers@cscsylhet.com>",
       to: adminEmail,
-      subject: `New Teacher Application: ${applicantName} for ${subject}`,
+      subject: `New Teacher Application: ${applicantName}`,
       react: TeacherApplicationAdminNotificationEmail({
         applicantName,
         applicantEmail,
@@ -214,18 +188,11 @@ export async function sendTeacherApplicationAdminNotificationEmail(
         applicationId,
       }),
     })
-
-    if (error) {
-      console.error("Error sending teacher admin notification email:", error)
-      throw new Error(`Failed to send admin notification: ${error.message}`)
-    }
-
-    console.log("Teacher admin notification email sent successfully:", data)
-    return data
+    console.log("HR notification email sent:", data)
+    return { success: true, data }
   } catch (error) {
-    console.error("Exception sending teacher admin notification email:", error)
-    // Don't throw here to prevent API failure if email sending fails
-    return null
+    console.error("Error sending HR notification email:", error)
+    return { success: false, error }
   }
 }
 

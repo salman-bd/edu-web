@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { ApplicationForm } from "@/components/application/ApplicationForm"
-import { ApplicationSuccess } from "@/components/application/ApplicationSuccess"
+import { ApplicationForm } from "@/components/application/StudentApplicationForm"
+import { ApplicationSuccess } from "@/components/application/StudentApplicationSuccess"
 
 export default function ApplyPage() {
   const [isSubmitted, setIsSubmitted] = useState(false)

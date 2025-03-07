@@ -115,7 +115,7 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
 
       console.log("Submitting form data...")
 
-      const response = await fetch("/api/careers/apply", {
+      const response = await fetch("/api/application/teacher", {
         method: "POST",
         body: formData,
       })

@@ -1,4 +1,4 @@
-import { Html, Head, Body, Container, Section, Heading, Text, Button, Hr, Tailwind } from "@react-email/components"
+import { Html, Head, Body, Container, Section, Heading, Text, Button, Tailwind } from "@react-email/components"
 
 interface WelcomeEmailProps {
   name: string
@@ -17,7 +17,7 @@ export default function WelcomeEmail({ name }: WelcomeEmailProps) {
               </Heading>
               <Text className="text-gray-600 mb-6">Hello {name},</Text>
               <Text className="text-gray-600 mb-6">
-                We're thrilled to have you join our community. Your journey towards excellence in education starts here!
+                We&apos;re thrilled to have you join our community. Your journey towards excellence in education starts here!
               </Text>
               <Button
                 href="https://cscsylhet.com/"

@@ -1,8 +1,8 @@
 "use client"
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { TeacherApplicationForm } from "@/components/careers/TeacherApplicationForm"
-import { ApplicationSuccess } from "@/components/careers/ApplicationSuccess"
+import { TeacherApplicationForm } from "@/components/application/TeacherApplicationForm"
+import { ApplicationSuccess } from "@/components/application/StudentApplicationSuccess"
 
 export default function CareersPageClient() {
   const [isSubmitted, setIsSubmitted] = useState(false)

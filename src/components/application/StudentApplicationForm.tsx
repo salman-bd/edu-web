@@ -90,7 +90,7 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
     try {
       console.log("Submitting application data:", data)
 
-      const response = await fetch("/api/apply", {
+      const response = await fetch("/api/application/student", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -26,7 +26,7 @@ export default function JoinTeam() {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <Button asChild size="lg" className="w-full sm:w-auto bg-red-800 hover:bg-red-700 text-white">
-              <Link href="/careers">Send a CV</Link>
+              <Link href="/application/teacher">Send a CV</Link>
             </Button>
             <Button
               asChild
