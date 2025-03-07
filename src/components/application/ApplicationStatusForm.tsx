@@ -10,12 +10,31 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useEffect } from "react"
+import { Badge } from "../ui/badge"
+import Link from "next/link"
 
 const formSchema = z.object({
   applicationId: z.string().min(6, {
     message: "Application ID must be at least 6 characters.",
   }),
 })
+
+type ApplicationStatus = "PENDING" | "UNDER_REVIEW" | "INTERVIEW_SCHEDULED" | "ACCEPTED" | "REJECTED" | "WAITLISTED"
+
+interface ApplicationDetail {
+  _id: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  dateOfBirth: string
+  address: string
+  status: ApplicationStatus
+  submittedAt: string
+  updatedAt: string
+  nextStep?: string
+  notes?: string
+}
 
 interface ApplicationStatusFormProps {
   type: "student" | "teacher"
@@ -26,9 +45,11 @@ export function ApplicationStatusForm({ type }: ApplicationStatusFormProps) {
   const searchParams = useSearchParams()
   const applicationId = searchParams.get("id")
   const [submitted, setSubmitted] = useState(false)
-  const [applicationData, setApplicationData] = useState<any>(null)
+  
+  const [applicationData, setApplicationData] = useState<ApplicationDetail | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [status, setStatus] = useState<ApplicationStatus | "">("")
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,7 +77,7 @@ export function ApplicationStatusForm({ type }: ApplicationStatusFormProps) {
       }
       const data = await response.json()
       // console.log('Response data: ', data);
-      const applicationData = data.application
+      const applicationData = data.application as ApplicationDetail
 
       setApplicationData(applicationData)
       setSubmitted(true)
@@ -69,8 +90,30 @@ export function ApplicationStatusForm({ type }: ApplicationStatusFormProps) {
     }
   }
 
+  // console.log('Application Data: ', applicationData);
+  
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     router.push(`?id=${values.applicationId}`)
+  }
+
+  const getStatusBadgeColor = (status: ApplicationStatus) => {
+    switch (status) {
+      case "PENDING":
+        return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
+      case "UNDER_REVIEW":
+        return "bg-blue-100 text-blue-800 hover:bg-blue-100"
+      case "INTERVIEW_SCHEDULED":
+        return "bg-purple-100 text-purple-800 hover:bg-purple-100"
+      case "ACCEPTED":
+        return "bg-green-100 text-green-800 hover:bg-green-100"
+      case "REJECTED":
+        return "bg-red-100 text-red-800 hover:bg-red-100"
+      case "WAITLISTED":
+        return "bg-orange-100 text-orange-800 hover:bg-orange-100"
+      default:
+        return "bg-gray-100 text-gray-800 hover:bg-gray-100"
+    }
   }
 
   if (isLoading) {
@@ -91,24 +134,35 @@ export function ApplicationStatusForm({ type }: ApplicationStatusFormProps) {
       <Card className="w-full max-w-md mx-auto">
         <CardHeader>
           <CardTitle className="text-xl text-indigo-600">Application Status</CardTitle>
-          <CardDescription>Details for application ID: {applicationData.id}</CardDescription>
+          <CardDescription>Details for application ID: {applicationData._id}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1">
-            <div>
-              <p className="text-sm font-medium text-gray-500">Name</p>
-              <p className="text-lg ">{applicationData.firstName} {applicationData.lastName}</p>
+            <div className="grid grid-cols-2">
+              <div>
+                <p className="text-sm font-medium text-gray-500">Name</p>
+                <p className="text-lg ">{applicationData.firstName} {applicationData.lastName}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Phone</p>
+                <p className="text-lg ">{applicationData.phone} </p>
+              </div>
             </div>
 
-            <div>
-              <p className="text-sm font-medium text-gray-500">Status</p>
-              <p className="text-lg text-amber-700">{applicationData.status}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Submitted Date</p>
-              <p className="text-lg ">{applicationData.createdAt}</p>
+            <div className="grid grid-cols-2">
+              <div>
+                <p className="text-sm font-medium text-gray-500">Status</p>
+                <Badge className={getStatusBadgeColor(applicationData.status)}>
+                  {applicationData.status.replace(/_/g, " ")}
+                </Badge>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Submitted Date</p>
+                <p className="text-lg ">{applicationData.submittedAt}</p>
+              </div>
             </div>
           </div>
+
           {applicationData.nextStep && (
             <div>
               <p className="text-sm font-medium text-gray-500">Next Step</p>
@@ -127,7 +181,9 @@ export function ApplicationStatusForm({ type }: ApplicationStatusFormProps) {
           >
             Check Another
           </Button>
-          <Button className="bg-indigo-600 hover:bg-indigo-700">Contact Admissions</Button>
+          <Link href='/admissions/contact'>
+            <Button className="bg-indigo-600 hover:bg-indigo-700">Contact Admissions</Button>
+          </Link>
         </CardFooter>
       </Card>
     )

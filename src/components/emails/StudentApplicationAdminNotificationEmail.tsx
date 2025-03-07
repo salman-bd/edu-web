@@ -102,7 +102,7 @@ export default function ApplicationConfirmationEmail({
                 <Section className="text-center mt-8">
                   <Button
                     className="bg-red-800 text-white font-bold px-6 py-3 rounded-md shadow-sm hover:bg-red-700"
-                    href={`${process.env.NEXT_PUBLIC_APP_URL}/application/status?id=${applicationId}`}
+                    href={`${process.env.NEXT_PUBLIC_APP_URL}/application/admin/student/${applicationId}`}
                   >
                     Check Application Status
                   </Button>

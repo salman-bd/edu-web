@@ -92,7 +92,7 @@ export default function TeacherApplicationAdminNotificationEmail({
                 <Section className="text-center mt-6">
                   <Button
                     className="bg-indigo-600 text-white font-bold px-6 py-3 rounded-md shadow-sm hover:bg-indigo-700"
-                    href={`${process.env.NEXT_PUBLIC_APP_URL}/admin/teacher-applications/${applicationId}`}
+                    href={`${process.env.NEXT_PUBLIC_APP_URL}/application/admin/teacher?id=${applicationId}`}
                   >
                     Review Application
                   </Button>

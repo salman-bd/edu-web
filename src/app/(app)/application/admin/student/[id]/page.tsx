@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -13,7 +13,7 @@ import type { ApplicationStatus } from "@/types/application"
 import { toast } from "react-hot-toast"
 
 interface ApplicationDetail {
-  id: string
+  _id: string
   firstName: string
   lastName: string
   email: string
@@ -34,9 +34,11 @@ interface ApplicationDetail {
 }
 
 export default function ApplicationDetailPage() {
-  const params = useParams()
   const router = useRouter()
+  const params = useParams()
   const { id } = params
+  // console.log('Application ID: ', id);
+
 
   const [application, setApplication] = useState<ApplicationDetail | null>(null)
   const [loading, setLoading] = useState(true)
@@ -52,16 +54,17 @@ export default function ApplicationDetailPage() {
   const fetchApplicationDetail = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/application/admin/${id}`)
+      const response = await fetch(`/api/application/admin/student/${id}`)
 
       if (!response.ok) {
         throw new Error("Failed to fetch application details")
       }
-
       const data = await response.json()
+      // console.log('Response Data: ', data);
       setApplication(data.application)
       setStatus(data.application.status)
       setNotes(data.application.notes || "")
+
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred")
       console.error("Error fetching application details:", err)
@@ -78,7 +81,7 @@ export default function ApplicationDetailPage() {
 
     try {
       setSaving(true)
-      const response = await fetch(`/api/application/student/${id}`, {
+      const response = await fetch(`/api/application/admin/student/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -94,6 +97,8 @@ export default function ApplicationDetailPage() {
       }
 
       const data = await response.json()
+      console.log('Response Data: ', data);
+
       setApplication(data.application)
       toast.success("Application updated successfully")
 
@@ -174,7 +179,7 @@ export default function ApplicationDetailPage() {
                   <CardTitle>
                     {application.firstName} {application.lastName}
                   </CardTitle>
-                  <CardDescription>Application ID: {application.id}</CardDescription>
+                  <CardDescription>Application ID: {application._id}</CardDescription>
                 </div>
                 <Badge className={getStatusBadgeColor(application.status)}>
                   {application.status.replace(/_/g, " ")}

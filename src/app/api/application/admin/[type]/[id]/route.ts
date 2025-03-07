@@ -2,11 +2,18 @@ import { NextRequest, NextResponse } from "next/server"
 import clientPromise from "@/lib/mongodb"
 import { ObjectId } from "mongodb"
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest ) {
   try {
-    const type = request.nextUrl.searchParams.get('type');  
-    const id = request.nextUrl.searchParams.get('id'); 
 
+    const fullUrl = request.url;  
+    const urlParts = new URL(fullUrl).pathname.split('/');  
+  
+    // urlParts will now be an array like:  
+    // ["", "api", "application", "admin", "student", "123"]  
+  
+    const type = urlParts[4];   
+    const id = urlParts[5]; 
+  
     console.log("Type:", type);  
     console.log("ID:", id);
 
@@ -22,7 +29,77 @@ export async function GET(request: NextRequest) {
     // Determine which collection to use
     const collectionName = type === "student" ? "student_applications" : "teacher_applications"
     const collection = db.collection(collectionName)
+
+    // In a real application, you would check authentication here
+    // if (!isAuthenticated(request)) {
+    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    // }
+
+    // Try to convert the ID to ObjectId
+    let objectId
+    if (!id) {
+      return NextResponse.json({ error: "Application ID is required" }, { status: 400 })
+    }
+    try {
+      objectId = new ObjectId(id)
+    } catch (error) {
+      return NextResponse.json({ error: "Invalid application ID format" }, { status: 400 })
+    }
     
+    const application = await collection.findOne({ _id: objectId })
+    // console.log('Application form MongoDB: ', application);
+
+
+    return NextResponse.json({ application })
+    
+  } catch (error) {
+    console.error("Error fetching applications:", error)
+    return NextResponse.json({ error: "Failed to fetch applications" }, { status: 500 })
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const fullUrl = request.url;  
+    const urlParts = new URL(fullUrl).pathname.split('/'); 
+    const body = await request.json() 
+    const { status, notes } = body
+  
+    // urlParts will now be an array like:  
+    // ["", "api", "application", "admin", "student", "123"]  
+  
+    const type = urlParts[4];   
+    const id = urlParts[5]; 
+  
+    console.log("\nType:", type);  
+    console.log("ID:", id);
+    console.log("Status: ", status);
+    console.log("Notes: ", notes);
+    
+
+    // Validate status
+    const validStatuses = ["PENDING", "UNDER_REVIEW", "INTERVIEW_SCHEDULED", "ACCEPTED", "REJECTED", "WAITLISTED"]
+    if (!validStatuses.includes(status)) {
+      return NextResponse.json({ error: "Invalid status value" }, { status: 400 })
+    }
+
+    // Validate application type
+    if (type !== "teacher" && type !== "student") {
+      return NextResponse.json({ error: "Invalid application type" }, { status: 400 })
+    }
+
+    // Connect to MongoDB
+    const client = await clientPromise
+    const db = client.db("education_app")
+
+    // Determine which collection to use
+    const collectionName = type === "student" ? "student_applications" : "teacher_applications"
+    const collection = db.collection(collectionName)
+
+    // In a real application, you would check authentication here
+    // if (!isAuthenticated(request)) {
+    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    // }
 
     // Try to convert the ID to ObjectId
     let objectId
@@ -35,68 +112,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Invalid application ID format" }, { status: 400 })
     }
 
-    const application = await collection.findOne({ _id: objectId })
-    // console.log('Application from MongoDB: ', application);
-
-    if (!application) {
-      return NextResponse.json({ error: "Application not found" }, { status: 404 })
-    }
-
-    // console.log('Application from MongoDB: ', application);
-
-    // Return the application data
-    return NextResponse.json({
-      success: true,
-      type,
-      application: application,
-    })
-    
-  } catch (error) {
-    console.error("Error fetching application:", error)
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Failed to fetch application",
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 },
-    )
-  }
-}
-
-// Admin route to update application status
-export async function PATCH(request: Request, { params }: { params: { type: string; id: string } }) {
-  try {
-    const { type, id } = params
-    const body = await request.json()
-    const { status, notes } = body
-
-    // Validate application type
-    if (type !== "teacher" && type !== "student") {
-      return NextResponse.json({ error: "Invalid application type" }, { status: 400 })
-    }
-
-    // Validate status
-    const validStatuses = ["PENDING", "UNDER_REVIEW", "INTERVIEW_SCHEDULED", "ACCEPTED", "REJECTED", "WAITLISTED"]
-    if (!validStatuses.includes(status)) {
-      return NextResponse.json({ error: "Invalid status value" }, { status: 400 })
-    }
-
-    // Connect to MongoDB
-    const client = await clientPromise
-    const db = client.db("education_app")
-
-    // Determine which collection to use
-    const collectionName = type === "student" ? "student_applications" : "teacher_applications"
-    const collection = db.collection(collectionName)
-
-    // Try to convert the ID to ObjectId
-    let objectId
-    try {
-      objectId = new ObjectId(id)
-    } catch (error) {
-      return NextResponse.json({ error: "Invalid application ID format" }, { status: 400 })
-    }
 
     // Update the application
     const updateData: any = {
@@ -117,7 +132,6 @@ export async function PATCH(request: Request, { params }: { params: { type: stri
     // Get the updated application
     const updatedApplication = await collection.findOne({ _id: objectId })
 
-   
     return NextResponse.json({
       success: true,
       application: updatedApplication,
@@ -125,14 +139,7 @@ export async function PATCH(request: Request, { params }: { params: { type: stri
 
   } catch (error) {
     console.error("Error updating application:", error)
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Failed to update application",
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: "Failed to update application" }, { status: 500 })
   }
 }
 
