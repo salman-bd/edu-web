@@ -120,7 +120,7 @@ export async function sendStudentApplicationConfirmationEmail(
 export async function sendStudentApplicationAdminNotificationEmail(
   applicantName: string,
   applicantEmail: string,
-  programType: string,
+  subject: string,
   applicationId: string,
 ) {
   try {
@@ -131,7 +131,7 @@ export async function sendStudentApplicationAdminNotificationEmail(
       react: StudentApplicationAdminNotificationEmail({
         applicantName,
         applicantEmail,
-        programType,
+        subject,
         applicationId,
       }),
     })
