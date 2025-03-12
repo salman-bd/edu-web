@@ -14,26 +14,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, CheckCircle2 } from "lucide-react"
 import toast, { Toaster } from "react-hot-toast"
+import { studentApplicationSchema } from "@/schemas/applicationsSchema"
+import axios from "axios"
 
-const formSchema = z.object({
-  firstName: z.string().min(2, { message: "First name must be at least 2 characters" }),
-  lastName: z.string().min(2, { message: "Last name must be at least 2 characters" }),
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  phone: z.string().min(10, { message: "Please enter a valid phone number" }),
-  dateOfBirth: z.string().min(1, { message: "Date of birth is required" }),
-  address: z.string().min(5, { message: "Address must be at least 5 characters" }),
-  city: z.string().min(2, { message: "City must be at least 2 characters" }),
-  state: z.string().min(2, { message: "State must be at least 2 characters" }),
-  zipCode: z.string().min(4, { message: "Zip code must be at least 4 characters" }).optional(),
-  programLevel: z.enum(["elementary", "middle", "high", "college"], {
-    required_error: "Please select a program level",
-  }),
-  programType: z.string().min(1, { message: "Please select a program" }),
-  previousSchool: z.string().min(2, { message: "Previous school must be at least 2 characters" }),
-  personalStatement: z.string().min(50, { message: "Personal statement must be at least 50 characters" }),
-})
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof studentApplicationSchema>
 
 interface ApplicationFormProps {
   onSubmitSuccess: () => void
@@ -45,7 +30,7 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(studentApplicationSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -90,17 +75,11 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
     try {
       console.log("Submitting application data:", data)
 
-      const response = await fetch("/api/application/student", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
+      const response = await axios.post("/api/application/student", data)
 
-      const responseData = await response.json()
+      const responseData = response.data.application
 
-      if (!response.ok) {
+      if (!response.data.success) {
         console.error("Server response error:", responseData)
         throw new Error(responseData.message || "Failed to submit application")
       }
@@ -110,6 +89,7 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
         duration: 4000,
       })
       onSubmitSuccess()
+      
     } catch (error) {
       console.error("Error submitting application:", error)
       let errorMessage = "There was a problem submitting your application. Please try again."

@@ -24,15 +24,11 @@ export async function GET(request: NextRequest) {
     const collection = db.collection(collectionName)
     
 
-    // Try to convert the ID to ObjectId
-    let objectId
     if (!id) {
-      return NextResponse.json({ error: "Application ID is required" }, { status: 400 })
-    } else {
-      objectId = new ObjectId(id)
+      return NextResponse.json({ error: "Application ID is required" }, { status: 400 });
     }
+    const application = await collection.findOne(new ObjectId(id));
 
-    const application = await collection.findOne({ _id: objectId })
     // console.log('Application from MongoDB: ', application);
 
     if (!application) {

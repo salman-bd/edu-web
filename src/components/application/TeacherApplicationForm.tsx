@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Loader2, Upload } from "lucide-react"
 import toast, { Toaster } from "react-hot-toast"
 import { Checkbox } from "@/components/ui/checkbox"
+import { teachingApplicationBaseSchema } from "@/schemas/applicationsSchema"
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ACCEPTED_FILE_TYPES = [
@@ -22,24 +23,11 @@ const ACCEPTED_FILE_TYPES = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ]
 
-// Create a schema without the FileList validation for server-side
-const baseSchema = {
-  firstName: z.string().min(2, { message: "First name must be at least 2 characters" }),
-  lastName: z.string().min(2, { message: "Last name must be at least 2 characters" }),
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  phone: z.string().min(10, { message: "Please enter a valid phone number" }),
-  address: z.string().min(5, { message: "Address must be at least 5 characters" }),
-  highestDegree: z.string().min(2, { message: "Please enter your highest degree" }),
-  university: z.string().min(2, { message: "Please enter your university" }),
-  yearsOfExperience: z.string().min(1, { message: "Please enter your years of experience" }),
-  subjectSpecialization: z.string().min(2, { message: "Please enter your subject specialization" }),
-  teachingLevel: z.array(z.string()).min(1, { message: "Please select at least one teaching level" }),
-  coverLetter: z.string().min(100, { message: "Cover letter must be at least 100 characters" }),
-}
+
 
 // Create the form schema dynamically based on environment
 const formSchema = z.object({
-  ...baseSchema,
+  ...teachingApplicationBaseSchema,
   resume:
     typeof window === "undefined"
       ? z.any() // Use a placeholder during SSR
@@ -83,7 +71,7 @@ export function TeacherApplicationForm({ onSubmitSuccess }: TeacherApplicationFo
   const teachingLevels = [
     { id: "elementary", label: "Elementary School (K-5)" },
     { id: "middle", label: "Middle School (6-8)" },
-    { id: "high", label: "High School (9-12)" },
+    { id: "high", label: "High School (9-10)" },
     { id: "college", label: "College" },
   ]
 
