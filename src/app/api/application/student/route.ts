@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";  
 import { studentApplicationSchema } from "@/schemas/applicationsSchema";  
 import { ObjectId } from "mongodb";
+import { sendStudentApplicationAdminNotificationEmail, sendStudentApplicationConfirmationEmail } from "@/lib/sendEmails";
 
 export async function POST(request: NextRequest) {  
   try {  
@@ -24,6 +25,23 @@ export async function POST(request: NextRequest) {
 
     // Log the new application details for debugging  
     console.log('New Application ID: ', applicationId);  
+
+    // Send confirmation email
+    const fullName = `${validatedData.firstName} ${validatedData.lastName}`
+    await sendStudentApplicationConfirmationEmail(
+      validatedData.email,
+      fullName,
+      validatedData.programType,
+      applicationId
+    )
+
+    // Send notification to admin
+    await sendStudentApplicationAdminNotificationEmail(
+      fullName,
+      validatedData.email,
+      validatedData.programType,
+      applicationId
+    )
 
     // Return a response including the new application ID  
     return NextResponse.json({  

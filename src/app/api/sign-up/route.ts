@@ -2,16 +2,19 @@ import {mongoDbConnect} from "@/lib/dbConnect";
 import UserModel from "@/models/User";
 import bcryptjs from "bcryptjs";
 import { sendVerificationEmail } from "@/lib/sendEmails";
+import clientPromise from "@/lib/mongodb";
 
 
 
 export async function POST(request: Request) {
-    await mongoDbConnect();
+    const client = await clientPromise;  
+    const db = client.db("education_app");  
+    const collection = db.collection('users');  
 
     try {
         const {name, email, password} = await request.json();
 
-        const existingUserByEmail = await UserModel.findOne({email});
+        const existingUserByEmail = collection.findOne({email})
         const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
         if (existingUserByEmail) {
@@ -29,7 +32,9 @@ export async function POST(request: Request) {
                 existingUserByEmail.verifyCode = verifyCode;
                 existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 360000);
             }
-            await existingUserByEmail.save();
+            await collection.updateOne({
+                
+            })
             
         } else {
             const hashedPassword = await bcryptjs.hash(password, 10);

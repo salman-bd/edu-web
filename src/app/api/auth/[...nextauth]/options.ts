@@ -8,6 +8,7 @@ import { compare } from "bcryptjs";
 import UserModel from "@/models/User";  
 import { User as NextAuthUser } from "next-auth";  
 import { sendWelcomeEmail } from "@/lib/sendEmails";
+import clientPromise from "@/lib/mongodb";
 
 interface User extends NextAuthUser {  
   _id: string;  
@@ -44,7 +45,10 @@ export const authOptions: NextAuthOptions = {
         await mongoDbConnect();  
 
         try {  
-          const user = await UserModel.findOne({ email: credentials.email });  
+          const client = await clientPromise;  
+          const db = client.db("education_app");  
+          const collection = db.collection('users');  
+          const user = collection.findOne({email: credentials.email})
 
           if (!user) {  
             throw new Error("No user found with this email");  
@@ -62,6 +66,7 @@ export const authOptions: NextAuthOptions = {
           }  
 
           return user.toObject() as User; // Convert Mongoose Document to plain object  
+          
         } catch (error) {  
           console.error("Authentication error:", error);  
           throw new Error("Authentication failed. Please try again.");  

@@ -67,8 +67,9 @@ export default function SignInForm() {
     if (result?.url) {  
       router.replace('/dashboard');  
     }  
-    setIsSubmitting(false);  
-  }  
+    setIsSubmitting(false);
+  }
+  
 
   return (
     <div className="space-y-6 ">
@@ -173,8 +174,6 @@ export default function SignInForm() {
         </div>
 
       </Card>
-
-
     </div>
   )
 }

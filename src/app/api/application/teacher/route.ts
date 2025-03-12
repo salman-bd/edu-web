@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";  
 import { studentApplicationSchema } from "@/schemas/applicationsSchema";  
 import { ObjectId } from "mongodb";
+import { sendTeacherApplicationAdminNotificationEmail, sendTeacherApplicationConfirmationEmail } from "@/lib/sendEmails";
 
 export async function POST(request: NextRequest) {  
   try {  
@@ -68,25 +69,42 @@ export async function POST(request: NextRequest) {
       submittedAt: new Date(),
       updatedAt: new Date(),
     }
-    const body = await request.json();  
-    const validatedData = studentApplicationSchema.parse(body);  
-    console.log('Validated Data: ', validatedData);  
+    // const body = await request.json();  
+    // const validatedData = studentApplicationSchema.parse(body);  
+    // console.log('Validated Data: ', validatedData);  
 
     // Connect to MongoDB  
     const client = await clientPromise;  
     const db = client.db("education_app");  
-    const collection = db.collection('student_applications');  
+    const collection = db.collection('teacher_applications');  
 
     // In a real application, you would check authentication here  
     // if (!isAuthenticated(request)) {  
     //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });  
     // }  
 
-    const newApplication = await collection.insertOne(validatedData);  
+    const newApplication = await collection.insertOne(applicationData);  
     const applicationId = newApplication.insertedId.toString();  
 
     // Log the new application details for debugging  
-    console.log('New Application ID: ', applicationId);  
+    console.log('New Application ID: ', applicationId); 
+    
+       // Send confirmation email
+       const fullName = `${firstName} ${lastName}`
+       await sendTeacherApplicationConfirmationEmail(
+        email, 
+        fullName, 
+        subjectSpecialization, 
+        applicationId
+      )
+   
+      // Send admin notification
+      await sendTeacherApplicationAdminNotificationEmail(
+        fullName,
+        email,
+        subjectSpecialization,
+        applicationId
+      )
 
     // Return a response including the new application ID  
     return NextResponse.json({  
@@ -94,7 +112,7 @@ export async function POST(request: NextRequest) {
       message: 'Application created successfully!',  
       application: {  
         id: applicationId, // Return the new document's ID as a string  
-        ...validatedData // Optionally include the original validated data  
+        ...applicationData // Optionally include the original validated data  
       },  
     }, { status: 201 });  
 
