@@ -3,8 +3,9 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
 import { motion } from "framer-motion"
+import Image from "next/image"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -12,31 +13,32 @@ import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, CheckCircle2 } from "lucide-react"
+import { Loader2, CheckCircle2, Upload } from "lucide-react"
 import toast, { Toaster } from "react-hot-toast"
-import { studentApplicationSchema } from "@/schemas/applicationsSchema"
-import axios from "axios"
+import { studentProfileSchema, type StudentProfileFormValues } from "@/schemas/studentProfileSchema"
 
-
-type FormValues = z.infer<typeof studentApplicationSchema>
-
-interface ApplicationFormProps {
+interface StudentProfileFormProps {
   onSubmitSuccess: () => void
 }
 
-export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormProps) {
+export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  const isAffiliated = searchParams.get("affiliated") ? true : false
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(studentApplicationSchema),
+  const form = useForm<StudentProfileFormValues>({
+    resolver: zodResolver(studentProfileSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
       email: "",
       phone: "",
       dateOfBirth: "",
+      gender: undefined,
+      institutionName: isAffiliated ? "Classic School And College" : "",
       address: "",
       city: "",
       state: "",
@@ -49,17 +51,29 @@ export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormP
     mode: "onChange",
   })
 
+  // Handle photo preview
+  const handlePhotoChange = (files: FileList | null) => {
+    if (files && files.length > 0) {
+      const file = files[0]
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setPhotoPreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const totalSteps = 3
 
   const nextStep = () => {
     const fieldsToValidate =
       currentStep === 1
-        ? ["firstName", "lastName", "email", "phone", "dateOfBirth", "gender"]
+        ? ["firstName", "lastName", "email", "phone", "dateOfBirth", "gender", "photo"]
         : currentStep === 2
-          ? ["institutionName", "address", "city", "programLevel", "programType"]
+          ? ["institutionName", "address", "city", "state", "zipCode", "programLevel", "programType"]
           : []
 
-    form.trigger(fieldsToValidate as Array<keyof FormValues>).then((isValid) => {
+    form.trigger(fieldsToValidate as Array<keyof StudentProfileFormValues>).then((isValid) => {
       if (isValid) setCurrentStep((prev) => Math.min(prev + 1, totalSteps))
     })
   }
@@ -68,31 +82,51 @@ export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormP
     setCurrentStep((prev) => Math.max(prev - 1, 1))
   }
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: StudentProfileFormValues) => {
     setIsSubmitting(true)
     setSubmitError(null)
 
     try {
-      console.log("Submitting application data:", data)
+      console.log("Submitting profile data:", data)
 
-      const response = await axios.post("/api/profile/student", data)
+      // Create FormData object to handle file upload
+      const formData = new FormData()
 
-      const responseData = response.data
+      // Append all text fields
+      Object.entries(data).forEach(([key, value]) => {
+        if (key !== "photo") {
+          formData.append(key, value as string)
+        }
+      })
 
-      if (!response.data.success) {
-        console.error("Server response error:", responseData)
-        throw new Error(responseData.message || "Failed to submit application")
+      // Append photo file
+      if (data.photo instanceof FileList && data.photo[0]) {
+        formData.append("photo", data.photo[0])
       }
 
-      console.log("Application submitted successfully:", responseData)
-      toast.success("Application submitted successfully! We'll review your application and contact you soon.", {
+      // Add affiliated status if present in URL
+      if (isAffiliated) {
+        formData.append("isAffiliated", "true")
+      }
+
+      const response = await fetch("/api/profile/student", {
+        method: "POST",
+        body: formData,
+      })
+
+      const responseData = await response.json()
+
+      if (!response.ok) {
+        throw new Error(responseData.message || "Failed to submit profile")
+      }
+
+      toast.success("Profile submitted successfully! Your information has been saved.", {
         duration: 4000,
       })
       onSubmitSuccess()
-      
     } catch (error) {
-      console.error("Error submitting application:", error)
-      let errorMessage = "There was a problem submitting your application. Please try again."
+      console.error("Error submitting profile:", error)
+      let errorMessage = "There was a problem submitting your profile. Please try again."
       if (error instanceof Error) {
         errorMessage = `Error: ${error.message}. Please try again.`
       }
@@ -106,22 +140,20 @@ export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormP
   }
 
   const programOptions = {
-    elementary: ["Elementary Education (K-5)"],
-    middle: [
-      "Middle School Program (6)",
-      "Middle School Program (7)",
-      "Middle School Program (8)",
+    elementary: [
+      "Elementary Education (K-1)",
+      "Elementary Education (K-2)",
+      "Elementary Education (K-3)",
+      "Elementary Education (K-4)",
+      "Elementary Education (K-5)",
     ],
+    middle: ["Middle School Program (6)", "Middle School Program (7)", "Middle School Program (8)"],
     high: [
       "High School (9-10) Science Group",
       "High School (9-10) Humanities Group",
       "High School (9-10) Business Studies Group",
     ],
-    college: [
-      "(11-12) Science Group", 
-      "(11-12) Humanities Group", 
-      "(11-12) Business Studies Group"
-    ],
+    college: ["(11-12) Science Group", "(11-12) Humanities Group", "(11-12) Business Studies Group"],
   }
 
   return (
@@ -132,11 +164,14 @@ export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormP
     >
       <Toaster position="top-center" />
       <Card className="border-indigo-600 border-t-4 shadow-lg">
+        <div className="bg-indigo-600">
+          <h1 className="text-3xl md:text-4xl text-center text-white font-semibold p-4">
+            {isAffiliated ? "CSC Student Profile" : "Student Profile Form"}
+          </h1>
+        </div>
         <CardHeader>
-          <CardTitle className="text-2xl text-indigo-600">Application Form</CardTitle>
-          <CardDescription>
-            Please complete all required fields. Your application will be reviewed by our admissions team.
-          </CardDescription>
+          <CardTitle className="text-2xl text-indigo-600">Student Profile Information</CardTitle>
+          <CardDescription>Please complete all required fields to set up your student profile.</CardDescription>
           <div className="flex justify-between items-center mt-4">
             {Array.from({ length: totalSteps }).map((_, index) => (
               <div
@@ -170,6 +205,68 @@ export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormP
                   className="space-y-4"
                 >
                   <h3 className="text-lg font-semibold text-indigo-600">Personal Information</h3>
+
+                  <FormField
+                    control={form.control}
+                    name="photo"
+                    render={({ field: { onChange, value, ...rest } }) => (
+                      <FormItem>
+                        <FormLabel className="text-indigo-600">Profile Photo</FormLabel>
+                        <FormControl>
+                          <div className="flex flex-col items-center justify-center w-full">
+                            {photoPreview ? (
+                              <div className="relative w-full h-48 mb-2">
+                                <Image
+                                  src={photoPreview || "/placeholder.svg"}
+                                  alt="Profile preview"
+                                  fill
+                                  className="object-contain rounded-lg"
+                                />
+                                <button
+                                  type="button"
+                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs"
+                                  onClick={() => {
+                                    setPhotoPreview(null)
+                                    onChange(null)
+                                  }}
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            ) : (
+                              <label
+                                htmlFor="photo-upload"
+                                className="flex flex-col items-center justify-center w-full h-40 border-2 border-indigo-200 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                              >
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                  <Upload className="w-8 h-8 mb-2 text-indigo-600" />
+                                  <p className="mb-2 text-sm text-gray-500">
+                                    <span className="font-semibold">Click to upload</span>
+                                  </p>
+                                  <p className="text-xs text-gray-500">JPG, PNG, WebP (MAX. 5MB)</p>
+                                </div>
+                              </label>
+                            )}
+                            <input
+                              id="photo-upload"
+                              type="file"
+                              accept="image/jpeg,image/jpg,image/png,image/webp"
+                              className="hidden"
+                              onChange={(e) => {
+                                if (e.target.files) {
+                                  onChange(e.target.files)
+                                  handlePhotoChange(e.target.files)
+                                }
+                              }}
+                              {...rest}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -206,54 +303,83 @@ export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormP
                       )}
                     />
                   </div>
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-indigo-600">Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="Enter your email"
-                            {...field}
-                            className="border-indigo-200 focus:border-indigo-600"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-700" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-indigo-600">Phone Number</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your phone number"
-                            {...field}
-                            className="border-indigo-200 focus:border-indigo-600"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-700" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="dateOfBirth"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-indigo-600">Date of Birth</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} className="border-indigo-200 focus:border-indigo-600" />
-                        </FormControl>
-                        <FormMessage className="text-red-700" />
-                      </FormItem>
-                    )}
-                  />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-indigo-600">Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="Enter your email"
+                              {...field}
+                              className="border-indigo-200 focus:border-indigo-600"
+                            />
+                          </FormControl>
+                          <FormMessage className="text-red-700" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-indigo-600">Phone Number</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter your phone number"
+                              {...field}
+                              className="border-indigo-200 focus:border-indigo-600"
+                            />
+                          </FormControl>
+                          <FormMessage className="text-red-700" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="dateOfBirth"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-indigo-600">Date of Birth</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} className="border-indigo-200 focus:border-indigo-600" />
+                          </FormControl>
+                          <FormMessage className="text-red-700" />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="gender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-indigo-600">Gender</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="border-indigo-200 focus:border-indigo-600">
+                                <SelectValue placeholder="Select your gender" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="male">Male</SelectItem>
+                              <SelectItem value="female">Female</SelectItem>
+                              <SelectItem value="other">Other</SelectItem>
+                              <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage className="text-red-700" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </motion.div>
               )}
 
@@ -265,7 +391,30 @@ export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormP
                   transition={{ duration: 0.3 }}
                   className="space-y-4"
                 >
-                  <h3 className="text-lg font-semibold text-indigo-600">Address & Program Selection</h3>
+                  <h3 className="text-lg font-semibold text-indigo-600">Institution & Program Selection</h3>
+                  <FormField
+                    control={form.control}
+                    name="institutionName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-indigo-600">Institution Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your school or institution name"
+                            {...field}
+                            disabled={isAffiliated}
+                            className={`border-indigo-200 focus:border-indigo-600 ${isAffiliated ? "bg-gray-100" : ""}`}
+                          />
+                        </FormControl>
+                        {isAffiliated && (
+                          <FormDescription>
+                            Institution name is pre-filled as you are affiliated with Classic School And College.
+                          </FormDescription>
+                        )}
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="address"
@@ -370,7 +519,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormP
                               <FormControl>
                                 <RadioGroupItem value="college" />
                               </FormControl>
-                              <FormLabel className="font-normal">College</FormLabel>
+                              <FormLabel className="font-normal">College (11-12)</FormLabel>
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
@@ -426,7 +575,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormP
                     name="previousSchool"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-indigo-600">Previous School</FormLabel>
+                        <FormLabel className="text-indigo-600">Previous School (Optional)</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Enter your previous school"
@@ -434,6 +583,9 @@ export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormP
                             className="border-indigo-200 focus:border-indigo-600"
                           />
                         </FormControl>
+                        <FormDescription>
+                          If you've transferred from another school, please provide its name.
+                        </FormDescription>
                         <FormMessage className="text-red-700" />
                       </FormItem>
                     )}
@@ -443,17 +595,16 @@ export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormP
                     name="personalStatement"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-indigo-600">Personal Statement</FormLabel>
+                        <FormLabel className="text-indigo-600">Personal Statement (Optional)</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Tell us why you want to join our institution and what you hope to achieve"
+                            placeholder="Tell us about your educational goals and interests"
                             className="min-h-[150px] border-indigo-200 focus:border-indigo-600"
                             {...field}
                           />
                         </FormControl>
                         <FormDescription>
-                          Please write a brief statement about your educational goals and why you are interested in our
-                          institution.
+                          Share your academic interests, goals, and any other information you'd like us to know.
                         </FormDescription>
                         <FormMessage className="text-red-700" />
                       </FormItem>
@@ -484,7 +635,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormP
               type="button"
               onClick={form.handleSubmit(onSubmit)}
               disabled={isSubmitting}
-              className="bg-red-800 hover:bg-red-700 text-white ml-auto"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white ml-auto"
             >
               {isSubmitting ? (
                 <>
@@ -492,7 +643,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormP
                   Submitting...
                 </>
               ) : (
-                "Submit Application"
+                "Submit Profile"
               )}
             </Button>
           )}
