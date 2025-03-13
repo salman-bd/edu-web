@@ -4,8 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";  
 import FacebookProvider from "next-auth/providers/facebook";  
 import { mongoDbConnect } from "@/lib/dbConnect";  
-import { compare } from "bcryptjs";  
-import UserModel from "@/models/User";  
+import { compare } from "bcryptjs";   
 import { User as NextAuthUser } from "next-auth";  
 import { sendWelcomeEmail } from "@/lib/sendEmails";
 import clientPromise from "@/lib/mongodb";
@@ -48,7 +47,7 @@ export const authOptions: NextAuthOptions = {
           const client = await clientPromise;  
           const db = client.db("education_app");  
           const collection = db.collection('users');  
-          const user = collection.findOne({email: credentials.email})
+          const user = await collection.findOne({email: credentials.email})
 
           if (!user) {  
             throw new Error("No user found with this email");  
@@ -65,7 +64,10 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Incorrect password");  
           }  
 
-          return user.toObject() as User; // Convert Mongoose Document to plain object  
+          console.log('User: ', user);
+          
+
+          return user as unknown as User; 
           
         } catch (error) {  
           console.error("Authentication error:", error);  
@@ -79,29 +81,26 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider && ["google", "github", "facebook"].includes(account.provider)) {  
         const email = profile?.email;  
         const name = profile?.name;  
-        if (!email) {  
+        if (!email || !name) {  
           return false;  
         }  
 
-        await mongoDbConnect();  
-        const existingUser = await UserModel.findOne({ email: email });  
+        const client = await clientPromise;  
+        const db = client.db("education_app");  
+        const collection = db.collection('users');  
+        const existingUser = await collection.findOne({email})
+
         if (!existingUser) {  
-          const expiryDate = new Date();  
-          expiryDate.setDate(expiryDate.getDate() + 29);  
-
-          const user = new UserModel({  
-            name,  
-            email,  
-            password: "verified",  
-            verifyCode: 1,  
-            verifyCodeExpiry: expiryDate,  
-            isVerified: true,  
-          });  
-
-          try {  
-            const newUser = await user.save();  
-            sendWelcomeEmail(newUser.email, newUser.name);
-            console.log("New user created by a social media provider: ", newUser);  
+           try {  
+            const newUser = await collection.insertOne({  
+              name,  
+              email,  
+              password: "verified",  
+              isVerified: true,  
+            });  
+            sendWelcomeEmail(email, name);
+            console.log("New user created by a social media provider: ", newUser); 
+             
           } catch (err) {  
             console.error("Error saving new user:", err);  
             return false; // Return false if user creation fails  
@@ -133,7 +132,7 @@ export const authOptions: NextAuthOptions = {
     signOut: "/",  
     error: "/auth/error",  
     verifyRequest: "/auth/verify",  
-    newUser: "/welcome",  
+    // newUser: "/welcome",  
   },  
   session: {  
     strategy: "jwt",  

@@ -49,17 +49,13 @@ export function ProfileHandler({ data }: UserProfileHandlerProps) {
   const closeProfileCompleteDialog = () => setIsProfileCompleteDialogOpen(false);
   const closeProfileDeleteDialog = () => setIsProfileDeleteDialogOpen(false);
 
-  const profileCompleteContinue = (type: string, isCSCAffiliated: string) => {
+  const profileCompleteContinue = (type: string, isCscAffiliated: string) => {
     setIsProfileCompleteDialogOpen(false)
-    if (type === "student" && isCSCAffiliated === "yes") {
-      router.push("/profile/csc-verification/student")
-    } else if (type === "teacher" && isCSCAffiliated === "yes") {
-      router.push("/profile/csc-verification/teacher")
-    } else if (type === "student" && isCSCAffiliated === "no") {
-      router.push(`/profile/student/profile-completion/`)
-    } else if (type === "teacher" && isCSCAffiliated === "no") {
-      router.push(`/profile/teacher/profile-completion/`)
-    }
+    if (isCscAffiliated === "yes") {
+      router.push(`/profile/${type}?isCscAffiliated=${true}`)
+    } else if (isCscAffiliated === "no") {
+      router.push(`/profile/${type}`)
+    } 
   }
 
   const handleProfileComplete = () => setIsProfileCompleteDialogOpen(true)

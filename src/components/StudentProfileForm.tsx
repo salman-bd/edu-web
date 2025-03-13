@@ -24,7 +24,7 @@ interface ApplicationFormProps {
   onSubmitSuccess: () => void
 }
 
-export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
+export default function StudentProfileForm({ onSubmitSuccess }: ApplicationFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -54,9 +54,9 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
   const nextStep = () => {
     const fieldsToValidate =
       currentStep === 1
-        ? ["firstName", "lastName", "email", "phone", "dateOfBirth"]
+        ? ["firstName", "lastName", "email", "phone", "dateOfBirth", "gender"]
         : currentStep === 2
-          ? ["address", "city", "state", "zipCode", "programLevel", "programType"]
+          ? ["institutionName", "address", "city", "programLevel", "programType"]
           : []
 
     form.trigger(fieldsToValidate as Array<keyof FormValues>).then((isValid) => {
@@ -75,9 +75,9 @@ export function ApplicationForm({ onSubmitSuccess }: ApplicationFormProps) {
     try {
       console.log("Submitting application data:", data)
 
-      const response = await axios.post("/api/application/student", data)
+      const response = await axios.post("/api/profile/student", data)
 
-      const responseData = response.data.application
+      const responseData = response.data
 
       if (!response.data.success) {
         console.error("Server response error:", responseData)

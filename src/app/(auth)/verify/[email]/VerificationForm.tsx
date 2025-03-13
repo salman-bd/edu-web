@@ -5,11 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Loader2 } from 'lucide-react'
-
-import { useToast } from '@/components/ui/use-toast';
 import { ApiResponse } from '@/types/ApiResponse';
 import axios, { AxiosError } from 'axios';
 import { useParams, useRouter } from 'next/navigation';
+import toast, {Toaster} from 'react-hot-toast';
 
 import * as z from 'zod';
 import { verifySchema } from '@/schemas/verifySchema';
@@ -24,9 +23,7 @@ export default function VerifyAccount() {
 
   const router = useRouter();
   const params = useParams<{ email: string }>();
-  const { toast } = useToast();
 
-  
   const handleChange = (element: HTMLInputElement, index: number) => {
     if (isNaN(Number(element.value))) return false
 
@@ -52,22 +49,19 @@ export default function VerifyAccount() {
         email: params.email,
         code: data.code,
       });
+      console.log('Verification page response; ', response);
+      
+      if (response.data.success) {
+        toast.success(response.data.message || 'Verifucation Successful!', {duration: 4000});
+      }
+      router.push('/signin');
 
-      toast({
-        title: 'Success',
-        description: response.data.message,
-      });
-
-      router.replace('/signin');
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      toast({
-        title: 'Verification Failed',
-        description:
-          axiosError.response?.data.message ??
-          'An error occurred. Please try again.',
-        variant: 'destructive',
+      toast.error(`Verification Failed: ${axiosError.response?.data.message}` || 'Verification Failed: An error occurred. Please try again.', {
+        duration: 4000
       });
+
     } finally {
       setIsVerifying(false)
     }
@@ -75,6 +69,7 @@ export default function VerifyAccount() {
 
   return (
     <Card className="w-full max-w-md mx-auto">
+    <Toaster position='top-center'/>
       <CardHeader>
         <CardTitle>Enter Verification Code</CardTitle>
         <CardDescription>

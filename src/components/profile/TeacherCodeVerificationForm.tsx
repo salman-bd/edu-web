@@ -8,8 +8,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
+import axios from "axios"
 
-export function TeacherCodeVerificationForm() {
+
+interface TeacherCodeVerificationProps {
+  cscVerified?: () => void
+}
+
+export function TeacherCodeVerificationForm({ cscVerified }: TeacherCodeVerificationProps) {
   const [code, setCode] = useState("")
   const [isVerifying, setIsVerifying] = useState(false)
   const [error, setError] = useState("")
@@ -18,19 +24,32 @@ export function TeacherCodeVerificationForm() {
   const handleVerifyCode = async () => {
     setIsVerifying(true)
     setError("")
-
-    if (code === "TCH-CSC002") {
-      const affiliated = "Classic School And College"
-      router.push(`/profile/teacher/profile-completion?affiliated=${encodeURIComponent(affiliated)}`)
-    } else {
-      setError("Incorrect teacher access code. Please try again.")
+    try {
+      const response = await axios.post(`/api/profile/csc-verification?type=teacher`, { code })
+      if (response.status === 200 && response.data.success) {
+        if (cscVerified) {
+          cscVerified()
+        }
+      } else {
+        // Use the error message from the server if available
+        setError(response.data.message || "Incorrect teacher access code. Please try again.")
+      }
+    } catch (err) {
+      // Handle network errors or other exceptions
+      console.error("Verification error:", err)
+      setError(
+        axios.isAxiosError(err) && err.response?.data?.message
+          ? err.response.data.message
+          : "Failed to verify code. Please try again."
+      )
+    } finally {
+      setIsVerifying(false)
     }
-    setIsVerifying(false)
   }
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-      <Card className="w-full max-w-md mx-auto">
+      <Card className="w-full max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-indigo-600">Verify Your Teacher Access Code</CardTitle>
           <CardDescription>

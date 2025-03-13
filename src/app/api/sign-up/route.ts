@@ -1,90 +1,69 @@
-import {mongoDbConnect} from "@/lib/dbConnect";
-import UserModel from "@/models/User";
-import bcryptjs from "bcryptjs";
-import { sendVerificationEmail } from "@/lib/sendEmails";
-import clientPromise from "@/lib/mongodb";
+import { NextRequest, NextResponse } from "next/server";  
+import bcryptjs from "bcryptjs";  
+import { sendVerificationEmail } from "@/lib/sendEmails";  
+import clientPromise from "@/lib/mongodb";  
 
-
-
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {  
     const client = await clientPromise;  
     const db = client.db("education_app");  
     const collection = db.collection('users');  
 
-    try {
-        const {name, email, password} = await request.json();
+    try {  
+        const { name, email, password } = await request.json();  
 
-        const existingUserByEmail = collection.findOne({email})
-        const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+        // Properly await the findOne operation  
+        const existingUserByEmail = await collection.findOne({ email });  
+        const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();  
 
-        if (existingUserByEmail) {
-            if (existingUserByEmail.isVerified) {
-                return Response.json(
-                    {
-                        success: false,
-                        message: "User already exist with this email"
-                    },
-                    {status: 500}
-                )
-            } else {
-                const hashedPassword = await bcryptjs.hash(password, 10);
-                existingUserByEmail.password = hashedPassword;
-                existingUserByEmail.verifyCode = verifyCode;
-                existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 360000);
-            }
-            await collection.updateOne({
-                
-            })
-            
-        } else {
-            const hashedPassword = await bcryptjs.hash(password, 10);
-            const expiryDate = new Date();
-            expiryDate.setHours(expiryDate.getHours() + 1);
+        if (existingUserByEmail) {  
+            // Check if the user is already verified  
+            if (existingUserByEmail.isVerified) {  
+                return NextResponse.json({ success: false, message: "User already exists with this email" }, { status: 400 });  
+            } else {  
+                const hashedPassword = await bcryptjs.hash(password, 10);  
+                const verifyCodeExpiry = new Date(Date.now() + 600000); // 10 minutes  
+                await collection.updateOne(  
+                    { email }, // Use a filter to update the specific user  
+                    {   
+                        $set: {  
+                            password: hashedPassword,  
+                            verifyCode,  
+                            verifyCodeExpiry,  
+                        },  
+                    }  
+                );  
+            }  
+        } else {  
+            const hashedPassword = await bcryptjs.hash(password, 10);  
+            const verifyCodeExpiry = new Date(Date.now() + 3600000); // 1 hour  
 
-            const newUser = new UserModel({
-                name,
-                email,
-                password: hashedPassword,
-                verifyCode,
-                verifyCodeExpiry: expiryDate,
-                isVerified: false,
-            })
-            console.log("New user: ", newUser);
+            await collection.insertOne({  
+                name,  
+                email,  
+                password: hashedPassword,  
+                verifyCode,  
+                verifyCodeExpiry,  
+                isVerified: false,  
+            });  
+            // console.log("New user: ", newUser);  
+        }  
 
-            await newUser.save();
-        }
+        const emailResponse = await sendVerificationEmail(email, name, verifyCode);  
 
-        const emailResponse = await sendVerificationEmail(email, name, verifyCode);
-
-        if (!emailResponse.success) {
-            return Response.json(
-                {
-                    success: false,
-                    message: emailResponse.message
-                },
-                {status: 500}
-            )
-        }
-        return Response.json(
-            {
-                success: true,
-                message: "User registered successfully. Please verify your email"
-            },
-            {status: 201}
-        )
-
-    } catch (error) {
-        console.error("Error registering user, ", error);
-        return Response.json(
-            {
-                success: false,
-                message: "Error registering user"
-            },
-            {
-                status: 500
-            }
-        )
+        if (!emailResponse.success) {  
+            return NextResponse.json({ success: false, message: emailResponse.message }, { status: 500 });  
+        }  
         
-    }
-}
+        return NextResponse.json({   
+            success: true,   
+            message: "User registered successfully. Please verify your email."   
+        }, { status: 201 });  
 
+    } catch (error) {  
+        console.error("Error registering user: ", error);  
+        return NextResponse.json({  
+            success: false,  
+            message: "Error registering user: " + (error instanceof Error ? error.message : 'Unknown error'), // Formatted correctly  
+        }, { status: 500 });  
+    }  
+}  

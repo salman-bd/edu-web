@@ -1,14 +1,16 @@
 import { Resend } from "resend"
-import VerificationEmail from "@/components/emails/VerificationEmail"
-import WelcomeEmail from "@/components/emails/WelcomeEmail"
-import ContactConfirmationEmail from "@/components/emails/ContactConfirmationEmail"
-import AdminContactNotificationEmail from "@/components/emails/AdminContactNotificationEmail"
+import VerificationEmail from "@/emails/VerificationEmail"
+import WelcomeEmail from "@/emails/WelcomeEmail"
+import ContactConfirmationEmail from "@/emails/ContactConfirmationEmail"
+import AdminContactNotificationEmail from "@/emails/AdminContactNotificationEmail"
 
-import StudentApplicationConfirmationEmail from "@/components/emails/StudentApplicationConfirmationEmail"
-import StudentApplicationAdminNotificationEmail from "@/components/emails/StudentApplicationAdminNotificationEmail"
-import TeacherApplicationConfirmationEmail from "@/components/emails/TeacherApplicationConfirmationEmail"
-import TeacherApplicationAdminNotificationEmail from "@/components/emails/TeacherApplicationAdminNotificationEmail"
+import StudentApplicationConfirmationEmail from "@/emails/StudentApplicationConfirmationEmail"
+import StudentApplicationAdminNotificationEmail from "@/emails/StudentApplicationAdminNotificationEmail"
+import TeacherApplicationConfirmationEmail from "@/emails/TeacherApplicationConfirmationEmail"
+import TeacherApplicationAdminNotificationEmail from "@/emails/TeacherApplicationAdminNotificationEmail"
 import { ApiResponse } from "@/types/ApiResponse"
+import TeacherProfileConfirmationEmail from "@/emails/TeacherProfileConfirmationEmail"
+import TeacherProfileAdminNotificationEmail from "@/emails/TeacherProfileAdminNotificationEmail"
 
 
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -196,3 +198,52 @@ export async function sendTeacherApplicationAdminNotificationEmail(
   }
 }
 
+// Teacher profile confirmation email
+export async function sendTeacherProfileConfirmationEmail(email: string, name: string, profileId: string) {
+  try {
+    const data = await resend.emails.send({
+      from: "Teacher Portal <portal@cscsylhet.com>",
+      to: email,
+      subject: "Teacher Profile Updated - Classic School And College",
+      react: TeacherProfileConfirmationEmail({
+        name,
+        email,
+        profileId,
+      }),
+    })
+    console.log("Teacher profile confirmation email sent:", data)
+    return { success: true, data }
+  } catch (error) {
+    console.error("Error sending teacher profile confirmation email:", error)
+    return { success: false, error }
+  }
+}
+
+// Teacher profile admin notification email
+export async function sendTeacherProfileAdminNotificationEmail(
+  teacherName: string,
+  teacherEmail: string,
+  subjectSpecialization: string,
+  profileId: string,
+  isNewProfile = false,
+) {
+  try {
+    const data = await resend.emails.send({
+      from: "Teacher Portal <portal@cscsylhet.com>",
+      to: adminEmail,
+      subject: isNewProfile ? `New Teacher Profile Created: ${teacherName}` : `Teacher Profile Updated: ${teacherName}`,
+      react: TeacherProfileAdminNotificationEmail({
+        teacherName,
+        teacherEmail,
+        subjectSpecialization,
+        profileId,
+        isNewProfile,
+      }),
+    })
+    console.log("Admin notification email sent:", data)
+    return { success: true, data }
+  } catch (error) {
+    console.error("Error sending admin notification email:", error)
+    return { success: false, error }
+  }
+}

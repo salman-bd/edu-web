@@ -11,18 +11,18 @@ import { motion } from "framer-motion"
 interface ProfileAlertDialogProps {
   isOpen: boolean
   onClose: () => void
-  onContinue: (type: string, isCSCAffiliated: string) => void
+  onContinue: (type: string, isCscAffiliated: string) => void
 }
 
 
 export function ProfileAlertDialog({ isOpen, onClose, onContinue }: ProfileAlertDialogProps) {
 
   const [type, setType] = useState<string>('')
-  const [isCSCAffiliated, setIsCSCAffiliated] = useState<string>('')
+  const [isCscAffiliated, setIsCscAffiliated] = useState<string>('')
 
   const handleContinue = () => {
-    if (type && isCSCAffiliated) {
-      onContinue(type, isCSCAffiliated);
+    if (type && isCscAffiliated) {
+      onContinue(type, isCscAffiliated);
     } else {
       alert('Please answer all questions before proceeding.')
     }
@@ -60,7 +60,7 @@ export function ProfileAlertDialog({ isOpen, onClose, onContinue }: ProfileAlert
             </div>
             <div>
               <Label className="text-base font-semibold text-gray-700">Are you a student or teacher of CSC?</Label>
-              <RadioGroup value={isCSCAffiliated} onValueChange={setIsCSCAffiliated} className="mt-2">
+              <RadioGroup value={isCscAffiliated} onValueChange={setIsCscAffiliated} className="mt-2">
                 <div className='flex flex-row gap-4'>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="csc-yes" className="text-indigo-600" />

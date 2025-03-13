@@ -2,6 +2,9 @@
 
 import Image from "next/image"
 import { motion } from "framer-motion"
+import { Button } from "../ui/button"
+import Link from "next/link"
+
 
 const teachers = [
   {
@@ -15,7 +18,7 @@ const teachers = [
 
 export default function TeachersList() {
   return (
-    <div className="bg-gray-50 py-24 sm:py-32">
+    <div className="bg-gray-50 py-12 md:py-16 space-y-4">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <motion.div
           className="mx-auto max-w-2xl lg:mx-0"
@@ -58,6 +61,11 @@ export default function TeachersList() {
             </motion.li>
           ))}
         </ul>
+      </div>
+      <div className="text-center">
+      <Link href={'/profile/teacher'}>
+        <Button className='bg-red-700 hover:bg-indigo-600 text-center m-auto m-t-4'>Create Teacher Profile</Button>
+      </Link>
       </div>
     </div>
   )

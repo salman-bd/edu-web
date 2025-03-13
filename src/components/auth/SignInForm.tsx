@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"  
 import Link from "next/link"  
 import { useState } from "react"  
-import { useToast } from "@/components/ui/use-toast"  
 import { useRouter } from "next/navigation"  
 import { signInSchema } from "@/schemas/signInSchema"  
 import { Input } from "@/components/ui/input"  
@@ -18,13 +17,13 @@ import { Icons } from "@/components/ui/icons"
 import Image from "next/image"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card } from "../ui/card"
+import toast, { Toaster } from "react-hot-toast"
 
 
 
 export default function SignInForm() {  
   const [isSubmitting, setIsSubmitting] = useState(false);  
-  const [showPassword, setShowPassword] = useState(false)
-  const { toast } = useToast();  
+  const [showPassword, setShowPassword] = useState(false) 
   const router = useRouter();
 
   
@@ -45,27 +44,20 @@ export default function SignInForm() {
       email: data.email,  
       password: data.password  
     });  
+
+    console.log('Sign in result: ', result);
+    
     
     if (result?.error) {  
       console.error("Error details: ", result.error);
       if (result?.error === 'CredentialsSignin') {  
-        toast({  
-          title: "Login Failed",  
-          description: "Incorrect username or password",  
-          variant: "destructive"  
-        });  
+        toast.success("Sign In Failed. Incorrect Username or Password", { duration: 4000});  
       } else {  
-        toast({  
-          title: "Error",  
-          description: result.error,  
-          variant: "destructive"  
-        });  
+        toast.error(result.error, { duration: 4000});  
       }  
     }   
-    console.log("Sign in result: ", result);
-    
     if (result?.url) {  
-      router.replace('/dashboard');  
+      router.replace(`/`);  
     }  
     setIsSubmitting(false);
   }
@@ -73,6 +65,7 @@ export default function SignInForm() {
 
   return (
     <div className="space-y-6 ">
+      <Toaster position="top-center" />
       <Card className="p-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">       
@@ -159,15 +152,15 @@ export default function SignInForm() {
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          <Button variant="outline" onClick={() => signIn("google", { callbackUrl: "/profile" })}>
+          <Button variant="outline" onClick={() => signIn("google", { callbackUrl: "/" })}>
             <Image src="/icons/icons8-google.svg" width={24} height={24} alt="Google Icon" />
             <span className="sr-only">Google</span>
           </Button>
-          <Button variant="outline" onClick={() => signIn("github", { callbackUrl: "/profile" })}>
+          <Button variant="outline" onClick={() => signIn("github", { callbackUrl: "/" })}>
             <Image src="/icons/icons8-github.svg" width={24} height={24} alt="GitHub Icon" />
             <span className="sr-only">GitHub</span>
           </Button>
-          <Button variant="outline" onClick={() => signIn("facebook", { callbackUrl: "/profile" })}>
+          <Button variant="outline" onClick={() => signIn("facebook", { callbackUrl: "/" })}>
             <Image src="/icons/icons8-facebook.svg" width={24} height={24} alt="Facebook Icon" />
             <span className="sr-only">Facebook</span>
           </Button>

@@ -69,9 +69,6 @@ export async function POST(request: NextRequest) {
       submittedAt: new Date(),
       updatedAt: new Date(),
     }
-    // const body = await request.json();  
-    // const validatedData = studentApplicationSchema.parse(body);  
-    // console.log('Validated Data: ', validatedData);  
 
     // Connect to MongoDB  
     const client = await clientPromise;  
