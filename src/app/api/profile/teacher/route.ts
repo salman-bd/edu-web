@@ -88,6 +88,7 @@ export async function POST(request: NextRequest) {
       ...validatedData,
       photoUrl,
       isAffiliated,
+      type: "teacher",
       createdAt: new Date(),
       updatedAt: new Date(),
     }

@@ -69,6 +69,7 @@ export async function POST(request: NextRequest) {
       ...validatedData,
       photoUrl,
       isAffiliated,
+      type: "student",
       fullName: `${validatedData.firstName} ${validatedData.lastName}`,
       createdAt: new Date(),
       updatedAt: new Date(),

@@ -95,7 +95,7 @@ export default function TeacherProfileForm({ onSubmitSuccess }: TeacherProfileFo
         formData.append("photo", data.photo[0])
       }
       if (isCscAffiliated) {
-        formData.append("isCscAffiliated", isCscAffiliated);
+        formData.append("isCscAffiliated", "true")
       }
      
 

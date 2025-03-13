@@ -4,6 +4,9 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 import { Button } from "../ui/button"
 import Link from "next/link"
+import { TeacherProfileAlertDialog } from "../profile/TeacherProfileAlertDialog"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 
 const teachers = [
@@ -17,6 +20,21 @@ const teachers = [
 ]
 
 export default function TeachersList() {
+  const router = useRouter()
+  const [isProfileCreateDialogOpen, setIsProfileCreateDialogOpen] = useState(false)
+
+  const closeProfileCreateDialogOpen = () => setIsProfileCreateDialogOpen(false);
+  const profileCreateHandler = () => setIsProfileCreateDialogOpen(true);
+  
+  const profileCreateContinue = (isCscAffiliated: string) => {
+    closeProfileCreateDialogOpen()
+    if (isCscAffiliated === "yes") {
+      router.push(`/profile/teacher?isCscAffiliated=${true}`)
+    } else if (isCscAffiliated === "no") {
+      router.push(`/profile/teacher`)
+    } 
+  }
+
   return (
     <div className="bg-gray-50 py-12 md:py-16 space-y-4">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -64,9 +82,10 @@ export default function TeachersList() {
       </div>
       <div className="text-center">
       <Link href={'/profile/teacher'}>
-        <Button className='bg-red-700 hover:bg-indigo-600 text-center m-auto m-t-4'>Create Teacher Profile</Button>
+        <Button onClick={profileCreateHandler} className='bg-indigo-600 hover:bg-indigo-700 text-center m-auto m-t-4'>Create Teacher Profile</Button>
       </Link>
       </div>
+      <TeacherProfileAlertDialog isOpen={isProfileCreateDialogOpen} onClose={closeProfileCreateDialogOpen} onContinue={profileCreateContinue} />
     </div>
   )
 }
