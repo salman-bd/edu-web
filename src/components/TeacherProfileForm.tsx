@@ -36,7 +36,7 @@ export default function TeacherProfileForm({ onSubmitSuccess }: TeacherProfileFo
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const searchParams = useSearchParams()
-  const isCscAffiliated = searchParams.get('isCscAffiliated')
+  const isCscAffiliated = searchParams.get("isCscAffiliated") ? true : false
   // console.log('Search Params: ', searchParams, isCscAffiliated);
   
 

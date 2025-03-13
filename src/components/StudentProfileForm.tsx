@@ -27,7 +27,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const searchParams = useSearchParams()
-  const isAffiliated = searchParams.get("affiliated") ? true : false
+  const isCscAffiliated = searchParams.get("isCscAffiliated") ? true : false
 
   const form = useForm<StudentProfileFormValues>({
     resolver: zodResolver(studentProfileSchema),
@@ -38,7 +38,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
       phone: "",
       dateOfBirth: "",
       gender: undefined,
-      institutionName: isAffiliated ? "Classic School And College" : "",
+      institutionName: isCscAffiliated ? "Classic School And College" : "",
       address: "",
       city: "",
       state: "",
@@ -105,8 +105,8 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
       }
 
       // Add affiliated status if present in URL
-      if (isAffiliated) {
-        formData.append("isAffiliated", "true")
+      if (isCscAffiliated) {
+        formData.append("isCscAffiliated", "true")
       }
 
       const response = await fetch("/api/profile/student", {
@@ -124,6 +124,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
         duration: 4000,
       })
       onSubmitSuccess()
+
     } catch (error) {
       console.error("Error submitting profile:", error)
       let errorMessage = "There was a problem submitting your profile. Please try again."
@@ -164,9 +165,9 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
     >
       <Toaster position="top-center" />
       <Card className="border-indigo-600 border-t-4 shadow-lg">
-        <div className="bg-indigo-600">
+        <div className="bg-indigo-600 rounded-tl-lg rounded-tr-lg">
           <h1 className="text-3xl md:text-4xl text-center text-white font-semibold p-4">
-            {isAffiliated ? "CSC Student Profile" : "Student Profile Form"}
+            {isCscAffiliated ? "CSC Student Profile" : "Student Profile Form"}
           </h1>
         </div>
         <CardHeader>
@@ -402,11 +403,11 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
                           <Input
                             placeholder="Enter your school or institution name"
                             {...field}
-                            disabled={isAffiliated}
-                            className={`border-indigo-200 focus:border-indigo-600 ${isAffiliated ? "bg-gray-100" : ""}`}
+                            disabled={isCscAffiliated}
+                            className={`border-indigo-200 focus:border-indigo-600 ${isCscAffiliated ? "bg-gray-100" : ""}`}
                           />
                         </FormControl>
-                        {isAffiliated && (
+                        {isCscAffiliated && (
                           <FormDescription>
                             Institution name is pre-filled as you are affiliated with Classic School And College.
                           </FormDescription>

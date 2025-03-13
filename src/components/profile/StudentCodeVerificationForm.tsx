@@ -8,8 +8,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
+import axios from "axios"
 
-export function StudentCodeVerificationForm() {
+
+interface StudentCodeVerificationProps {
+  cscVerified?: () => void
+}
+
+export function StudentCodeVerificationForm({ cscVerified }: StudentCodeVerificationProps) {
   const router = useRouter()
   const [code, setCode] = useState("")
   const [isVerifying, setIsVerifying] = useState(false)
@@ -18,13 +24,27 @@ export function StudentCodeVerificationForm() {
   const handleVerifyCode = async () => {
     setIsVerifying(true)
     setError("")
-    if (code === "STU-CSC003") {
-      const affiliated = "Classic School And College"
-      router.push(`/profile/student/profile-completion?affiliated=${encodeURIComponent(affiliated)}`)
-    } else {
-      setError("Incorrect student access code. Please try again.")
+    try {
+      const response = await axios.post(`/api/profile/csc-verification?type=student`, { code })
+      if (response.status === 200 && response.data.success) {
+        if (cscVerified) {
+          cscVerified()
+        }
+      } else {
+        // Use the error message from the server if available
+        setError(response.data.message || "Incorrect teacher access code. Please try again.")
+      }
+    } catch (err) {
+      // Handle network errors or other exceptions
+      console.error("Verification error:", err)
+      setError(
+        axios.isAxiosError(err) && err.response?.data?.message
+          ? err.response.data.message
+          : "Failed to verify code. Please try again."
+      )
+    } finally {
+      setIsVerifying(false)
     }
-    setIsVerifying(false)
   }
 
   return (

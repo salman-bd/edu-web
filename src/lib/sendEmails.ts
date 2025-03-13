@@ -11,6 +11,8 @@ import TeacherApplicationAdminNotificationEmail from "@/emails/TeacherApplicatio
 import { ApiResponse } from "@/types/ApiResponse"
 import TeacherProfileConfirmationEmail from "@/emails/TeacherProfileConfirmationEmail"
 import TeacherProfileAdminNotificationEmail from "@/emails/TeacherProfileAdminNotificationEmail"
+import StudentProfileConfirmationEmail from "@/emails/StudentProfileConfirmationEmail"
+import StudentProfileAdminNotificationEmail from "@/emails/StudentProfileAdminNotificationEmail"
 
 
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -197,6 +199,57 @@ export async function sendTeacherApplicationAdminNotificationEmail(
     return { success: false, error }
   }
 }
+
+// Student profile confirmation email
+export async function sendStudentProfileConfirmationEmail(email: string, name: string, profileId: string) {
+  try {
+    const data = await resend.emails.send({
+      from: "Student Portal <portal@cscsylhet.com>",
+      to: email,
+      subject: "Student Profile Updated - Classic School And College",
+      react: StudentProfileConfirmationEmail({
+        name,
+        email,
+        profileId,
+      }),
+    })
+    console.log("Student profile confirmation email sent:", data)
+    return { success: true, data }
+  } catch (error) {
+    console.error("Error sending student profile confirmation email:", error)
+    return { success: false, error }
+  }
+}
+
+// Student profile admin notification email
+export async function sendStudentProfileAdminNotificationEmail(
+  studentName: string,
+  studentEmail: string,
+  programType: string,
+  profileId: string,
+  isNewProfile = false,
+) {
+  try {
+    const data = await resend.emails.send({
+      from: "Student Portal <portal@cscsylhet.com>",
+      to: adminEmail,
+      subject: isNewProfile ? `New Student Profile Created: ${studentName}` : `Student Profile Updated: ${studentName}`,
+      react: StudentProfileAdminNotificationEmail({
+        studentName,
+        studentEmail,
+        programType,
+        profileId,
+        isNewProfile,
+      }),
+    })
+    console.log("Admin notification email sent:", data)
+    return { success: true, data }
+  } catch (error) {
+    console.error("Error sending admin notification email:", error)
+    return { success: false, error }
+  }
+}
+
 
 // Teacher profile confirmation email
 export async function sendTeacherProfileConfirmationEmail(email: string, name: string, profileId: string) {

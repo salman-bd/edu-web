@@ -24,6 +24,9 @@ export default async function ProfileDataFetch() {
               <p className="text-gray-600">
                 If you&apos;re a student of CSC, please enter your student identification number to access your profile.
               </p>
+              <p className="text-gray-600">
+                If you haven&apos;t completed your profile, go for completing the profile clicking the below button.
+              </p>
             </div>
             <ProfileHandler data={null} />
           </CardContent>

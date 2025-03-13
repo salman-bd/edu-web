@@ -1,30 +1,7 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
-import { mongoDbConnect } from './dbConnect';
-import ProfileModel from '@/models/ProfileModel';
+import clientPromise from './mongodb';
 
-export interface ProfileInfoData {
-  id: string;
-  avatar: string;
-  name: string;
-  designation: string;
-  isAffiliated: boolean;
-  email: string;
-  contactNo: string;
-  birthDate: string;
-  profileType: string;
-  institutionName: string;
-  gender: string;
-  grade: string;
-  school: string;
-  sscPassingYear: string;
-  college: string;
-  hscPassingYear: string;
-  university: string;
-  graduationYear: string;
-  career: string;
-  achievements: string[];
-}
 
 async function getSession() {
   try {
@@ -35,41 +12,24 @@ async function getSession() {
   }
 }
 
-export async function getProfileInfo(): Promise<ProfileInfoData | null> {  
+export async function getProfileInfo() {  
   try {  
     const session = await getSession();  
     if (!session?.user?.email) return null;  
 
     const email = session.user.email;  
-    await mongoDbConnect();  
-    const profile = await ProfileModel.findOne({ email });  
+    
+    const client = await clientPromise
+    const db = client.db("education_app")
+    const collection = db.collection("profiles")
+
+    const profile = await collection.findOne({ email });  
+    console.log('Profile data: ', profile);
+    
 
     if (!profile) return null;  
-
-    const profileInfo: ProfileInfoData = {  
-      id: profile._id.toString(), // Now correctly inferred  
-      avatar: profile.avatar,  
-      name: profile.name,  
-      designation: profile.designation,  
-      isAffiliated: profile.isAffiliated,  
-      email: profile.email,  
-      contactNo: profile.contactNo,  
-      birthDate: profile.birthDate.toISOString(),  
-      gender: profile.gender,  
-      profileType: profile.profileType,  
-      institutionName: profile.institutionName,  
-      grade: profile.grade || 'not added',  
-      school: profile.school || 'not added',  
-      sscPassingYear: profile.sscPassingYear || 'not added',  
-      college: profile.college || 'not added',  
-      hscPassingYear: profile.hscPassingYear || 'not added',  
-      university: profile.university || 'not added',  
-      graduationYear: profile.graduationYear || 'not added',  
-      career: profile.career || '',  
-      achievements: Array.isArray(profile.achievements) ? profile.achievements : [],  
-    };  
-
-    return profileInfo;  
+ 
+    return profile;  
 
   } catch (error) {  
     console.error("Error fetching personal info:", (error as Error).message);  

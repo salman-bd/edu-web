@@ -6,19 +6,14 @@ export default function StudentProfileLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-indigo-700 text-white py-4">
-        <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gray-50 ">
+      <header className="bg-indigo-700 text-white py-4 mx-auto">
+        <div className="container flex flex-col items-center justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
           <h1 className="text-2xl font-bold">Student Portal</h1>
           <p className="text-indigo-100">Manage your student profile</p>
         </div>
       </header>
       <main>{children}</main>
-      <footer className="bg-gray-100 py-6 mt-12">
-        <div className="container mx-auto px-4 text-center text-gray-600">
-          <p>© {new Date().getFullYear()} Education Platform. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   )
 }

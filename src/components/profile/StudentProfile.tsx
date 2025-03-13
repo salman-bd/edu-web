@@ -1,144 +1,241 @@
-'use client'
+"use client"
 
+import type React from "react"
+
+import { useState } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
-import { MailIcon, ContactIcon, SchoolIcon, VerifiedIcon, CircleAlert, CalendarClock, User } from "lucide-react"
-
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Mail,
+  Phone,
+  School,
+  CheckCircle,
+  Calendar,
+  User,
+  BookOpen,
+  MapPin,
+  GraduationCap,
+  FileText,
+} from "lucide-react"
 
 interface ProfileData {
-  data: {
-    isAffiliated: boolean;
-    birthDate: string | number | Date;
-    avatar: string;
-    name: string;
-    profileType: string;
-    institutionName: string;
-    grade: string;
-    email: string;
-    contactNo: string;
-    // Add other fields as necessary
-  };
+  isAffiliated: boolean
+  birthDate: string | number | Date
+  avatar: string
+  name: string
+  profileType: string
+  institutionName: string
+  grade: string
+  email: string
+  contactNo: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  previousSchool?: string
+  personalStatement?: string
+  achievements?: string[]
 }
 
-export function StudentProfile(profileData: ProfileData) {
-  // const [showDetails, setShowDetails] = useState(false);
+export function StudentProfile({ data }: { data: ProfileData }) {
+  const [activeTab, setActiveTab] = useState("basic")
+  const isVerified = data.isAffiliated
 
-  const data = profileData.data;
-  const Verified = data.isAffiliated;
+  function calculateAge(birthDateString: string | number | Date) {
+    const birthDate = new Date(birthDateString)
+    const today = new Date()
 
-  function calculateAge(birthDateString: string | number | Date) {  
-    const birthDate = new Date(birthDateString);  
-    const today = new Date();  
-    
-    let years = today.getFullYear() - birthDate.getFullYear();  
-    let months = today.getMonth() - birthDate.getMonth();  
-    let days = today.getDate() - birthDate.getDate();  
+    let years = today.getFullYear() - birthDate.getFullYear()
+    let months = today.getMonth() - birthDate.getMonth()
+    let days = today.getDate() - birthDate.getDate()
 
-    // Adjust for negative days  
-    if (days < 0) {  
-        months--;  
-        days += new Date(today.getFullYear(), today.getMonth(), 0).getDate(); // Last day of previous month  
-    }  
-    // Adjust for negative months  
-    if (months < 0) {  
-        years--;  
-        months += 12;  
-    }  
-    return `${years} Years ${months} Months ${days} Days`;  
-  }  
-  const birthDate = data.birthDate; 
-  const age = calculateAge(birthDate);
+    // Adjust for negative days
+    if (days < 0) {
+      months--
+      days += new Date(today.getFullYear(), today.getMonth(), 0).getDate()
+    }
+    // Adjust for negative months
+    if (months < 0) {
+      years--
+      months += 12
+    }
+    return `${years} Years ${months} Months ${days} Days`
+  }
 
-  // const toggleShowDetalis = () => {
-  //   setShowDetails(!showDetails);
-  // }
-
+  const age = calculateAge(data.birthDate)
+  const hasAddress = data.address && data.city && data.state && data.zipCode
+  const fullAddress = hasAddress ? `${data.address}, ${data.city}, ${data.state} ${data.zipCode}` : null
 
   return (
-    <Card className="md:w-1/2  mx-auto">
-      <CardHeader className='flex flex-col justify-center items-center'>
-        
-        { Verified ? (  
-          <div className='flex flex-row gap-2 items-center text-center lg:text-2xl'>  
-            <h2>Verified</h2>   
-            <VerifiedIcon className='text-blue-600' />  
-          </div>  
-        ) : (  
-          <div className='flex flex-row gap-2 items-center text-center lg:text-2xl'>  
-            <h2>Not Verified</h2>   
-            <CircleAlert className='text-red-600' />  
-          </div>  
-        )}
-
-        <Avatar className="w-32 h-32 mx-auto mb-4">
-          <AvatarImage src={data.avatar} alt={data.name} />
-          <AvatarFallback className="bg-violet-600 text-white text-4xl">{data?.name.charAt(0)}</AvatarFallback>
-        </Avatar>
-        <h1 className="text-2xl font-bold">{data.name}</h1>
-        <h4 className='text-white p-4 py-2 bg-blue-700 rounded-full'>{data.profileType} </h4>
-        
-
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col">
-          <div className='text-gray-800'>
-            <div className='flex flex-row gap-2'>
-              <SchoolIcon /><p className="0 mb-4">{data.institutionName}</p>
-            </div>
-            <div className='flex flex-row gap-2'>
-              <User /><p className="0 mb-4"> <strong>Class: </strong>{data.grade}</p>
-            </div>
-            <div className='flex flex-row gap-2'>
-              <MailIcon /> <p className="mb-4">{data.email}</p>
-            </div>
-            <div className='flex flex-row gap-2'>
-              <ContactIcon /> <p className=" mb-4">{data.contactNo}</p>
-            </div>
-            <div className='flex flex-row gap-2'>
-              <CalendarClock />
-              <p className=" mb-4"><strong className='text-gray-950'>Age: </strong>{age}</p>
-            </div>
-            <hr />
-            <br />
+    <Card className="max-w-3xl mx-auto shadow-lg border-blue-100">
+      <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 rounded-t-lg">
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          <div className="relative">
+            <Avatar className="w-28 h-28 border-4 border-white">
+              <AvatarImage src={data.avatar} alt={data.name} />
+              <AvatarFallback className="bg-blue-300 text-blue-800 text-4xl">{data.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            {isVerified && (
+              <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              </div>
+            )}
           </div>
-          
-          {/* {showDetails && (
-            <div className=' flex flex-col'>
-              <div className='flex flex-row gap-2'>
-              <GraduationCap />
-                <p className="0 mb-4"><strong className='text-gray-950'>Graduated From: </strong>{data.university}</p>
-              </div>
-              <div className='flex flex-row gap-2'>
-                <Calendar /> <p className="mb-4"> <strong className='text-gray-950'>Graduation Year: </strong>{data.graduationYear}</p>
-              </div>
-              <div className='flex flex-row gap-2'>
-                <School2 /> <p className="mb-4"> <strong className='text-gray-950'>College: </strong>{data.college}</p>
-              </div>
-              <div className='flex flex-row gap-2'>
-                <Calendar /> <p className="mb-4"><strong className='text-gray-950'>Passing Year: </strong>{data.hscPassingYear}</p>
-              </div>
-              <div className='flex flex-row gap-2'>
-                <School2 /> <p className="mb-4"><strong className='text-gray-950'>High School: </strong>{data.school}</p>
-              </div>
-              <div className='flex flex-row gap-2'>
-                <Calendar /> <p className="mb-4"><strong className='text-gray-950'>Graduation Year: </strong>{data.sscPassingYear}</p>
-              </div>
-              <div className='flex flex-row gap-2'>
-                <Medal /> <p className="mb-4"><strong className='text-gray-950'>Achievements: </strong>{data.achievements || ['Not included']}</p>
+
+          <div className="text-center md:text-left flex-1">
+            <div className="flex flex-col md:flex-row md:items-center gap-2 mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold">{data.name}</h1>
+              {isVerified ? (
+                <Badge className="bg-green-500 hover:bg-green-600 self-center">Verified</Badge>
+              ) : (
+                <Badge className="bg-amber-500 hover:bg-amber-600 self-center">Pending Verification</Badge>
+              )}
+            </div>
+            <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+              <Badge className="bg-blue-700 hover:bg-blue-800">{data.profileType}</Badge>
+              <Badge variant="outline" className="bg-blue-600/20 text-white border-blue-400">
+                {data.grade}
+              </Badge>
+            </div>
+            <div className="flex flex-col md:flex-row gap-4 mt-2">
+              <div className="flex items-center gap-1">
+                <School className="h-4 w-4" />
+                <span className="text-sm">{data.institutionName}</span>
               </div>
             </div>
-
-          )}
-          {showDetails ? (
-            <Button onClick={toggleShowDetalis} className='bg-blue-700'>View Short</Button>
-          ) : (
-            <Button onClick={toggleShowDetalis} className='bg-blue-700'>View Full</Button>
-          )}
-         */}
+          </div>
         </div>
-      </CardContent> 
+      </CardHeader>
+
+      <Tabs defaultValue="basic" className="w-full" onValueChange={setActiveTab}>
+        <div className="px-6 pt-4">
+          <TabsList className="grid grid-cols-3 w-full bg-blue-50">
+            <TabsTrigger
+              value="basic"
+              className={activeTab === "basic" ? "data-[state=active]:bg-blue-600 data-[state=active]:text-white" : ""}
+            >
+              Basic Info
+            </TabsTrigger>
+            <TabsTrigger
+              value="education"
+              className={
+                activeTab === "education" ? "data-[state=active]:bg-blue-600 data-[state=active]:text-white" : ""
+              }
+            >
+              Education
+            </TabsTrigger>
+            <TabsTrigger
+              value="statement"
+              className={
+                activeTab === "statement" ? "data-[state=active]:bg-blue-600 data-[state=active]:text-white" : ""
+              }
+            >
+              Statement
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <CardContent className="pt-6">
+          <TabsContent value="basic" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InfoItem icon={<Mail className="h-5 w-5 text-blue-600" />} label="Email" value={data.email} />
+              <InfoItem
+                icon={<Phone className="h-5 w-5 text-blue-600" />}
+                label="Contact Number"
+                value={data.contactNo}
+              />
+              <InfoItem icon={<Calendar className="h-5 w-5 text-blue-600" />} label="Age" value={age} />
+              <InfoItem
+                icon={<User className="h-5 w-5 text-blue-600" />}
+                label="Profile Type"
+                value={data.profileType}
+              />
+              {fullAddress && (
+                <InfoItem
+                  icon={<MapPin className="h-5 w-5 text-blue-600" />}
+                  label="Address"
+                  value={fullAddress}
+                  className="md:col-span-2"
+                />
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="education" className="space-y-4">
+            <div className="space-y-6">
+              <div className="border-l-4 border-blue-600 pl-4 py-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <School className="h-5 w-5 text-blue-600" />
+                  <h3 className="font-semibold text-lg">Current Institution</h3>
+                </div>
+                <p className="text-gray-700">{data.institutionName}</p>
+                <p className="text-gray-500 text-sm">Grade/Class: {data.grade}</p>
+              </div>
+
+              {data.previousSchool && (
+                <div className="border-l-4 border-blue-400 pl-4 py-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <GraduationCap className="h-5 w-5 text-blue-600" />
+                    <h3 className="font-semibold text-lg">Previous School</h3>
+                  </div>
+                  <p className="text-gray-700">{data.previousSchool}</p>
+                </div>
+              )}
+
+              {data.achievements && data.achievements.length > 0 && (
+                <div className="border-l-4 border-blue-300 pl-4 py-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <BookOpen className="h-5 w-5 text-blue-600" />
+                    <h3 className="font-semibold text-lg">Academic Achievements</h3>
+                  </div>
+                  <ul className="list-disc list-inside text-gray-700 space-y-1">
+                    {data.achievements.map((achievement, index) => (
+                      <li key={index}>{achievement}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="statement" className="space-y-4">
+            {data.personalStatement ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <FileText className="h-5 w-5 text-blue-600" />
+                  <h3 className="font-semibold text-lg">Personal Statement</h3>
+                </div>
+                <div className="p-4 bg-blue-50 rounded-lg text-gray-700 leading-relaxed">{data.personalStatement}</div>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <FileText className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                <p>No personal statement provided.</p>
+              </div>
+            )}
+          </TabsContent>
+        </CardContent>
+      </Tabs>
     </Card>
+  )
+}
+
+function InfoItem({
+  icon,
+  label,
+  value,
+  className = "",
+}: { icon: React.ReactNode; label: string; value: string; className?: string }) {
+  return (
+    <div className={`flex items-start gap-3 ${className}`}>
+      <div className="mt-0.5">{icon}</div>
+      <div>
+        <p className="text-sm text-gray-500 font-medium">{label}</p>
+        <p className="text-gray-800">{value}</p>
+      </div>
+    </div>
   )
 }
 
