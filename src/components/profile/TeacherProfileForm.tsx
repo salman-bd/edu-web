@@ -1,616 +1,512 @@
-'use client';  
+"use client"
 
-import { useState } from 'react';  
-import { useRouter } from 'next/navigation';  
-import { useToast } from '@/components/ui/use-toast';  
-import * as z from "zod";  
-import { zodResolver } from "@hookform/resolvers/zod";  
-import { useForm } from "react-hook-form";  
-import { ApiResponse } from '@/types/ApiResponse';  
-import { teacherProfileSchema } from '@/schemas/teacherProfileSchema';  
-import { Button } from "@/components/ui/button";  
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";  
-import { AvatarUpload } from '@/components/ui/Avatar-upload';  
-// import { AchievementInput } from '@/components/ui/achievement-input';  
-import axios, { AxiosError } from 'axios';  
-import {Loader2 } from 'lucide-react';  
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import DatePicker from 'react-datepicker';  
-import 'react-datepicker/dist/react-datepicker.css';
-import { Textarea } from '../ui/textarea';
+import type React from "react"
 
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { motion } from "framer-motion"
+import Image from "next/image"
+import { Loader2, Upload } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { teacherProfileSchema, type TeacherProfileFormValues } from "@/schemas/teacherProfileSchema"
+import { useSearchParams } from "next/navigation"
+import toast, { Toaster } from "react-hot-toast"
 
-interface TeacherProfileFormProps {  
-  data: {
-    profileType: string;
-    birthDate: string;
-    gender: string;
-    graduationYear: string;
-    university: string;
-    hscPassingYear: string;
-    college: string;
-    sscPassingYear: string;
-    school: string;
-    contactNo: string;
-    email: string;
-    designation: string;
-    institutionName: string;
-    name: string;
-    avatar: string;
-    isAffiliated: boolean;  
-    career:string;
-  };  
-}  
+// Teaching levels data
+const TEACHING_LEVELS = [
+  { id: "elementary", label: "Elementary School (K-5)" },
+  { id: "middle", label: "Middle School (6-8)" },
+  { id: "high", label: "High School (9-12)" },
+  { id: "college", label: "College" },
+]
 
-export default function TeacherProfileForm({ data }: TeacherProfileFormProps) {  
-  const router = useRouter();  
-  const { toast } = useToast();  
-  const [isSubmitting, setIsSubmitting] = useState(false);  
+interface TeacherProfileFormProps {
+  onSubmitSuccess?: () => void
+}
 
-  const { searchParams } = new URL(window.location.href);  
-  const csc = searchParams.get('affiliated');  
-  const profileType = 'teacher';  
-  const isAffiliated = csc? true : data?.isAffiliated || false;  
-
-  // console.log("CSC, data.isAffiliated, isAffiliated: ", csc, data?.isAffiliated, isAffiliated);
+export default function TeacherProfileForm({ onSubmitSuccess }: TeacherProfileFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  const isCscAffiliated = searchParams.get("isCscAffiliated") ? true : false
+  // console.log('Search Params: ', searchParams, isCscAffiliated);
   
-  const form = useForm<z.infer<typeof teacherProfileSchema>>({  
-    resolver: zodResolver(teacherProfileSchema),  
-    defaultValues: {  
-      avatar: data?.avatar || undefined,  
-      name: data?.name || '',  
-      institutionName: data?.institutionName || csc || '',  
-      designation: data?.designation || '',  
-      email: data?.email || '',  
-      contactNo: data?.contactNo || '',  
-      school: data?.school || '',  
-      sscPassingYear: data?.sscPassingYear || '',  
-      college: data?.college || '',  
-      hscPassingYear: data?.hscPassingYear || '',  
-      university: data?.university || '',  
-      graduationYear: data?.graduationYear || '',  
-      gender: data?.gender || '',  
-      birthDate: data?.birthDate ? new Date(data.birthDate) : null,  
-      isAffiliated: isAffiliated,  
-      profileType: data?.profileType || profileType,  
-      career: data?.career || ''
-      // achievements: data?.achievements || []  
-    },  
-  });  
 
-  async function onSubmit(data: z.infer<typeof teacherProfileSchema>) {  
-    setIsSubmitting(true);  
-    try {  
-      const formData = new FormData();  
-      for (const [key, value] of Object.entries(data)) {  
-        if (key === 'birthDate' && value instanceof Date) {  
-          formData.append(key, value.toISOString());  
-        } else if (value !== null && value !== undefined) {  
-          formData.append(key, value as string | Blob);  
-        }  
-      }  
+  const form = useForm<TeacherProfileFormValues>({
+    resolver: zodResolver(teacherProfileSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      dateOfBirth: "",
+      address: "",
+      highestDegree: "",
+      university: "",
+      yearsOfExperience: "",
+      subjectSpecialization: "",
+      teachingLevel: [],
+      coverLetter: "",
+    },
+    mode: "onChange",
+  })
 
-      const response = await axios.post<ApiResponse>(`/api/profile`, formData);  
-      toast({  
-        title: 'Success',  
-        description: response.data.message,  
-      });  
-      router.replace('/profile');
-    } catch (error) {  
-      const axiosError = error as AxiosError<ApiResponse>;  
-      const errorMessage = axiosError.response?.data.message || "An unexpected error occurred. Please try again.";  
+  // Handle photo preview
+  const handlePhotoChange = (files: FileList | null) => {
+    if (files && files.length > 0) {
+      const file = files[0]
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setPhotoPreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
-      toast({  
-        title: "Profile completion failed",  
-        description: errorMessage,  
-        variant: "destructive",  
-      });  
-    } finally {  
-      setIsSubmitting(false);  
-    }  
-  }  
+  // Form submission handler
+  const onSubmit = async (data: TeacherProfileFormValues) => {
+    setIsSubmitting(true)
+    setSubmitError(null)
 
+    try {
+      // Create FormData object to handle file upload
+      const formData = new FormData()
+
+      // Append all text fields
+      Object.entries(data).forEach(([key, value]) => {
+        if (key !== "photo" && key !== "teachingLevel") {
+          formData.append(key, value as string)
+        }
+      })
+
+      // Handle teaching levels array
+      formData.append("teachingLevel", JSON.stringify(data.teachingLevel))
+
+      // Append photo file
+      if (data.photo instanceof FileList && data.photo[0]) {
+        formData.append("photo", data.photo[0])
+      }
+      if (isCscAffiliated) {
+        formData.append("isCscAffiliated", "true")
+      }
+     
+
+      const response = await fetch("/api/profile/teacher", {
+        method: "POST",
+        body: formData
+      })
+
+      const responseData = await response.json()
+
+      if (!response.ok) {
+        throw new Error(responseData.message || "Failed to submit profile")
+      }
+
+      toast.success("Your teacher profile has been successfully updated.", { duration: 4000})
+
+      if (onSubmitSuccess) {
+        onSubmitSuccess()
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error)
+      const errorMessage =
+        error instanceof Error
+          ? `Error: ${error.message}`
+          : "There was a problem updating your profile. Please try again."
+
+      setSubmitError(errorMessage)
+      toast(errorMessage, { duration: 4000})
+
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
-    <div className='flex justify-center items-center bg-gray-100 lg:w-1/2 py-8 max-w-7xl mx-auto '>
-      <div className='w-full p-6 space-y-8 bg-white rounded-lg shadow-md '>
-
-        <div className='flex flex-col items-center gap-2'>
-          <h1 className='font-bold text-3xl'>Create Your Profile</h1>
-          <p>Enter your necessary information to set up your profile.</p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+    >
+      <Toaster />
+      <Card className="border-red-700 border-t-4 shadow-lg">
+        <div className="bg-indigo-600 rounded-tl-lg rounded-tr-lg">
+          <h1 className="text-3xl md:text-4xl text-center text-white font-semibold p-4">
+            Complete Your Teacher Profile
+          </h1>
         </div>
-        <hr />
+        <CardHeader>
+          <CardTitle className="text-2xl text-indigo-600">Teacher Profile Information</CardTitle>
+          <CardDescription>Please complete all required fields to set up your teacher profile.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {submitError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md">{submitError}</div>
+          )}
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="avatar"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Profile Picture</FormLabel>
-                    <FormControl>
-                      <AvatarUpload
-                        onChange={(file) => field.onChange(file)}
-                        value={field.value as File | null}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Choose a profile picture. Max size: 5MB. Supported formats: JPG, PNG, WebP.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Enter your full name as it appears on official documents.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="institutionName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Inatitution Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder='' {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Enter your institution name as it appears on official documents.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="designation"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Designation</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Personal Information Section */}
+              <ProfileSection title="Personal Information">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-indigo-600">First Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your first name"
+                            {...field}
+                            className="border-indigo-200 focus:border-indigo-600"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-indigo-600">Last Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your last name"
+                            {...field}
+                            className="border-indigo-200 focus:border-indigo-600"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-indigo-600">Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="Enter your email"
+                            {...field}
+                            className="border-indigo-200 focus:border-indigo-600"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-indigo-600">Phone Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your phone number"
+                            {...field}
+                            className="border-indigo-200 focus:border-indigo-600"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="dateOfBirth"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-indigo-600">Date of Birth</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} className="border-indigo-200 focus:border-indigo-600" />
+                        </FormControl>
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-indigo-600">Address</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your address"
+                            {...field}
+                            className="border-indigo-200 focus:border-indigo-600"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </ProfileSection>
+
+              {/* Educational Background Section */}
+              <ProfileSection title="Educational Background">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="highestDegree"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-indigo-600">Highest Degree</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="border-indigo-200 focus:border-indigo-600">
+                              <SelectValue placeholder="Select your highest degree" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="bachelor">Bachelor&apos;s Degree</SelectItem>
+                            <SelectItem value="master">Master&apos;s Degree</SelectItem>
+                            <SelectItem value="phd">Ph.D.</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="university"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-indigo-600">University/Institution</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your university"
+                            {...field}
+                            className="border-indigo-200 focus:border-indigo-600"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </ProfileSection>
+
+              {/* Teaching Experience Section */}
+              <ProfileSection title="Teaching Experience">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="yearsOfExperience"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-indigo-600">Years of Experience</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="border-indigo-200 focus:border-indigo-600">
+                              <SelectValue placeholder="Select years of experience" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="0-2">0-2 years</SelectItem>
+                            <SelectItem value="3-5">3-5 years</SelectItem>
+                            <SelectItem value="6-10">6-10 years</SelectItem>
+                            <SelectItem value="10+">10+ years</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="subjectSpecialization"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-indigo-600">Subject Specialization</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="E.g., Mathematics, Science, English"
+                            {...field}
+                            className="border-indigo-200 focus:border-indigo-600"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-700" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="teachingLevel"
+                  render={() => (
+                    <FormItem>
+                      <div className="mb-4">
+                        <FormLabel className="text-indigo-600">Preferred Teaching Level</FormLabel>
+                        <FormDescription>Select all that apply</FormDescription>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {TEACHING_LEVELS.map((level) => (
+                          <FormField
+                            key={level.id}
+                            control={form.control}
+                            name="teachingLevel"
+                            render={({ field }) => (
+                              <FormItem key={level.id} className="flex flex-row items-start space-x-3 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(level.id)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...field.value, level.id])
+                                        : field.onChange(field.value?.filter((value) => value !== level.id))
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal">{level.label}</FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+              </ProfileSection>
+
+              {/* Teaching Philosophy & Photo Section */}
+              <ProfileSection title="Teaching Philosophy & Profile Photo">
+                <FormField
+                  control={form.control}
+                  name="coverLetter"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-indigo-600">Teaching Philosophy(optional)</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your designation" />
-                        </SelectTrigger>
+                        <Textarea
+                          placeholder="Tell us about your teaching philosophy and why you chose teaching as a profession"
+                          className="min-h-[150px] border-indigo-200 focus:border-indigo-600"
+                          {...field}
+                        />
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Professor">Professor</SelectItem>
-                        <SelectItem value="Associate Professor">Associate Professor</SelectItem>
-                        <SelectItem value="Assistant Professor">Assistant Professor</SelectItem>
-                        <SelectItem value="Lecturer">Lecturer</SelectItem>
-                        <SelectItem value="Assistant Teacher">Assistant Teacher</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Select the gender you identify with. This information helps us provide relevant educational resources.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="email@example.com" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="contactNo"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contact Number</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter your contact number." {...field} />
-                    </FormControl>
-                    <FormDescription>
-                    
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField  
-                control={form.control}  
-                name="school"  
-                render={({ field }) => (  
-                  <FormItem>  
-                    <FormLabel>High School</FormLabel>  
-                    <FormControl>  
-                      <Input placeholder="Enter the name of your high school" {...field} />  
-                    </FormControl>  
-                    <FormDescription></FormDescription>  
-                    <FormMessage />  
-                  </FormItem>  
-                )}  
-              />  
-              <FormField  
-                control={form.control}  
-                name="sscPassingYear"  
-                render={({ field }) => (  
-                  <FormItem>  
-                    <FormLabel>SSC Passing Year</FormLabel>  
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>  
-                      <FormControl>  
-                        <SelectTrigger>  
-                          <SelectValue placeholder="Select Your SSC Passing Year" />  
-                        </SelectTrigger>  
-                      </FormControl>  
-                      <SelectContent>  
-                        {[...Array(30)].map((_, i) => {  
-                          const year = 2024 - i;  
-                          return (  
-                            <SelectItem key={year} value={year.toString()}>  
-                              {year}  
-                            </SelectItem>  
-                          );  
-                        })}  
-                      </SelectContent>  
-                    </Select>  
-                    <FormDescription></FormDescription>  
-                    <FormMessage />  
-                  </FormItem>  
-                )}  
-              />  
-              <FormField  
-                control={form.control}  
-                name="college"  
-                render={({ field }) => (  
-                  <FormItem>  
-                    <FormLabel>College</FormLabel>  
-                    <FormControl>  
-                      <Input placeholder="Enter the name of your college" {...field} />  
-                    </FormControl>  
-                    <FormDescription></FormDescription>  
-                    <FormMessage />  
-                  </FormItem>  
-                )}  
-              />  
-              <FormField  
-                control={form.control}  
-                name="hscPassingYear"  
-                render={({ field }) => (  
-                  <FormItem>  
-                    <FormLabel>HSC Passing Year</FormLabel>  
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>  
-                      <FormControl>  
-                        <SelectTrigger>  
-                          <SelectValue placeholder="Select Your HSC Passing Year" />  
-                        </SelectTrigger>  
-                      </FormControl>  
-                      <SelectContent>  
-                        {[...Array(30)].map((_, i) => {  
-                          const year = new Date().getFullYear() - i;  
-                          return (  
-                            <SelectItem key={year} value={year.toString()}>  
-                              {year}  
-                            </SelectItem>  
-                          );  
-                        })}  
-                      </SelectContent>  
-                    </Select>  
-                    <FormDescription></FormDescription>  
-                    <FormMessage />  
-                  </FormItem>  
-                )}  
-              />  
-              <FormField  
-                control={form.control}  
-                name="university"  
-                render={({ field }) => (  
-                  <FormItem>  
-                    <FormLabel>University</FormLabel>  
-                    <FormControl>  
-                      <Input placeholder="Enter the name of your university" {...field} />  
-                    </FormControl>  
-                    <FormDescription></FormDescription>  
-                    <FormMessage />  
-                  </FormItem>  
-                )}  
-              />  
-              <FormField  
-                control={form.control}  
-                name="graduationYear"  
-                render={({ field }) => (  
-                  <FormItem>  
-                    <FormLabel>Graduation Year</FormLabel>  
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>  
-                      <FormControl>  
-                        <SelectTrigger>  
-                          <SelectValue placeholder="Select your graduation year" />  
-                        </SelectTrigger>  
-                      </FormControl>  
-                      <SelectContent>  
-                        {[...Array(25)].map((_, i) => {  
-                          const year = new Date().getFullYear() - i;  
-                          return (  
-                            <SelectItem key={year} value={year.toString()}>  
-                              {year}  
-                            </SelectItem>  
-                          );  
-                        })}  
-                      </SelectContent>  
-                    </Select>  
-                    <FormDescription>  
-                      Select your expected year of graduation.  
-                    </FormDescription>  
-                    <FormMessage />  
-                  </FormItem>  
-                )}  
-              />  
-              
-              <FormField  
-                control={form.control}  
-                name="birthDate"  
-                render={({ field }) => (  
-                  <FormItem className="flex flex-col">  
-                    <FormLabel>Date of birth</FormLabel>  
-                    <FormControl>  
-                      <div style={{ position: 'relative' }}>  
-                        <DatePicker  
-                          selected={field.value} // Controlled component  
-                          onChange={(date: Date | null) => {  
-                            field.onChange(date);  // Update the field value  
-                          }}  
-                          // Set the min date to today to prevent future selection  
-                          maxDate={new Date()}  
-                          placeholderText="      Select your date of birth " // Placeholder text  
-                          showYearDropdown // Show the dropdown for selecting the year  
-                          yearDropdownItemNumber={100} // Number of years to show in dropdown  
-                          scrollableYearDropdown // Allows scrolling through the years  
-                          customInput={  
-                            <input  
-                            style={{  
-                              paddingLeft: '5px', 
-                              padding: '10px',  
-                              borderRadius: '4px',  
-                              border: '1px solid #ccc',  
-                              width: '250px',  
+                      <FormDescription>
+                        Please write a brief statement about your teaching approach and educational values.
+                      </FormDescription>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="photo"
+                  render={({ field: { onChange, value, ...rest } }) => (
+                    <FormItem>
+                      <FormLabel className="text-indigo-600">Profile Photo</FormLabel>
+                      <FormControl>
+                        <div className="flex flex-col items-center justify-center w-full">
+                          {photoPreview ? (
+                            <div className="relative w-full h-48 mb-2">
+                              <Image
+                                src={photoPreview || "/placeholder.svg"}
+                                alt="Profile preview"
+                                fill
+                                className="object-contain rounded-lg"
+                              />
+                              <button
+                                type="button"
+                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs"
+                                onClick={() => {
+                                  setPhotoPreview(null)
+                                  onChange(null)
+                                }}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ) : (
+                            <label
+                              htmlFor="photo-upload"
+                              className="flex flex-col items-center justify-center w-full h-40 border-2 border-indigo-200 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                            >
+                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <Upload className="w-8 h-8 mb-2 text-indigo-600" />
+                                <p className="mb-2 text-sm text-gray-500">
+                                  <span className="font-semibold">Click to upload</span>
+                                </p>
+                                <p className="text-xs text-gray-500">JPG, PNG, WebP (MAX. 5MB)</p>
+                              </div>
+                            </label>
+                          )}
+                          <input
+                            id="photo-upload"
+                            type="file"
+                            accept="image/jpeg,image/jpg,image/png,image/webp"
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.files) {
+                                onChange(e.target.files)
+                                handlePhotoChange(e.target.files)
+                              }
                             }}
-                              readOnly // Preventing manual input (optional)  
-                            />  
-                          }  
-                          dateFormat="yyyy/MM/dd" // Change format if needed  
-                        />  
-                        {/* <span  
-                          style={{  
-                            position: 'absolute',  
-                            left: '10px',  
-                            top: '10px',  
-                            pointerEvents: 'none',  
-                            color: '#999',  
-                          }}>  
-                          <Calendar />  
-                        </span>   */}
-                      </div>  
-                    </FormControl>  
-                    <FormDescription>  
-                      Your date of birth is used to calculate your age and provide age-appropriate content.  
-                    </FormDescription>  
-                    <FormMessage />  
-                  </FormItem>  
-                )}  
-              /> 
-
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Gender</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your gender" />
-                        </SelectTrigger>
+                            {...rest}
+                          />
+                        </div>
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="male">Male</SelectItem>
-                        <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                        <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Select the gender you identify with. This information helps us provide relevant educational resources.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+              </ProfileSection>
 
-              {/* <FormField
-                control={form.control}
-                name="achievements"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Achievements(Optional)</FormLabel>
-                    <FormControl>
-                      <AchievementInput
-                        achievements={field.value || []}
-                        setAchievements={(newAchievements) => field.onChange(newAchievements)}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Add your notable academic accomplishments, awards, or any significant educational milestones.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />     */}
-              
-              {/* <FormField  
-                control={form.control}  
-                name="achievements"  
-                render={({ field }) => (  
-                    <FormItem>  
-                        <FormLabel>Achievements / Certifications (Optional)</FormLabel>  
-                        <FormControl>  
-                          <AchievementInput  
-                            achievements={Array.isArray(field.value) ? field.value : []} // Ensure achievements is an array  
-                            setAchievements={(newAchievements) => {  
-                              // Process achievements: if newAchievements is a string, split it, else use it directly.  
-                              const processedAchievements = typeof newAchievements === 'string'  
-                                ? newAchievements.split(',').map(item => item.trim()) // Convert string to array  
-                                : Array.isArray(newAchievements) // If already an array, use it as is.  
-                                ? newAchievements  
-                                : [];  
-                              
-                              field.onChange(processedAchievements); // Set processed array of achievements  
-                            }}  
-                          />  
-                        </FormControl>  
-                        <FormDescription>  
-                            Add your notable academic accomplishments, awards, or any significant educational milestones.  
-                        </FormDescription>  
-                        <FormMessage />  
-                    </FormItem>  
-                )}  
-              /> */}
-
-              <FormField  
-                control={form.control}  
-                name="career"  
-                render={({ field }) => (  
-                  <FormItem>  
-                    <FormLabel>Describe Your Career</FormLabel>  
-                    <FormControl>  
-                      <Textarea placeholder="" {...field} />  
-                    </FormControl>  
-                    <FormDescription>
-                    You should start like <br /> <b>&quot;For 5 years I am in Elementary Education .... / I am in the teaching profession for 5 years expertise in .....&quot;</b> <br /> Don&apos;t need to mention your name.
-                    </FormDescription>  
-                    <FormMessage />  
-                  </FormItem>  
-                )}  
-              /> 
-
-              <FormField
-                control={form.control}
-                name="isAffiliated"
-                render={({ field }) => (
-                  <FormItem className='hidden'>
-                    <FormLabel> Affiliated </FormLabel>
-                    <FormControl>
-                    <Input placeholder="" {...field} value={field.value.toString()}/>
-                    </FormControl>
-                    <FormDescription>
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="profileType"
-                render={({ field }) => (
-                  <FormItem className='hidden'>
-                    <FormLabel> profileType </FormLabel>
-                    <FormControl>
-                    <Input placeholder="" {...field}/>
-                    </FormControl>
-                    <FormDescription>
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {data ? (
-                  <Button type="submit" className='bg-indigo-700 hover:bg-indigo-600'> 
-                  {
-                  isSubmitting? (
-                    <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Please wait
-                    </>
-                  ) : ('Save Changes')
-                  }
-                </Button>
- 
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Updating Profile...
+                  </>
                 ) : (
-                  <Button type="submit" className='bg-indigo-700 hover:bg-indigo-600'> 
-                  {
-                  isSubmitting? (
-                    <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin "/> Please wait
-                    </>
-                  ) : ('Create Profile')
-                  }
-                </Button>
-              )}
-
-              
+                  "Save Profile Information"
+                )}
+              </Button>
             </form>
           </Form>
-
-
-      </div>
-    </div>
-
-
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }
 
-{/* <FormField
-  name="date"
-  render={({ field }) => (
-    <FormItem className="flex flex-col">
-      <FormLabel>Date</FormLabel>
-      <Popover>
-        <PopoverTriggerr asChild>
-          <FormControl>
-            <Button
-              variant={'outline'}
-              className={cn(
-                'w-[240px] pl-3 text-left font-normal',
-                !date && 'text-muted-foreground'
-              )}
-            >
-              {date ? format(date, 'PPP') : <span>Pick a date</span>}
-              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-            </Button>
-          </FormControl>
-        </PopoverTriggerr>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={(newDate) => {
-              setDate(newDate)
-              field.onChange(newDate?.toISOString())
-            }}
-            initialFocus
-          />
-        </PopoverContent>
-      </Popover>
-      <FormDescription>
-        Select a date for your event or appointment.
-      </FormDescription>
-      <FormMessage />
-    </FormItem>
-  )}
-/> */}
+// Reusable section component to reduce redundancy
+function ProfileSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold text-indigo-600">{title}</h3>
+      {children}
+    </div>
+  )
+}
+

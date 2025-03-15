@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   try {
     // Parse the multipart form data
     const formData = await request.formData()
-    console.log("Form data: ", formData);
+    // console.log("Form data: ", formData);
     
 
     // Extract file data and parse teaching levels
@@ -40,11 +40,10 @@ export async function POST(request: NextRequest) {
       teachingLevel,
       isCscAffiliated: formData.get("isCscAffiliated"),
       coverLetter: formData.get("coverLetter"),
-      photo: photoFile,
     }
 
     const validatedData = serverTeacherProfileSchema.parse(data)
-    console.log('Validated data: ', validatedData);
+    // console.log('Validated data: ', validatedData);
     
     // Handle photo upload
     let photoUrl
@@ -89,11 +88,12 @@ export async function POST(request: NextRequest) {
       photoUrl,
       isAffiliated,
       type: "teacher",
+      fullName: `${validatedData.firstName} ${validatedData.lastName}`,
       createdAt: new Date(),
       updatedAt: new Date(),
     }
 
-    console.log("Teacher profile to save:", teacherProfile)
+    // console.log("Teacher profile to save:", teacherProfile)
 
     const client = await clientPromise;  
     const db = client.db("education_app");  

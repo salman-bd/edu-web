@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   try {
     // Parse the multipart form data
     const formData = await request.formData()
-    console.log("Form data received for student profile")
+    // console.log("Form data received for student profile")
 
     // Extract file data
     const photoFile = formData.get("photo") as File | null
@@ -37,12 +37,11 @@ export async function POST(request: NextRequest) {
       programType: formData.get("programType"),
       previousSchool: formData.get("previousSchool") || "",
       personalStatement: formData.get("personalStatement") || "",
-      photo: photoFile,
     }
 
     // Validate the data
     const validatedData = serverStudentProfileSchema.parse(data)
-    console.log("Validated student profile data")
+    // console.log("Validated student profile data")
 
     // Handle photo upload to Cloudinary
     let photoUrl
@@ -75,7 +74,7 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     }
 
-    console.log("Student profile to save", studentProfile)
+    // console.log("Student profile to save", studentProfile)
 
     // Connect to MongoDB
     const client = await clientPromise
@@ -96,6 +95,8 @@ export async function POST(request: NextRequest) {
         {
           $set: {
             ...studentProfile,
+            fullName: `${validatedData.firstName} ${validatedData.lastName}`,
+            updatedAt: new Date(),
           },
         },
       )

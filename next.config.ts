@@ -11,6 +11,13 @@ module.exports = {
   },
 }
 
+// next.config.js  
+module.exports = {  
+  images: {  
+    domains: ['res.cloudinary.com'],  
+  },  
+};  
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [

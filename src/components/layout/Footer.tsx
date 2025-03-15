@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react"
+import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, X } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { motion } from "framer-motion"
 
@@ -24,9 +24,8 @@ export default function Footer() {
             <div className="flex space-x-4">
               {[
                 { href: "https://www.facebook.com/cscedubd/", Icon: Facebook },
-                { href: "https://twitter.com", Icon: Twitter },
-                { href: "https://instagram.com", Icon: Instagram },
-                { href: "https://linkedin.com", Icon: Linkedin },
+                { href: "https://x.com/cscsylhet", Icon: X },
+                { href: "https://www.linkedin.com/in/cscsylhet/", Icon: Linkedin },
               ].map(({ href, Icon }) => (
                 <Link
                   key={href}
@@ -102,7 +101,7 @@ export default function Footer() {
         <div className="flex flex-col items-center justify-between space-y-4 text-sm md:flex-row md:space-y-0">
           <div className="flex flex-col md:flex-row items-center justify-between gap-2">
             <p>&copy; Classic School And College</p>
-            <Link href="https://salmanbd.com" target="_blank" className="hover:text-gray-950">Developed by: Md. Abu Salman</Link>
+            <Link href="https://salmanbd.com" target="_blank" className="hover:text-indigo-600">Developed by: Md. Abu Salman</Link>
           </div>
 
           <nav>

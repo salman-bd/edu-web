@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import TeacherProfileForm from "@/components/TeacherProfileForm"
+import TeacherProfileForm from "@/components/profile/TeacherProfileForm"
 import { Toaster } from "@/components/ui/toaster"
 import { useSearchParams } from "next/navigation"
 import { TeacherCodeVerificationForm } from "@/components/profile/TeacherCodeVerificationForm"

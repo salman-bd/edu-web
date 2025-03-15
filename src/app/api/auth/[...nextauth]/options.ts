@@ -64,9 +64,7 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Incorrect password");  
           }  
 
-          console.log('User: ', user);
-          
-
+          // console.log('User: ', user);
           return user as unknown as User; 
           
         } catch (error) {  

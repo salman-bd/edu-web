@@ -2,12 +2,14 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { Loader2, Upload } from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { Loader2, Upload, ArrowLeft, Save } from "lucide-react"
+import toast from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -16,8 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { teacherProfileSchema, type TeacherProfileFormValues } from "@/schemas/teacherProfileSchema"
-import { useSearchParams } from "next/navigation"
-import toast, { Toaster } from "react-hot-toast"
+import { Skeleton } from "@/components/ui/skeleton"
 
 // Teaching levels data
 const TEACHING_LEVELS = [
@@ -27,18 +28,18 @@ const TEACHING_LEVELS = [
   { id: "college", label: "College" },
 ]
 
-interface TeacherProfileFormProps {
-  onSubmitSuccess?: () => void
+interface TeacherProfileEditFormProps {
+  profileId: string | undefined
+  onSuccess?: () => void
 }
 
-export default function TeacherProfileForm({ onSubmitSuccess }: TeacherProfileFormProps) {
+export default function TeacherProfileEditForm({ profileId, onSuccess }: TeacherProfileEditFormProps) {
+  const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const router = useRouter()
   const searchParams = useSearchParams()
-  const isCscAffiliated = searchParams.get("isCscAffiliated") ? true : false
-  // console.log('Search Params: ', searchParams, isCscAffiliated);
-  
 
   const form = useForm<TeacherProfileFormValues>({
     resolver: zodResolver(teacherProfileSchema),
@@ -58,6 +59,92 @@ export default function TeacherProfileForm({ onSubmitSuccess }: TeacherProfileFo
     },
     mode: "onChange",
   })
+
+  // Load profile data from URL parameters
+  useEffect(() => {
+    try {
+      setIsLoading(true)
+      // Get encoded data from URL
+      const encodedData = searchParams.get("data")
+      if (!encodedData) {
+        throw new Error("No profile data found in URL")
+      }
+      // Decode and parse the data
+      const decodedData = JSON.parse(decodeURIComponent(encodedData))
+
+      // Format date to YYYY-MM-DD for input[type="date"]
+      const formattedDate = decodedData.dateOfBirth ? new Date(decodedData.dateOfBirth).toISOString().split("T")[0] : ""
+
+      // Set form values
+      form.reset({
+        firstName: decodedData.firstName || "",
+        lastName: decodedData.lastName || "",
+        email: decodedData.email || "",
+        phone: decodedData.phone || "",
+        dateOfBirth: formattedDate,
+        address: decodedData.address || "",
+        highestDegree: decodedData.highestDegree || "",
+        university: decodedData.university || "",
+        yearsOfExperience: decodedData.yearsOfExperience || "",
+        subjectSpecialization: decodedData.subjectSpecialization || "",
+        teachingLevel: decodedData.teachingLevel || [],
+        coverLetter: decodedData.coverLetter || "",
+      })
+
+      // Set photo preview if available
+      if (decodedData.photoUrl) {
+        setPhotoPreview(decodedData.photoUrl)
+      }
+    } catch (error) {
+      console.error("Error loading profile data:", error)
+      toast.error("Failed to load profile data. Please try again.")
+
+      // If there's an error with URL params, try to fetch from API as fallback
+      fetchProfileFromAPI()
+    } finally {
+      setIsLoading(false)
+    }
+  }, [searchParams, form])
+
+  // Fallback function to fetch from API if URL params fail
+  const fetchProfileFromAPI = async () => {
+    try {
+      const response = await fetch(`/api/profile/teacher/${profileId}`)
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch profile data")
+      }
+
+      const data = await response.json()
+
+      // Format date to YYYY-MM-DD for input[type="date"]
+      const formattedDate = data.dateOfBirth ? new Date(data.dateOfBirth).toISOString().split("T")[0] : ""
+
+      // Set form values
+      form.reset({
+        firstName: data.firstName || "",
+        lastName: data.lastName || "",
+        email: data.email || "",
+        phone: data.phone || "",
+        dateOfBirth: formattedDate,
+        address: data.address || "",
+        highestDegree: data.highestDegree || "",
+        university: data.university || "",
+        yearsOfExperience: data.yearsOfExperience || "",
+        subjectSpecialization: data.subjectSpecialization || "",
+        teachingLevel: data.teachingLevel || [],
+        coverLetter: data.coverLetter || "",
+      })
+
+      // Set photo preview if available
+      if (data.photoUrl) {
+        setPhotoPreview(data.photoUrl)
+      }
+    } catch (error) {
+      console.error("Error fetching profile from API:", error)
+      toast.error("Failed to load profile data. Please try again.")
+    }
+  }
 
   // Handle photo preview
   const handlePhotoChange = (files: FileList | null) => {
@@ -94,58 +181,81 @@ export default function TeacherProfileForm({ onSubmitSuccess }: TeacherProfileFo
       if (data.photo instanceof FileList && data.photo[0]) {
         formData.append("photo", data.photo[0])
       }
-      if (isCscAffiliated) {
-        formData.append("isCscAffiliated", "true")
-      }
-     
 
-      const response = await fetch("/api/profile/teacher", {
-        method: "POST",
-        body: formData
+      const response = await fetch(`/api/profile/teacher/${profileId}`, {
+        method: "PUT",
+        body: formData,
       })
 
       const responseData = await response.json()
+      console.log('Response data: ', responseData);
+      
 
       if (!response.ok) {
-        throw new Error(responseData.message || "Failed to submit profile")
+        throw new Error(responseData.message || "Failed to update profile")
       }
 
-      toast.success("Your teacher profile has been successfully updated.", { duration: 4000})
+      toast.success("Your teacher profile has been successfully updated.")
 
-      if (onSubmitSuccess) {
-        onSubmitSuccess()
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        router.push(`/profile/teacher/${profileId}`)
       }
+
     } catch (error) {
-      console.error("Error submitting form:", error)
+      console.error("Error updating profile:", error)
       const errorMessage =
         error instanceof Error
           ? `Error: ${error.message}`
           : "There was a problem updating your profile. Please try again."
 
       setSubmitError(errorMessage)
-      toast(errorMessage, { duration: 4000})
-
+      toast.error(errorMessage)
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  const handleCancel = () => {
+    router.back()
+  }
+
+  if (isLoading) {
+    return (
+      <Card className="border-red-700 border-t-4 shadow-lg max-w-4xl mx-auto">
+        <div className="bg-indigo-600 rounded-tl-lg rounded-tr-lg">
+          <h1 className="text-3xl md:text-4xl text-center text-white font-semibold p-4">Edit Teacher Profile</h1>
+        </div>
+        <CardContent className="p-6">
+          <div className="space-y-6">
+            <Skeleton className="h-12 w-full" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+            <Skeleton className="h-40 w-full" />
+            <div className="flex justify-end gap-2">
+              <Skeleton className="h-10 w-24" />
+              <Skeleton className="h-10 w-24" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-    >
-      <Toaster />
-      <Card className="border-indigo-600 border-t-4 shadow-lg">
-        <div className="bg-indigo-600">
-          <h1 className="text-3xl md:text-4xl text-center text-white font-semibold p-4">
-            Complete Your Teacher Profile
-          </h1>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <Card className="border-red-700 border-t-4 shadow-lg max-w-4xl mx-auto">
+        <div className="bg-indigo-600 rounded-tl-lg rounded-tr-lg">
+          <h1 className="text-3xl md:text-4xl text-center text-white font-semibold p-4">Edit Teacher Profile</h1>
         </div>
         <CardHeader>
-          <CardTitle className="text-2xl text-indigo-600">Teacher Profile Information</CardTitle>
-          <CardDescription>Please complete all required fields to set up your teacher profile.</CardDescription>
+          <CardTitle className="text-2xl text-indigo-600">Update Your Profile Information</CardTitle>
+          <CardDescription>Make changes to your teacher profile information below.</CardDescription>
         </CardHeader>
         <CardContent>
           {submitError && (
@@ -400,7 +510,7 @@ export default function TeacherProfileForm({ onSubmitSuccess }: TeacherProfileFo
                   name="coverLetter"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-indigo-600">Teaching Philosophy(optional)</FormLabel>
+                      <FormLabel className="text-indigo-600">Teaching Philosophy (optional)</FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="Tell us about your teaching philosophy and why you chose teaching as a profession"
@@ -478,20 +588,30 @@ export default function TeacherProfileForm({ onSubmitSuccess }: TeacherProfileFo
                 />
               </ProfileSection>
 
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Updating Profile...
-                  </>
-                ) : (
-                  "Save Profile Information"
-                )}
-              </Button>
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  className="border-indigo-200 text-indigo-600"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Changes
+                    </>
+                  )}
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>

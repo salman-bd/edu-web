@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -13,21 +13,24 @@ import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, CheckCircle2, Upload } from "lucide-react"
-import toast, { Toaster } from "react-hot-toast"
+import { Loader2, Upload, ArrowLeft, Save, ChevronRight, ChevronLeft } from "lucide-react"
+import toast from "react-hot-toast"
+import { Skeleton } from "@/components/ui/skeleton"
 import { studentProfileSchema, type StudentProfileFormValues } from "@/schemas/studentProfileSchema"
 
-interface StudentProfileFormProps {
-  onSubmitSuccess: () => void
+interface StudentProfileEditFormProps {
+  profileId: string | undefined
+  onSuccess?: () => void
 }
 
-export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFormProps) {
+export default function StudentProfileEditForm({ profileId, onSuccess }: StudentProfileEditFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
+  const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const router = useRouter()
   const searchParams = useSearchParams()
-  const isCscAffiliated = searchParams.get("isCscAffiliated") ? true : false
 
   const form = useForm<StudentProfileFormValues>({
     resolver: zodResolver(studentProfileSchema),
@@ -38,7 +41,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
       phone: "",
       dateOfBirth: "",
       gender: undefined,
-      institutionName: isCscAffiliated ? "Classic School And College" : "",
+      institutionName: "",
       address: "",
       city: "",
       state: "",
@@ -50,6 +53,92 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
     },
     mode: "onChange",
   })
+
+  // Load profile data from URL parameters
+  useEffect(() => {
+    try {
+      setIsLoading(true)
+      // Get encoded data from URL
+      const encodedData = searchParams.get("data")
+      if (!encodedData) {
+        throw new Error("No profile data found in URL")
+      }
+      // Decode and parse the data
+      const decodedData = JSON.parse(decodeURIComponent(encodedData))
+      // Format date to YYYY-MM-DD for input[type="date"]
+      const formattedDate = decodedData.dateOfBirth ? new Date(decodedData.dateOfBirth).toISOString().split("T")[0] : ""
+
+      // Set form values
+      form.reset({
+        firstName: decodedData.firstName || "",
+        lastName: decodedData.lastName || "",
+        email: decodedData.email || "",
+        phone: decodedData.phone || "",
+        dateOfBirth: formattedDate,
+        gender: decodedData.gender,
+        institutionName: decodedData.institutionName || "",
+        address: decodedData.address || "",
+        city: decodedData.city || "",
+        state: decodedData.state || "",
+        zipCode: decodedData.zipCode || "",
+        programLevel: decodedData.programLevel,
+        programType: decodedData.programType || "",
+        previousSchool: decodedData.previousSchool || "",
+        personalStatement: decodedData.personalStatement || "",
+      })
+      if (decodedData.photoUrl) {
+        setPhotoPreview(decodedData.photoUrl)
+      }
+    } catch (error) {
+      console.error("Error loading profile data:", error)
+      toast.error("Failed to load profile data. Please try again.")
+
+      // If there's an error with URL params, try to fetch from API as fallback
+      fetchProfileFromAPI()
+    } finally {
+      setIsLoading(false)
+    }
+  }, [searchParams, form])
+
+  // Fallback function to fetch from API if URL params fail
+  const fetchProfileFromAPI = async () => {
+    try {
+      const response = await fetch(`/api/profile/student/${profileId}`)
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch profile data")
+      }
+      const data = await response.json()
+      // Format date to YYYY-MM-DD for input[type="date"]
+      const formattedDate = data.dateOfBirth ? new Date(data.dateOfBirth).toISOString().split("T")[0] : ""
+      // Set form values
+      form.reset({
+        firstName: data.firstName || "",
+        lastName: data.lastName || "",
+        email: data.email || "",
+        phone: data.phone || "",
+        dateOfBirth: formattedDate,
+        gender: data.gender,
+        institutionName: data.institutionName || "",
+        address: data.address || "",
+        city: data.city || "",
+        state: data.state || "",
+        zipCode: data.zipCode || "",
+        programLevel: data.programLevel,
+        programType: data.programType || "",
+        previousSchool: data.previousSchool || "",
+        personalStatement: data.personalStatement || "",
+      })
+
+      // Set photo preview if available
+      if (data.photoUrl) {
+        setPhotoPreview(data.photoUrl)
+      }
+    } catch (error) {
+      console.error("Error fetching profile from API:", error)
+      toast.error("Failed to load profile data. Please try again.")
+    }
+  }
 
   // Handle photo preview
   const handlePhotoChange = (files: FileList | null) => {
@@ -68,7 +157,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
   const nextStep = () => {
     const fieldsToValidate =
       currentStep === 1
-        ? ["firstName", "lastName", "email", "phone", "dateOfBirth", "gender", "photo"]
+        ? ["firstName", "lastName", "email", "phone", "dateOfBirth", "gender"]
         : currentStep === 2
           ? ["institutionName", "address", "city", "state", "zipCode", "programLevel", "programType"]
           : []
@@ -87,15 +176,16 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
     setSubmitError(null)
 
     try {
-      console.log("Submitting profile data:", data)
-
       // Create FormData object to handle file upload
       const formData = new FormData()
 
       // Append all text fields
       Object.entries(data).forEach(([key, value]) => {
         if (key !== "photo") {
-          formData.append(key, value as string)
+          // Handle undefined values
+          if (value !== undefined && value !== null) {
+            formData.append(key, value as string)
+          }
         }
       })
 
@@ -104,40 +194,36 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
         formData.append("photo", data.photo[0])
       }
 
-      // Add affiliated status if present in URL
-      if (isCscAffiliated) {
-        formData.append("isCscAffiliated", "true")
-      }
-
-      const response = await fetch("/api/profile/student", {
-        method: "POST",
+      const response = await fetch(`/api/profile/student/${profileId}`, {
+        method: "PUT",
         body: formData,
       })
-
       const responseData = await response.json()
-
       if (!response.ok) {
-        throw new Error(responseData.message || "Failed to submit profile")
+        throw new Error(responseData.message || "Failed to update profile")
       }
-
-      toast.success("Profile submitted successfully! Your information has been saved.", {
-        duration: 4000,
-      })
-      onSubmitSuccess()
-
+      toast.success("Your student profile has been successfully updated.")
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        router.push(`/profile/student/${profileId}`)
+      }
+      
     } catch (error) {
-      console.error("Error submitting profile:", error)
-      let errorMessage = "There was a problem submitting your profile. Please try again."
+      console.error("Error updating profile:", error)
+      let errorMessage = "There was a problem updating your profile. Please try again."
       if (error instanceof Error) {
         errorMessage = `Error: ${error.message}. Please try again.`
       }
       setSubmitError(errorMessage)
-      toast.error(errorMessage, {
-        duration: 4000,
-      })
+      toast.error(errorMessage)
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const handleCancel = () => {
+    router.back()
   }
 
   const programOptions = {
@@ -157,22 +243,41 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
     college: ["(11-12) Science Group", "(11-12) Humanities Group", "(11-12) Business Studies Group"],
   }
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-    >
-      <Toaster position="top-center" />
-      <Card className="border-indigo-600 border-t-4 shadow-lg">
+  if (isLoading) {
+    return (
+      <Card className="border-red-700 border-t-4 shadow-lg max-w-4xl mx-auto">
         <div className="bg-indigo-600 rounded-tl-lg rounded-tr-lg">
-          <h1 className="text-3xl md:text-4xl text-center text-white font-semibold p-4">
-            {isCscAffiliated ? "CSC Student Profile" : "Student Profile Form"}
-          </h1>
+          <h1 className="text-3xl md:text-4xl text-center text-white font-semibold p-4">Edit Student Profile</h1>
+        </div>
+        <CardContent className="p-6">
+          <div className="space-y-6">
+            <Skeleton className="h-12 w-full" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+            <Skeleton className="h-40 w-full" />
+            <div className="flex justify-end gap-2">
+              <Skeleton className="h-10 w-24" />
+              <Skeleton className="h-10 w-24" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <Card className="border-red-700 border-t-4 shadow-lg max-w-4xl mx-auto">
+        <div className="bg-indigo-600 rounded-tl-lg rounded-tr-lg">
+          <h1 className="text-3xl md:text-4xl text-center text-white font-semibold p-4">Edit Student Profile</h1>
         </div>
         <CardHeader>
-          <CardTitle className="text-2xl text-indigo-600">Student Profile Information</CardTitle>
-          <CardDescription>Please complete all required fields to set up your student profile.</CardDescription>
+          <CardTitle className="text-2xl text-indigo-600">Update Your Profile Information</CardTitle>
+          <CardDescription>Make changes to your student profile information below.</CardDescription>
           <div className="flex justify-between items-center mt-4">
             {Array.from({ length: totalSteps }).map((_, index) => (
               <div
@@ -185,7 +290,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
                       : "bg-gray-200 text-gray-600"
                 }`}
               >
-                {currentStep > index + 1 ? <CheckCircle2 className="w-5 h-5" /> : index + 1}
+                {index + 1}
               </div>
             ))}
           </div>
@@ -403,15 +508,9 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
                           <Input
                             placeholder="Enter your school or institution name"
                             {...field}
-                            disabled={isCscAffiliated}
-                            className={`border-indigo-200 focus:border-indigo-600 ${isCscAffiliated ? "bg-gray-100" : ""}`}
+                            className="border-indigo-200 focus:border-indigo-600"
                           />
                         </FormControl>
-                        {isCscAffiliated && (
-                          <FormDescription>
-                            Institution name is pre-filled as you are affiliated with Classic School And College.
-                          </FormDescription>
-                        )}
                         <FormMessage className="text-red-700" />
                       </FormItem>
                     )}
@@ -617,34 +716,45 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
           </Form>
         </CardContent>
         <CardFooter className="flex justify-between">
-          {currentStep > 1 && (
+          {currentStep > 1 ? (
+            <Button type="button" variant="outline" onClick={prevStep} className="border-indigo-200 text-indigo-600">
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              Previous
+            </Button>
+          ) : (
             <Button
               type="button"
               variant="outline"
-              onClick={prevStep}
-              className="border-indigo-600 text-indigo-600 hover:bg-indigo-50"
+              onClick={handleCancel}
+              className="border-indigo-200 text-indigo-600"
             >
-              Previous
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Cancel
             </Button>
           )}
+
           {currentStep < totalSteps ? (
-            <Button type="button" onClick={nextStep} className="bg-indigo-600 hover:bg-indigo-700 ml-auto">
+            <Button type="button" onClick={nextStep} className="bg-indigo-600 hover:bg-indigo-700">
               Next
+              <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
           ) : (
             <Button
               type="button"
               onClick={form.handleSubmit(onSubmit)}
               disabled={isSubmitting}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white ml-auto"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Submitting...
+                  Updating...
                 </>
               ) : (
-                "Submit Profile"
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Changes
+                </>
               )}
             </Button>
           )}
