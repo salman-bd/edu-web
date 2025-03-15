@@ -12,7 +12,7 @@ interface AvatarUploadProps {
   onChange: (file: File | null) => void
 }
 
-export function ImageUpload({ value, onChange }: AvatarUploadProps) {
+export function ImageUpload({ onChange }: AvatarUploadProps) {
   const [preview, setPreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 

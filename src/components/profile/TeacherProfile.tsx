@@ -4,20 +4,7 @@ import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import {
-  AtSign,
-  GraduationCap,
-  Home,
-  Calendar,
-  BookOpen,
-  Award,
-  Clock,
-  Edit3,
-  Trash2,
-  ChevronRight,
-  Heart,
-  MessageSquare,
-} from "lucide-react"
+import { AtSign, GraduationCap, Home, Calendar, BookOpen, Award, Clock, Edit3, Trash2, ChevronRight, } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
@@ -34,6 +21,7 @@ import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import toast from "react-hot-toast"
 import { TeacherProfileType } from "@/types/profile"
+import Image from "next/image"
 
 type ProfileDataProps = {
   data: TeacherProfileType
@@ -76,7 +64,8 @@ export const TeacherProfile = ({ data }: ProfileDataProps) => {
       router.push("/")
 
     } catch (error) {
-      toast.error("Failed to delete profile. Please try again.", { duration: 4000 })
+      const errorMessage = error instanceof Error ? error.message : "Failed to delete profile. Please try again."
+      toast.error(errorMessage, { duration: 4000 })
     } finally {
       setIsDeleting(false)
     }
@@ -147,7 +136,7 @@ export const TeacherProfile = ({ data }: ProfileDataProps) => {
               whileHover={{ scale: 1.05 }}
               className="w-32 h-32 rounded-full border-4 border-white overflow-hidden bg-white shadow-lg"
             >
-              <img
+              <Image
                 src={data.photoUrl || "/placeholder.svg?height=128&width=128"}
                 alt={`${data.firstName} ${data.lastName}`}
                 className="w-full h-full object-cover"
@@ -331,7 +320,7 @@ export const TeacherProfile = ({ data }: ProfileDataProps) => {
               <div>
                 <p className="text-sm text-indigo-400 mb-2">Teaching Levels</p>
                 <div className="flex flex-wrap gap-2">
-                  {data.teachingLevel.map((level) => (
+                  {data.teachingLevel?.map((level) => (
                     <motion.div key={level} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Badge
                         className={`${teachingLevelMap[level]?.color || "bg-indigo-100 text-indigo-800"} px-3 py-1 text-sm flex items-center gap-1`}

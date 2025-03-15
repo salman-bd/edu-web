@@ -22,7 +22,6 @@ interface TeacherProfileConfirmationEmailProps {
 
 export default function TeacherProfileConfirmationEmail({
   name,
-  email,
   profileId,
 }: TeacherProfileConfirmationEmailProps) {
   const previewText = `Your teacher profile has been updated - Classic School And College`

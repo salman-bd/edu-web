@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import StudentProfileForm from "@/components/profile/StudentProfileForm"
 import { Toaster } from "react-hot-toast"
 import { StudentCodeVerificationForm } from "@/components/profile/StudentCodeVerificationForm"

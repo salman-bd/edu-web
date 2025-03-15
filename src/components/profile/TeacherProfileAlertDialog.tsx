@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { motion } from "framer-motion"
-import { useRouter } from 'next/navigation'
-
 
 
 interface ProfileAlertDialogProps {
@@ -19,7 +17,6 @@ interface ProfileAlertDialogProps {
 
 export function TeacherProfileAlertDialog({ isOpen, onClose, onContinue }: ProfileAlertDialogProps) {
   const [isCscAffiliated, setIsCscAffiliated] = useState<string>('')
-  const router = useRouter()
 
   const handleContinue = () => {
     if (isCscAffiliated) {

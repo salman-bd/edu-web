@@ -23,23 +23,8 @@ import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  AtSign,
-  PhoneCall,
-  Building,
-  Clock,
-  UserCircle,
-  BookOpen,
-  Navigation,
-  Award,
-  FileText,
-  Edit,
-  Trash,
-  Star,
-  Heart,
-  MessageSquare,
-  Share2,
-  ShieldCheck,
-} from "lucide-react"
+  AtSign, PhoneCall, Building, Clock, UserCircle, BookOpen, Navigation, 
+  Award, FileText, Edit, Trash, Star, ShieldCheck,} from "lucide-react"
 import { StudentProfileType } from "@/types/profile"
 
 type ProfileDataProps = {
@@ -94,7 +79,8 @@ export function StudentProfile({ data }: ProfileDataProps) {
       router.push("/")
 
     } catch (error) {
-      toast.error("Failed to delete profile. Please try again.")
+      const errorMessage = error instanceof Error ? error.message : "Failed to delete profile. Please try again."
+      toast.error(errorMessage)
     } finally {
       setIsDeleting(false)
     }

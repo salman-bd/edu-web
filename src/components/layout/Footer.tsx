@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, X } from "lucide-react"
+import { Facebook, Linkedin, Mail, Phone, MapPin, X } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { motion } from "framer-motion"
 

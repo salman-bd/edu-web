@@ -210,7 +210,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
                   <FormField
                     control={form.control}
                     name="photo"
-                    render={({ field: { onChange, value, ...rest } }) => (
+                    render={({ field: { onChange, ...rest } }) => (
                       <FormItem>
                         <FormLabel className="text-indigo-600">Profile Photo</FormLabel>
                         <FormControl>
@@ -585,7 +585,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
                           />
                         </FormControl>
                         <FormDescription>
-                          If you've transferred from another school, please provide its name.
+                          If you&apos;ve transferred from another school, please provide its name.
                         </FormDescription>
                         <FormMessage className="text-red-700" />
                       </FormItem>
@@ -605,7 +605,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
                           />
                         </FormControl>
                         <FormDescription>
-                          Share your academic interests, goals, and any other information you'd like us to know.
+                          Share your academic interests, goals, and any other information you&apos;d like us to know.
                         </FormDescription>
                         <FormMessage className="text-red-700" />
                       </FormItem>

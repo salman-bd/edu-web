@@ -1,91 +1,121 @@
 "use client"
 
-import Image from "next/image"
-import { motion } from "framer-motion"
-import { Button } from "../ui/button"
-import Link from "next/link"
-import { TeacherProfileAlertDialog } from "../profile/TeacherProfileAlertDialog"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import TeacherCard from "@/components/teachers/TeacherCard"
+import type { TeacherProfileType } from "@/types/profile"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { Search, Filter } from "lucide-react"
 
+interface TeacherListProps {
+  teachers: TeacherProfileType[]
+}
 
-const teachers = [
-  {
-    name: "Mr. Name",
-    role: "Elementary Education Specialist",
-    image: "/teachers/demo-avatar.png",
-    bio: "With over 15 years of experience in early childhood education, Mr. Name leads our elementary school program with enthusiasm and expertise.",
-  },
- 
-]
+export default function TeacherList({ teachers }: TeacherListProps) {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [subjectFilter, setSubjectFilter] = useState("")
+  const [levelFilter, setLevelFilter] = useState("")
 
-export default function TeachersList() {
-  const router = useRouter()
-  const [isProfileCreateDialogOpen, setIsProfileCreateDialogOpen] = useState(false)
+  // Get unique subjects for filter
+  const subjects = Array.from(new Set(teachers.map((t) => t.subjectSpecialization)))
 
-  const closeProfileCreateDialogOpen = () => setIsProfileCreateDialogOpen(false);
-  const profileCreateHandler = () => setIsProfileCreateDialogOpen(true);
-  
-  const profileCreateContinue = (isCscAffiliated: string) => {
-    closeProfileCreateDialogOpen()
-    if (isCscAffiliated === "yes") {
-      router.push(`/profile/teacher?isCscAffiliated=${true}`)
-    } else if (isCscAffiliated === "no") {
-      router.push(`/profile/teacher`)
-    } 
-  }
+  // Get unique teaching levels for filter
+  const allLevels = teachers.flatMap((t) => t.teachingLevel || [])
+  const uniqueLevels = Array.from(new Set(allLevels))
+
+  // Filter teachers based on search and filters
+  const filteredTeachers = teachers.filter((teacher) => {
+    const matchesSearch =
+      searchTerm === "" ||
+      `${teacher.firstName} ${teacher.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      teacher.subjectSpecialization?.toLowerCase().includes(searchTerm.toLowerCase())
+
+    const matchesSubject = subjectFilter === "" || teacher.subjectSpecialization === subjectFilter
+
+    const matchesLevel = levelFilter === "" || teacher.teachingLevel?.includes(levelFilter)
+
+    return matchesSearch && matchesSubject && matchesLevel
+  })
 
   return (
-    <div className="bg-gray-50 py-12 md:py-16 space-y-4">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <motion.div
-          className="mx-auto max-w-2xl lg:mx-0"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-3xl font-bold tracking-tight text-indigo-600 sm:text-4xl">Meet Our Faculty</h2>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
-            Our diverse team of educators brings a wealth of knowledge and experience to inspire and guide our students.
+    <div className="space-y-6">
+      {/* Filters */}
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-indigo-100">
+        <h2 className="text-lg font-medium text-indigo-700 mb-4">Find Teachers</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="relative">
+            <Input
+              placeholder="Search by name or subject..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+          </div>
+
+          <Select value={subjectFilter} onValueChange={setSubjectFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="Filter by subject" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Subjects</SelectItem>
+              {subjects.map((subject) => (
+                <SelectItem key={subject} value={subject || ""}>
+                  {subject}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={levelFilter} onValueChange={setLevelFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="Filter by level" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Levels</SelectItem>
+              {uniqueLevels.map((level) => (
+                <SelectItem key={level} value={level}>
+                  {level.charAt(0).toUpperCase() + level.slice(1)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex justify-between items-center mt-4">
+          <p className="text-sm text-muted-foreground">
+            Showing {filteredTeachers.length} of {teachers.length} teachers
           </p>
-        </motion.div>
-        <ul
-          role="list"
-          className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3"
-        >
-          {teachers.map((teacher, index) => (
-            <motion.li
-              key={teacher.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group"
-            >
-              <div className="relative overflow-hidden rounded-2xl">
-                <Image
-                  className="aspect-[3/2] w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                  src={teacher.image || "/placeholder.svg"}
-                  alt={teacher.name}
-                  width={400}
-                  height={400}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-              <div className="mt-6">
-                <h3 className="text-lg font-semibold leading-8 tracking-tight text-indigo-600">{teacher.name}</h3>
-                <p className="text-base leading-7 text-red-700">{teacher.role}</p>
-                <p className="mt-4 text-base leading-7 text-gray-600">{teacher.bio}</p>
-              </div>
-            </motion.li>
-          ))}
-        </ul>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setSearchTerm("")
+              setSubjectFilter("")
+              setLevelFilter("")
+            }}
+            className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+          >
+            <Filter className="h-3 w-3 mr-2" />
+            Clear Filters
+          </Button>
+        </div>
       </div>
-      <div className="text-center">
-      <Link href={'/profile/teacher'}>
-        <Button onClick={profileCreateHandler} className='bg-indigo-600 hover:bg-indigo-700 text-center m-auto m-t-4'>Create Teacher Profile</Button>
-      </Link>
+
+      {/* Teacher grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredTeachers.length > 0 ? (
+          filteredTeachers.map((teacher) => <TeacherCard key={teacher.id?.toString()} teacher={teacher} />)
+        ) : (
+          <div className="col-span-full text-center py-12 bg-indigo-50 rounded-lg">
+            <h3 className="text-lg font-medium text-indigo-700">No teachers found</h3>
+            <p className="text-muted-foreground">Try adjusting your search or filters</p>
+          </div>
+        )}
       </div>
-      <TeacherProfileAlertDialog isOpen={isProfileCreateDialogOpen} onClose={closeProfileCreateDialogOpen} onContinue={profileCreateContinue} />
     </div>
   )
 }

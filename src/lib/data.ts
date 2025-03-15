@@ -2,8 +2,6 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import clientPromise from './mongodb';
 import { ObjectId } from 'mongodb';
-import { StudentProfileType, TeacherProfileType } from '@/types/profile';
-
 
 async function getSession() {
   try {

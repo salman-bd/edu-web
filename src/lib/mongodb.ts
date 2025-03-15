@@ -13,7 +13,6 @@ const options = {
 
 // Extend the NodeJS global type to include our client promise
 declare global {
-  // eslint-disable-next-line no-var
   var _mongoClientPromise: Promise<MongoClient> | undefined
 }
 
