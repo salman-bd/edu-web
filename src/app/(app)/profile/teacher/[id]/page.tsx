@@ -2,7 +2,8 @@ import { TeacherProfile } from "@/components/profile/TeacherProfile"
 import { getProfileById } from "@/lib/data"
 
 export default async function TeacherProfilePage({ params }: { params: { id: string } }) {
-  const profileData = await getProfileById(params.id)
+  const param = await params
+  const profileData = await getProfileById(param.id)
 
   return (
     <>

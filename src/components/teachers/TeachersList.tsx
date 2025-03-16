@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import TeacherCard from "@/components/teachers/TeacherCard"
 import type { TeacherProfileType } from "@/types/profile"
@@ -7,12 +8,16 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Search, Filter } from "lucide-react"
+import { Card, CardContent } from "../ui/card"
+import { TeacherProfileAlertDialog } from "../profile/TeacherProfileAlertDialog"
+
 
 interface TeacherListProps {
   teachers: TeacherProfileType[]
 }
 
 export default function TeacherList({ teachers }: TeacherListProps) {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("")
   const [subjectFilter, setSubjectFilter] = useState("")
   const [levelFilter, setLevelFilter] = useState("")
@@ -31,13 +36,33 @@ export default function TeacherList({ teachers }: TeacherListProps) {
       `${teacher.firstName} ${teacher.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       teacher.subjectSpecialization?.toLowerCase().includes(searchTerm.toLowerCase())
 
-    const matchesSubject = subjectFilter === "" || teacher.subjectSpecialization === subjectFilter
+    // Fix for "All Subjects" - check if subjectFilter is empty OR "all"
+    const matchesSubject = 
+      subjectFilter === "" || 
+      subjectFilter === "all" || 
+      teacher.subjectSpecialization === subjectFilter
 
-    const matchesLevel = levelFilter === "" || teacher.teachingLevel?.includes(levelFilter)
+    // Fix for "All Levels" - check if levelFilter is empty OR "all"
+    const matchesLevel = 
+      levelFilter === "" || 
+      levelFilter === "all" || 
+      teacher.teachingLevel?.includes(levelFilter)
 
     return matchesSearch && matchesSubject && matchesLevel
   })
 
+  const handleProfileComplete = () => setIsProfileCompleteDialogOpen(true)
+  const [isProfileCompleteDialogOpen, setIsProfileCompleteDialogOpen] = useState(false)
+  const closeProfileCompleteDialog = () => setIsProfileCompleteDialogOpen(false);
+  const profileCompleteContinue = (isCscAffiliated: string) => {
+    setIsProfileCompleteDialogOpen(false)
+    if (isCscAffiliated === "yes") {
+      router.push(`/profile/teacher/creation?isCscAffiliated=${true}`)
+    } else if (isCscAffiliated === "no") {
+      router.push(`/profile/teacher/creation`)
+    } 
+  }
+  
   return (
     <div className="space-y-6">
       {/* Filters */}
@@ -108,7 +133,7 @@ export default function TeacherList({ teachers }: TeacherListProps) {
       {/* Teacher grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTeachers.length > 0 ? (
-          filteredTeachers.map((teacher) => <TeacherCard key={teacher.id?.toString()} teacher={teacher} />)
+          filteredTeachers.map((teacher) => <TeacherCard key={teacher._id?.toString()} teacher={teacher} />)
         ) : (
           <div className="col-span-full text-center py-12 bg-indigo-50 rounded-lg">
             <h3 className="text-lg font-medium text-indigo-700">No teachers found</h3>
@@ -116,6 +141,23 @@ export default function TeacherList({ teachers }: TeacherListProps) {
           </div>
         )}
       </div>
+
+      <div>
+        <TeacherProfileAlertDialog 
+        isOpen={isProfileCompleteDialogOpen} 
+        onClose={closeProfileCompleteDialog} 
+        onContinue={profileCompleteContinue} 
+        />
+
+        <Card className="mx-auto bg-indigo-200 ">
+          <CardContent className="flex items-center justify-center p-4">
+            <Button onClick={handleProfileComplete} className="bg-indigo-600 text-white hover:bg-indigo-700 ">
+              Create Teaching Profile
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
     </div>
   )
 }

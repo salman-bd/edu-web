@@ -25,57 +25,57 @@ export async function getProfile() {
     const profile = await collection.findOne({ email });  
   
     if (!profile) return null;  
-    let profileData
-    if (profile.type === 'student') {
-      profileData = {
-        id: profile._id.toString(),
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        email: profile.email,
-        phone: profile.phone,
-        dateOfBirth: profile.dateOfBirth,
-        gender: profile.gender,
-        institutionName: profile.institutionName,
+    // let profileData
+    // if (profile.type === 'student') {
+    //   profileData = {
+    //     id: profile._id.toString(),
+    //     firstName: profile.firstName,
+    //     lastName: profile.lastName,
+    //     email: profile.email,
+    //     phone: profile.phone,
+    //     dateOfBirth: profile.dateOfBirth,
+    //     gender: profile.gender,
+    //     institutionName: profile.institutionName,
 
-        address: profile.address,
-        zipCode: profile.zipCode,
-        city: profile.city,
-        state: profile.state,
-        programLevel: profile.programLevel,
-        programType: profile.programType,
-        previousSchool: profile.previousSchool,
-        personalStatement: profile.personalStatement,
-        photoUrl: profile.photoUrl,
-        isAffiliated: profile.isAffiliated,
-        type: profile.type,
-        fullName: profile.fullName,
-        createdAt: profile.createdAt
-      } 
-    } else {
-      profileData = {
-        id: profile._id.toString(),
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        email: profile.email,
-        phone: profile.phone,
-        dateOfBirth: profile.dateOfBirth,
-        address: profile.address,
-        highestDegree: profile.highestDegree,
-        university: profile.university,
-        yearsOfExperience: profile.yearsOfExperience,
-        subjectSpecialization: profile.subjectSpecialization,
-        teachingLevel: profile.teachingLevel,
-        coverLetter: profile.coverLetter,
-        photoUrl: profile.photoUrl,
-        isAffiliated: profile.isAffiliated,
-        type: profile.type,
-        fullName: profile.fullName,
-        createdAt: profile.createdAt
-      } 
-    }
+    //     address: profile.address,
+    //     zipCode: profile.zipCode,
+    //     city: profile.city,
+    //     state: profile.state,
+    //     programLevel: profile.programLevel,
+    //     programType: profile.programType,
+    //     previousSchool: profile.previousSchool,
+    //     personalStatement: profile.personalStatement,
+    //     photoUrl: profile.photoUrl,
+    //     isAffiliated: profile.isAffiliated,
+    //     type: profile.type,
+    //     fullName: profile.fullName,
+    //     createdAt: profile.createdAt
+    //   } 
+    // } else {
+    //   profileData = {
+    //     id: profile._id.toString(),
+    //     firstName: profile.firstName,
+    //     lastName: profile.lastName,
+    //     email: profile.email,
+    //     phone: profile.phone,
+    //     dateOfBirth: profile.dateOfBirth,
+    //     address: profile.address,
+    //     highestDegree: profile.highestDegree,
+    //     university: profile.university,
+    //     yearsOfExperience: profile.yearsOfExperience,
+    //     subjectSpecialization: profile.subjectSpecialization,
+    //     teachingLevel: profile.teachingLevel,
+    //     coverLetter: profile.coverLetter,
+    //     photoUrl: profile.photoUrl,
+    //     isAffiliated: profile.isAffiliated,
+    //     type: profile.type,
+    //     fullName: profile.fullName,
+    //     createdAt: profile.createdAt
+    //   } 
+    // }
 
     // console.log('Profile data: ', profile);
-    return profileData
+    return JSON.parse(JSON.stringify(profile))
 
   } catch (error) {  
     console.error("Error fetching personal info:", (error as Error).message);  
@@ -94,58 +94,58 @@ export async function getProfileById(id: string) {
 
     const profile = await collection.findOne({ _id: new ObjectId(id) });  
   
-    if (!profile) return null;  
-    let profileData
-    if (profile.type === 'student') {
-      profileData = {
-        id: profile._id.toString(),
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        email: profile.email,
-        phone: profile.phone,
-        dateOfBirth: profile.dateOfBirth,
-        gender: profile.gender,
-        institutionName: profile.institutionName,
+    // if (!profile) return null;  
+    // let profileData
+    // if (profile.type === 'student') {
+    //   profileData = {
+    //     id: profile._id.toString(),
+    //     firstName: profile.firstName,
+    //     lastName: profile.lastName,
+    //     email: profile.email,
+    //     phone: profile.phone,
+    //     dateOfBirth: profile.dateOfBirth,
+    //     gender: profile.gender,
+    //     institutionName: profile.institutionName,
 
-        address: profile.address,
-        zipCode: profile.zipCode,
-        city: profile.city,
-        state: profile.state,
-        programLevel: profile.programLevel,
-        programType: profile.programType,
-        previousSchool: profile.previousSchool,
-        personalStatement: profile.personalStatement,
-        photoUrl: profile.photoUrl,
-        isAffiliated: profile.isAffiliated,
-        type: profile.type,
-        fullName: profile.fullName,
-        createdAt: profile.createdAt
-      } 
-    } else {
-      profileData = {
-        id: profile._id.toString(),
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        email: profile.email,
-        phone: profile.phone,
-        dateOfBirth: profile.dateOfBirth,
-        address: profile.address,
-        highestDegree: profile.highestDegree,
-        university: profile.university,
-        yearsOfExperience: profile.yearsOfExperience,
-        subjectSpecialization: profile.subjectSpecialization,
-        teachingLevel: profile.teachingLevel,
-        coverLetter: profile.coverLetter,
-        photoUrl: profile.photoUrl,
-        isAffiliated: profile.isAffiliated,
-        type: profile.type,
-        fullName: profile.fullName,
-        createdAt: profile.createdAt
-      } 
-    }
+    //     address: profile.address,
+    //     zipCode: profile.zipCode,
+    //     city: profile.city,
+    //     state: profile.state,
+    //     programLevel: profile.programLevel,
+    //     programType: profile.programType,
+    //     previousSchool: profile.previousSchool,
+    //     personalStatement: profile.personalStatement,
+    //     photoUrl: profile.photoUrl,
+    //     isAffiliated: profile.isAffiliated,
+    //     type: profile.type,
+    //     fullName: profile.fullName,
+    //     createdAt: profile.createdAt
+    //   } 
+    // } else {
+    //   profileData = {
+    //     id: profile._id.toString(),
+    //     firstName: profile.firstName,
+    //     lastName: profile.lastName,
+    //     email: profile.email,
+    //     phone: profile.phone,
+    //     dateOfBirth: profile.dateOfBirth,
+    //     address: profile.address,
+    //     highestDegree: profile.highestDegree,
+    //     university: profile.university,
+    //     yearsOfExperience: profile.yearsOfExperience,
+    //     subjectSpecialization: profile.subjectSpecialization,
+    //     teachingLevel: profile.teachingLevel,
+    //     coverLetter: profile.coverLetter,
+    //     photoUrl: profile.photoUrl,
+    //     isAffiliated: profile.isAffiliated,
+    //     type: profile.type,
+    //     fullName: profile.fullName,
+    //     createdAt: profile.createdAt
+    //   } 
+    // }
 
     // console.log('Profile data: ', profile);
-    return profileData
+    return JSON.parse(JSON.stringify(profile))
 
   } catch (error) {  
     console.error("Error fetching personal info:", (error as Error).message);  

@@ -3,10 +3,8 @@ import { getProfileById } from "@/lib/data"
 
 
 export default async function Page({ params }: { params: { id: string } }) {
-  // Extract the ID from props.params
-  const { id } = params
-  
-  const profileData = await getProfileById(id)
+  const param = await params
+  const profileData = await getProfileById(param.id)
 
   return (
     <div className="container mx-auto py-10">

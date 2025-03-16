@@ -210,7 +210,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
                   <FormField
                     control={form.control}
                     name="photo"
-                    render={({ field: { onChange, ...rest } }) => (
+                    render={({ field: { onChange, value, ...rest } }) => (
                       <FormItem>
                         <FormLabel className="text-indigo-600">Profile Photo</FormLabel>
                         <FormControl>

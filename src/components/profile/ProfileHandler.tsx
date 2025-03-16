@@ -16,9 +16,9 @@ export function ProfileHandler() {
   const profileCompleteContinue = (type: string, isCscAffiliated: string) => {
     setIsProfileCompleteDialogOpen(false)
     if (isCscAffiliated === "yes") {
-      router.push(`/profile/${type}?isCscAffiliated=${true}`)
+      router.push(`/profile/${type}/creation?isCscAffiliated=${true}`)
     } else if (isCscAffiliated === "no") {
-      router.push(`/profile/${type}`)
+      router.push(`/profile/${type}/creation`)
     } 
   }
 

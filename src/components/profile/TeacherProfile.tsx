@@ -22,6 +22,7 @@ import { motion } from "framer-motion"
 import toast from "react-hot-toast"
 import { TeacherProfileType } from "@/types/profile"
 import Image from "next/image"
+import { useSession } from "next-auth/react"
 
 type ProfileDataProps = {
   data: TeacherProfileType
@@ -29,6 +30,8 @@ type ProfileDataProps = {
 
 export const TeacherProfile = ({ data }: ProfileDataProps) => {
   const router = useRouter()
+  const { data: session } = useSession()
+  const userEmail = session?.user.email
   const [isDeleting, setIsDeleting] = useState(false)
 
   // Map teaching levels to a readable format with proper styling
@@ -48,13 +51,13 @@ export const TeacherProfile = ({ data }: ProfileDataProps) => {
   const handleEdit = () => {
     // Stringify and encode the data
     const encodedData = encodeURIComponent(JSON.stringify(data))
-    router.push(`/profile/teacher/edit/${data.id}?data=${encodedData}`)
+    router.push(`/profile/teacher/edit/${data._id}?data=${encodedData}`)
   }
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      const response = await fetch(`/api/profile/teacher/${data.id}`, {
+      const response = await fetch(`/api/profile/teacher/${data._id}`, {
         method: "DELETE",
       })
       if (!response.ok) {
@@ -87,6 +90,8 @@ export const TeacherProfile = ({ data }: ProfileDataProps) => {
           <div className="bg-gradient-to-r from-indigo-700 to-indigo-500 w-full rounded-t-lg">
             <div className="flex justify-between items-center p-4">
               <h1 className="text-3xl text-white font-semibold">Teacher Profile</h1>
+
+              {userEmail === data.email && (
               <div className="flex gap-2">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -128,6 +133,8 @@ export const TeacherProfile = ({ data }: ProfileDataProps) => {
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
+              )}
+
             </div>
           </div>
 
@@ -139,6 +146,8 @@ export const TeacherProfile = ({ data }: ProfileDataProps) => {
               <Image
                 src={data.photoUrl || "/placeholder.svg?height=128&width=128"}
                 alt={`${data.firstName} ${data.lastName}`}
+                width={200}
+                height={200}
                 className="w-full h-full object-cover"
               />
             </motion.div>
@@ -347,6 +356,7 @@ export const TeacherProfile = ({ data }: ProfileDataProps) => {
           <div className="mt-8 text-sm text-indigo-400 flex justify-between items-center">
             <p>Profile Created {data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "N/A"}</p>
 
+            {userEmail === data.email && (
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -389,7 +399,9 @@ export const TeacherProfile = ({ data }: ProfileDataProps) => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-            </div>
+              </div>
+            )}
+
           </div>
         </CardContent>
       </Card>

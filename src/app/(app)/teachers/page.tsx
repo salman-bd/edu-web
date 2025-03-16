@@ -6,9 +6,13 @@ async function getTeachers(): Promise<TeacherProfileType[]> {
   try {
     const client = await clientPromise
     const db = client.db("education_app")
-    const teachers = await db.collection("profiles").find({ type: "teacher" }).sort({ createdAt: -1 }).toArray()
-
+    const teachers = await db.collection("profiles").find({ type: "teacher" })
+      .sort({ createdAt: -1 })
+      .toArray();      
+      
+    // console.log('Teachers: ', teachers);
     return JSON.parse(JSON.stringify(teachers))
+    
   } catch (error) {
     console.error("Failed to fetch teachers:", error)
     return []

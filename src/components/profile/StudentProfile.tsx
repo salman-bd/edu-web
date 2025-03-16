@@ -63,13 +63,13 @@ export function StudentProfile({ data }: ProfileDataProps) {
     // Stringify and encode the data
     const encodedData = encodeURIComponent(JSON.stringify(data))
     // Navigate to the edit page with the encoded data
-    router.push(`/profile/student/edit/${data.id}?data=${encodedData}`)
+    router.push(`/profile/student/edit/${data._id}?data=${encodedData}`)
   }
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      const response = await fetch(`/api/profile/student/${data.id}`, {
+      const response = await fetch(`/api/profile/student/${data._id}`, {
         method: "DELETE",
       })
       if (!response.ok) {
@@ -111,7 +111,7 @@ export function StudentProfile({ data }: ProfileDataProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="max-w-3xl mx-auto"
+      className="max-w-4xl mx-auto"
     >
       <Card className="border-red-700 border-t-4 shadow-xl overflow-hidden relative">
         {/* Decorative background elements */}
@@ -430,7 +430,7 @@ export function StudentProfile({ data }: ProfileDataProps) {
             </AnimatePresence>
 
             <div className="mt-8 pt-4 border-t border-indigo-100 flex justify-between items-center">
-              <p className="text-sm text-indigo-400">Profile ID: {data.id.substring(0, 8)}...</p>
+              <p className="text-sm text-indigo-400">Profile ID: {data._id.substring(0, 8)}...</p>
 
               <div className="flex gap-2">
                 <Button

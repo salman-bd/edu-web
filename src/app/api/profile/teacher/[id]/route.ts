@@ -19,8 +19,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   if (!session) {  
     return NextResponse.json({ success: false, message: 'User not authenticated' }, { status: 401 });  
   }  
-
-  const id = await params.id;  
+  const paramsForId = await params
+  const id = paramsForId.id;  
+  
   if (!id) {  
     return NextResponse.json({ error: 'ID is required' }, { status: 400 });  
   } 

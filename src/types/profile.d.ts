@@ -17,7 +17,7 @@ export interface ProfileType {
 }
 
 export interface TeacherProfileType {
-    id: string
+    _id: string
     firstName: string
     lastName: string
     email: string
@@ -38,7 +38,7 @@ export interface TeacherProfileType {
 }
 
 export interface StudentProfileType {
-    id: string
+    _id: string
     firstName: string
     lastName: string
     email: string
