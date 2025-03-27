@@ -1,8 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { serverStudentProfileSchema } from "@/schemas/studentProfileSchema"
-import { sendStudentProfileConfirmationEmail, sendStudentProfileAdminNotificationEmail } from "@/lib/sendEmails"
+// import { v4 as uuidv4 } from "uuid"
+import { sendStudentProfileAdminNotificationEmail, sendStudentProfileConfirmationEmail } from "@/lib/sendEmails"
 import clientPromise from "@/lib/mongodb"
 import { v2 as cloudinary } from "cloudinary"
+import { getServerSession } from "next-auth"
+import { ObjectId } from "mongodb"
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -10,16 +13,31 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
-export async function POST(request: NextRequest) {
+export async function PUT(request: NextRequest) {
+  const id = request.nextUrl.searchParams.get('id')
+  console.log("ID to update: ", id)
+
+  const session = await getServerSession()
+  if (!session) {
+    return NextResponse.json({ success: false, message: "User not authenticated" }, { status: 401 })
+  }
+  if (!id) {
+    return NextResponse.json({ error: "ID is required" }, { status: 400 })
+  }
+
   try {
-    // Parse the multipart form data
     const formData = await request.formData()
-    // console.log("Form data received for student profile")
+    // Find the existing profile
+    const client = await clientPromise
+    const db = client.db("education_app")
+    const collection = db.collection("profiles")
+    const existingProfile = await collection.findOne({ _id: new ObjectId(id) })
+    if (!existingProfile) {
+      return NextResponse.json({ success: false, message: "Profile not found" }, { status: 400 })
+    }
 
-    // Extract file data
-    const photoFile = formData.get("photo") as File | null
-    const isAffiliated = formData.get("isCscAffiliated")
-
+    // Extract photo file/url
+    const photoFile = formData.get("photo")
     // Create data object for validation
     const data = {
       firstName: formData.get("firstName"),
@@ -38,86 +56,55 @@ export async function POST(request: NextRequest) {
       previousSchool: formData.get("previousSchool") || "",
       personalStatement: formData.get("personalStatement") || "",
     }
-
-    // Validate the data
     const validatedData = serverStudentProfileSchema.parse(data)
-    // console.log("Validated student profile data")
 
-    // Handle photo upload to Cloudinary
-    let photoUrl
-    if (photoFile instanceof File) {
-      const arrayBuffer = await photoFile.arrayBuffer()
-      const buffer = Buffer.from(arrayBuffer)
-
-      const cloudinaryResponse = await new Promise((resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream({ resource_type: "auto" }, (error, result) => {
-            if (error) reject(error)
-            else resolve(result)
-          })
-          .end(buffer)
-      })
-
-      photoUrl = (cloudinaryResponse as { secure_url: string }).secure_url
-    } else {
-      photoUrl = photoFile
+    // Handle photo processing
+    let photoUrl = existingProfile.photoUrl // Default to existing photo URL
+    if (photoFile) {
+      // If it's a File object, upload to Cloudinary
+      if (photoFile instanceof File && photoFile.size > 0) {
+        const arrayBuffer = await photoFile.arrayBuffer()
+        const buffer = Buffer.from(arrayBuffer)
+        const cloudinaryResponse = await new Promise((resolve, reject) => {
+          cloudinary.uploader
+            .upload_stream({ resource_type: "auto" }, (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            })
+            .end(buffer)
+        })
+        photoUrl = (cloudinaryResponse as { secure_url: string }).secure_url
+      }
+      // If it's a string and different from existing URL, it's a new URL
+      else if (typeof photoFile === "string" && photoFile !== existingProfile.photoUrl) {
+        photoUrl = photoFile
+      }
     }
 
-    // Create the student profile object to save to database
+    // Update the student profile object to save to database
     const studentProfile = {
       ...validatedData,
-      photoUrl,
-      isAffiliated,
-      type: "student",
-      fullName: `${validatedData.firstName} ${validatedData.lastName}`,
-      createdAt: new Date(),
+      photoUrl, // This will never be null now
       updatedAt: new Date(),
     }
-
-    // console.log("Student profile to save", studentProfile)
-
-    // Connect to MongoDB
-    const client = await clientPromise
-    const db = client.db("education_app")
-    const collection = db.collection("profiles")
-
-    // Check if profile already exists
-    const email = validatedData.email
-    let isNewProfile = false
-    const profile = await collection.findOne({ email })
-
-    if (!profile) {
-      isNewProfile = true
-      await collection.insertOne(studentProfile)
-    } else {
-      await collection.updateOne(
-        { email },
-        {
-          $set: {
-            ...studentProfile,
-            fullName: `${validatedData.firstName} ${validatedData.lastName}`,
-            updatedAt: new Date(),
-          },
+    await collection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          ...studentProfile,
         },
-      )
-    }
-
-    // Get the updated/created profile
-    const result = await collection.findOne({ email })
+      },
+    )
+    const result = await collection.findOne({ _id: new ObjectId(id) })
     if (!result) {
-      return NextResponse.json(
-        { success: false, message: "Student profile update or creation failed!" },
-        { status: 400 },
-      )
+      return NextResponse.json({ success: false, message: "Profile updation failed!" }, { status: 400 })
     }
-
-    const profileId = result._id.toString()
 
     // Send confirmation email to the student
     await sendStudentProfileConfirmationEmail(
       validatedData.email as string,
       `${validatedData.firstName} ${validatedData.lastName}`,
-      profileId,
+      id,
     )
 
     // Send notification email to admin
@@ -125,19 +112,15 @@ export async function POST(request: NextRequest) {
       `${validatedData.firstName} ${validatedData.lastName}`,
       validatedData.email as string,
       validatedData.programType as string,
-      profileId,
-      isNewProfile,
+      id,
     )
-
     // Return success response
     return NextResponse.json({
       success: true,
       message: "Student profile updated successfully",
       data: {
-        id: profileId,
+        id: id,
         ...studentProfile,
-        // Don't return the actual file data in the response
-        photo: photoUrl ? { name: photoFile?.name, path: photoUrl } : null,
       },
     })
   } catch (error) {
@@ -146,8 +129,74 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error) {
       return NextResponse.json({ success: false, message: `Error: ${error.message}` }, { status: 400 })
     }
-
     return NextResponse.json({ success: false, message: "An unexpected error occurred" }, { status: 500 })
   }
 }
 
+export async function DELETE(request: NextRequest) {
+  const id = request.nextUrl.searchParams.get('id')
+  console.log("ID to delete: ", id)
+  const session = getServerSession()
+  if (!session) {
+    return NextResponse.json({ success: false, message: "User not authenticated" }, { status: 400 })
+  }
+  if (!id) {
+    return NextResponse.json(
+      { success: false, message: "Invalid request. You must request with an ID" },
+      { status: 400 },
+    )
+  }
+
+  try {
+    // Find the profile
+    const client = await clientPromise
+    const db = client.db("education_app")
+    const collection = db.collection("profiles")
+    const existingProfile = await collection.findOne({ _id: new ObjectId(id) })
+
+    if (!existingProfile) {
+      return NextResponse.json({ success: false, message: "Profile not found" }, { status: 400 })
+    }
+
+    await collection.deleteOne({ _id: new ObjectId(id) })
+
+    // In a real application, you would also:
+    // 1. Delete the associated photo from storage
+    // 2. Handle cascading deletes for related data
+
+    return NextResponse.json({ message: "Profile deleted successfully" }, { status: 200 })
+  } catch (error) {
+    console.error("Error deleting teacher profile:", error)
+    return NextResponse.json({ error: "Failed to delete profile" }, { status: 500 })
+  }
+}
+
+// GET method for retrieving a profile (needed for the fallback fetch in the edit form)
+export async function GET(request: NextRequest) {
+  try {
+    const id = request.nextUrl.searchParams.get('id')
+
+    const session = await getServerSession()
+    if (!session) {
+      return NextResponse.json({ success: false, message: "User not authenticated" }, { status: 401 })
+    }
+  
+    if (!id) {
+      return NextResponse.json({ success: false, message: "Invalid request. You must request with an ID" }, { status: 400 })
+    }
+    // Find the profile
+    const client = await clientPromise
+    const db = client.db("education_app")
+    const collection = db.collection("profiles")
+    const profile = await collection.findOne({ _id: new ObjectId(id) })
+
+    if (!profile) {
+      return NextResponse.json({ success: false, message: "Profile Not Found!" }, { status: 404 })
+    }
+    return NextResponse.json({ success: true, profileData: profile }, { status: 200 })
+
+  } catch (error) {
+    console.error("Error fetching student profile:", error)
+    return NextResponse.json({ error: "Failed to fetch profile" }, { status: 500 })
+  }
+}

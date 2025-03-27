@@ -109,7 +109,7 @@ export default function StudentProfileForm({ onSubmitSuccess }: StudentProfileFo
         formData.append("isCscAffiliated", "true")
       }
 
-      const response = await fetch("/api/profile/student", {
+      const response = await fetch("/api/profile/student/create", {
         method: "POST",
         body: formData,
       })

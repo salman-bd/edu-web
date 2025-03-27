@@ -15,10 +15,14 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { teacherProfileSchema, type TeacherProfileFormValues } from "@/schemas/teacherProfileSchema"
 import { Skeleton } from "@/components/ui/skeleton"
+
+// Add these constants at the top of the component
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
 
 // Teaching levels data
 const TEACHING_LEVELS = [
@@ -62,64 +66,66 @@ export default function TeacherProfileEditForm({ profileId, onSuccess }: Teacher
 
   // Load profile data from URL parameters
   useEffect(() => {
-    try {
+    const loadProfileData = async () => {
       setIsLoading(true)
-      // Get encoded data from URL
-      const encodedData = searchParams.get("data")
-      if (!encodedData) {
-        throw new Error("No profile data found in URL")
+      try {
+        // Get encoded data from URL
+        const encodedData = searchParams.get("data")
+        if (encodedData) {
+          // Decode and parse the data
+          const decodedData = JSON.parse(decodeURIComponent(encodedData))
+          // Format date to YYYY-MM-DD for input[type="date"]
+          const formattedDate = decodedData.dateOfBirth
+            ? new Date(decodedData.dateOfBirth).toISOString().split("T")[0]
+            : ""
+          // Set form values
+          form.reset({
+            firstName: decodedData.firstName || "",
+            lastName: decodedData.lastName || "",
+            email: decodedData.email || "",
+            phone: decodedData.phone || "",
+            dateOfBirth: formattedDate,
+            address: decodedData.address || "",
+            highestDegree: decodedData.highestDegree || "",
+            university: decodedData.university || "",
+            yearsOfExperience: decodedData.yearsOfExperience || "",
+            subjectSpecialization: decodedData.subjectSpecialization || "",
+            teachingLevel: decodedData.teachingLevel || [],
+            coverLetter: decodedData.coverLetter || "",
+          })
+
+          // Set photo preview if available
+          if (decodedData.photoUrl) {
+            setPhotoPreview(decodedData.photoUrl)
+          }
+        } else {
+          // If there's no data in URL params, fetch from API
+          await fetchProfileFromAPI()
+        }
+      } catch (error) {
+        console.error("Error loading profile data:", error)
+        toast.error("Failed to load profile data. Please try again.")
+
+        // If there's an error with URL params, try to fetch from API as fallback
+        await fetchProfileFromAPI()
+      } finally {
+        setIsLoading(false)
       }
-      // Decode and parse the data
-      const decodedData = JSON.parse(decodeURIComponent(encodedData))
-
-      // Format date to YYYY-MM-DD for input[type="date"]
-      const formattedDate = decodedData.dateOfBirth ? new Date(decodedData.dateOfBirth).toISOString().split("T")[0] : ""
-
-      // Set form values
-      form.reset({
-        firstName: decodedData.firstName || "",
-        lastName: decodedData.lastName || "",
-        email: decodedData.email || "",
-        phone: decodedData.phone || "",
-        dateOfBirth: formattedDate,
-        address: decodedData.address || "",
-        highestDegree: decodedData.highestDegree || "",
-        university: decodedData.university || "",
-        yearsOfExperience: decodedData.yearsOfExperience || "",
-        subjectSpecialization: decodedData.subjectSpecialization || "",
-        teachingLevel: decodedData.teachingLevel || [],
-        coverLetter: decodedData.coverLetter || "",
-      })
-
-      // Set photo preview if available
-      if (decodedData.photoUrl) {
-        setPhotoPreview(decodedData.photoUrl)
-      }
-    } catch (error) {
-      console.error("Error loading profile data:", error)
-      toast.error("Failed to load profile data. Please try again.")
-
-      // If there's an error with URL params, try to fetch from API as fallback
-      fetchProfileFromAPI()
-    } finally {
-      setIsLoading(false)
     }
-  }, [searchParams, form])
+
+    loadProfileData()
+  }, [searchParams, form, profileId])
 
   // Fallback function to fetch from API if URL params fail
   const fetchProfileFromAPI = async () => {
     try {
-      const response = await fetch(`/api/profile/teacher/${profileId}`)
-
+      const response = await fetch(`/api/profile/teacher?id=${profileId}`)
       if (!response.ok) {
         throw new Error("Failed to fetch profile data")
       }
-
       const data = await response.json()
-
       // Format date to YYYY-MM-DD for input[type="date"]
       const formattedDate = data.dateOfBirth ? new Date(data.dateOfBirth).toISOString().split("T")[0] : ""
-
       // Set form values
       form.reset({
         firstName: data.firstName || "",
@@ -135,7 +141,6 @@ export default function TeacherProfileEditForm({ profileId, onSuccess }: Teacher
         teachingLevel: data.teachingLevel || [],
         coverLetter: data.coverLetter || "",
       })
-
       // Set photo preview if available
       if (data.photoUrl) {
         setPhotoPreview(data.photoUrl)
@@ -150,6 +155,19 @@ export default function TeacherProfileEditForm({ profileId, onSuccess }: Teacher
   const handlePhotoChange = (files: FileList | null) => {
     if (files && files.length > 0) {
       const file = files[0]
+
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("File size must be less than 5MB")
+        return
+      }
+
+      // Validate file type
+      if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+        toast.error("Only JPEG, JPG, PNG, and WebP images are accepted")
+        return
+      }
+
       const reader = new FileReader()
       reader.onload = (e) => {
         setPhotoPreview(e.target?.result as string)
@@ -158,7 +176,6 @@ export default function TeacherProfileEditForm({ profileId, onSuccess }: Teacher
     }
   }
 
-  // Form submission handler
   const onSubmit = async (data: TeacherProfileFormValues) => {
     setIsSubmitting(true)
     setSubmitError(null)
@@ -170,46 +187,44 @@ export default function TeacherProfileEditForm({ profileId, onSuccess }: Teacher
       // Append all text fields
       Object.entries(data).forEach(([key, value]) => {
         if (key !== "photo" && key !== "teachingLevel") {
-          formData.append(key, value as string)
+          // Handle undefined values
+          if (value !== undefined && value !== null) {
+            formData.append(key, value as string)
+          }
         }
       })
 
       // Handle teaching levels array
       formData.append("teachingLevel", JSON.stringify(data.teachingLevel))
 
-      // Append photo file
+      // Append photo file or photo URL
       if (data.photo instanceof FileList && data.photo[0]) {
         formData.append("photo", data.photo[0])
+      } else if (photoPreview && typeof photoPreview === "string") {
+        // If we have a photoPreview but no new file, pass the existing URL
+        formData.append("photo", photoPreview)
       }
 
-      const response = await fetch(`/api/profile/teacher/${profileId}`, {
+      const response = await fetch(`/api/profile/teacher?id=${profileId}`, {
         method: "PUT",
         body: formData,
       })
-
       const responseData = await response.json()
-      console.log('Response data: ', responseData);
-      
-
       if (!response.ok) {
         throw new Error(responseData.message || "Failed to update profile")
       }
-
       toast.success("Your teacher profile has been successfully updated.")
-
       if (onSuccess) {
         onSuccess()
       } else {
         router.push(`/profile/teacher/${profileId}`)
       }
-
     } catch (error) {
       console.error("Error updating profile:", error)
-      const errorMessage =
-        error instanceof Error
-          ? `Error: ${error.message}`
-          : "There was a problem updating your profile. Please try again."
-
+      let errorMessage = "There was a problem updating your profile. Please try again."
+      if (error instanceof Error) {
+        errorMessage = `Error: ${error.message}. Please try again.`
+      }
       setSubmitError(errorMessage)
       toast.error(errorMessage)
     } finally {
@@ -266,6 +281,67 @@ export default function TeacherProfileEditForm({ profileId, onSuccess }: Teacher
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Personal Information Section */}
               <ProfileSection title="Personal Information">
+                <FormField
+                  control={form.control}
+                  name="photo"
+                  render={({ field: { onChange, value, ...rest } }) => (
+                    <FormItem>
+                      <FormLabel className="text-indigo-600">Profile Photo</FormLabel>
+                      <FormControl>
+                        <div className="flex flex-col items-center justify-center w-full">
+                          {photoPreview ? (
+                            <div className="relative w-full h-48 mb-2">
+                              <Image
+                                src={photoPreview || "/placeholder.svg"}
+                                alt="Profile preview"
+                                fill
+                                className="object-contain rounded-lg"
+                              />
+                              <button
+                                type="button"
+                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs"
+                                onClick={() => {
+                                  setPhotoPreview(null)
+                                  onChange(null)
+                                }}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ) : (
+                            <label
+                              htmlFor="photo-upload"
+                              className="flex flex-col items-center justify-center w-full h-40 border-2 border-indigo-200 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                            >
+                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <Upload className="w-8 h-8 mb-2 text-indigo-600" />
+                                <p className="mb-2 text-sm text-gray-500">
+                                  <span className="font-semibold">Click to upload</span>
+                                </p>
+                                <p className="text-xs text-gray-500">JPG, PNG, WebP (MAX. 5MB)</p>
+                              </div>
+                            </label>
+                          )}
+                          <input
+                            id="photo-upload"
+                            type="file"
+                            accept="image/jpeg,image/jpg,image/png,image/webp"
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.files) {
+                                onChange(e.target.files)
+                                handlePhotoChange(e.target.files)
+                              }
+                            }}
+                            {...rest}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-red-700" />
+                    </FormItem>
+                  )}
+                />
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -503,8 +579,8 @@ export default function TeacherProfileEditForm({ profileId, onSuccess }: Teacher
                 />
               </ProfileSection>
 
-              {/* Teaching Philosophy & Photo Section */}
-              <ProfileSection title="Teaching Philosophy & Profile Photo">
+              {/* Teaching Philosophy Section */}
+              <ProfileSection title="Teaching Philosophy">
                 <FormField
                   control={form.control}
                   name="coverLetter"
@@ -521,67 +597,6 @@ export default function TeacherProfileEditForm({ profileId, onSuccess }: Teacher
                       <FormDescription>
                         Please write a brief statement about your teaching approach and educational values.
                       </FormDescription>
-                      <FormMessage className="text-red-700" />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="photo"
-                  render={({ field: { onChange, value, ...rest } }) => (
-                    <FormItem>
-                      <FormLabel className="text-indigo-600">Profile Photo</FormLabel>
-                      <FormControl>
-                        <div className="flex flex-col items-center justify-center w-full">
-                          {photoPreview ? (
-                            <div className="relative w-full h-48 mb-2">
-                              <Image
-                                src={photoPreview || "/placeholder.svg"}
-                                alt="Profile preview"
-                                fill
-                                className="object-contain rounded-lg"
-                              />
-                              <button
-                                type="button"
-                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs"
-                                onClick={() => {
-                                  setPhotoPreview(null)
-                                  onChange(null)
-                                }}
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          ) : (
-                            <label
-                              htmlFor="photo-upload"
-                              className="flex flex-col items-center justify-center w-full h-40 border-2 border-indigo-200 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-                            >
-                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                <Upload className="w-8 h-8 mb-2 text-indigo-600" />
-                                <p className="mb-2 text-sm text-gray-500">
-                                  <span className="font-semibold">Click to upload</span>
-                                </p>
-                                <p className="text-xs text-gray-500">JPG, PNG, WebP (MAX. 5MB)</p>
-                              </div>
-                            </label>
-                          )}
-                          <input
-                            id="photo-upload"
-                            type="file"
-                            accept="image/jpeg,image/jpg,image/png,image/webp"
-                            className="hidden"
-                            onChange={(e) => {
-                              if (e.target.files) {
-                                onChange(e.target.files)
-                                handlePhotoChange(e.target.files)
-                              }
-                            }}
-                            {...rest}
-                          />
-                        </div>
-                      </FormControl>
                       <FormMessage className="text-red-700" />
                     </FormItem>
                   )}
@@ -615,6 +630,11 @@ export default function TeacherProfileEditForm({ profileId, onSuccess }: Teacher
             </form>
           </Form>
         </CardContent>
+        <CardFooter>
+          {submitError && (
+            <div className="w-full p-3 bg-red-50 border border-red-200 text-red-700 rounded-md">{submitError}</div>
+          )}
+        </CardFooter>
       </Card>
     </motion.div>
   )

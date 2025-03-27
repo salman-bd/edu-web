@@ -42,11 +42,25 @@ export const TeacherProfile = ({ data }: ProfileDataProps) => {
     college: { label: "College", color: "bg-purple-100 text-purple-800 hover:bg-purple-200" },
   }
 
-  // Format date to be more readable
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-  }
+  function calculateAge(birthDateString: string | number | Date) {
+    const birthDate = new Date(birthDateString)
+    const today = new Date()
+
+    let years = today.getFullYear() - birthDate.getFullYear()
+    let months = today.getMonth() - birthDate.getMonth()
+    let days = today.getDate() - birthDate.getDate()
+    // Adjust for negative days
+    if (days < 0) {
+      months--
+      days += new Date(today.getFullYear(), today.getMonth(), 0).getDate()
+    }
+    // Adjust for negative months
+    if (months < 0) {
+      years--
+      months += 12
+    }
+    return `${years} Years ${months} Months ${days} Days`
+  } 
 
   const handleEdit = () => {
     // Stringify and encode the data
@@ -244,8 +258,8 @@ export const TeacherProfile = ({ data }: ProfileDataProps) => {
                 >
                   <Calendar className="h-5 w-5 text-indigo-400 mt-0.5" />
                   <div>
-                    <p className="text-sm text-indigo-400">Date of Birth</p>
-                    <p className="font-medium">{formatDate(data.dateOfBirth)}</p>
+                    <p className="text-sm text-indigo-400">Age</p>
+                    <p className="font-medium">{calculateAge(data.dateOfBirth)}</p>
                   </div>
                 </motion.div>
               </div>

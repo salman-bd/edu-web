@@ -44,7 +44,6 @@ export function StudentProfile({ data }: ProfileDataProps) {
     let years = today.getFullYear() - birthDate.getFullYear()
     let months = today.getMonth() - birthDate.getMonth()
     let days = today.getDate() - birthDate.getDate()
-
     // Adjust for negative days
     if (days < 0) {
       months--

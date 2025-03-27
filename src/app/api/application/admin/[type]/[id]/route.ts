@@ -14,8 +14,8 @@ export async function GET(request: NextRequest ) {
     const type = urlParts[4];   
     const id = urlParts[5]; 
   
-    console.log("Type:", type);  
-    console.log("ID:", id);
+    // console.log("Type:", type);  
+    // console.log("ID:", id);
 
     // Validate application type
     if (type !== "teacher" && type !== "student") {
@@ -67,10 +67,10 @@ export async function PATCH(request: NextRequest) {
     const type = urlParts[4];   
     const id = urlParts[5]; 
   
-    console.log("\nType:", type);  
-    console.log("ID:", id);
-    console.log("Status: ", status);
-    console.log("Notes: ", notes);
+    // console.log("\nType:", type);  
+    // console.log("ID:", id);
+    // console.log("Status: ", status);
+    // console.log("Notes: ", notes);
     
 
     // Validate status

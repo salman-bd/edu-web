@@ -18,6 +18,10 @@ import toast from "react-hot-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 import { studentProfileSchema, type StudentProfileFormValues } from "@/schemas/studentProfileSchema"
 
+// Add these constants at the top of the component
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
+
 interface StudentProfileEditFormProps {
   profileId: string | undefined
   onSuccess?: () => void
@@ -103,7 +107,7 @@ export default function StudentProfileEditForm({ profileId, onSuccess }: Student
   // Fallback function to fetch from API if URL params fail
   const fetchProfileFromAPI = async () => {
     try {
-      const response = await fetch(`/api/profile/student/${profileId}`)
+      const response = await fetch(`/api/profile/student?id=${profileId}`)
 
       if (!response.ok) {
         throw new Error("Failed to fetch profile data")
@@ -144,6 +148,19 @@ export default function StudentProfileEditForm({ profileId, onSuccess }: Student
   const handlePhotoChange = (files: FileList | null) => {
     if (files && files.length > 0) {
       const file = files[0]
+
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("File size must be less than 5MB")
+        return
+      }
+
+      // Validate file type
+      if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+        toast.error("Only JPEG, JPG, PNG, and WebP images are accepted")
+        return
+      }
+
       const reader = new FileReader()
       reader.onload = (e) => {
         setPhotoPreview(e.target?.result as string)
@@ -189,12 +206,15 @@ export default function StudentProfileEditForm({ profileId, onSuccess }: Student
         }
       })
 
-      // Append photo file
+      // Append photo file or photo URL
       if (data.photo instanceof FileList && data.photo[0]) {
         formData.append("photo", data.photo[0])
+      } else if (photoPreview && typeof photoPreview === "string") {
+        // If we have a photoPreview but no new file, pass the existing URL
+        formData.append("photo", photoPreview)
       }
 
-      const response = await fetch(`/api/profile/student/${profileId}`, {
+      const response = await fetch(`/api/profile/student?id=${profileId}`, {
         method: "PUT",
         body: formData,
       })
@@ -208,7 +228,6 @@ export default function StudentProfileEditForm({ profileId, onSuccess }: Student
       } else {
         router.push(`/profile/student/${profileId}`)
       }
-      
     } catch (error) {
       console.error("Error updating profile:", error)
       let errorMessage = "There was a problem updating your profile. Please try again."

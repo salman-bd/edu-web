@@ -89,7 +89,6 @@ export default function TeacherProfileForm({ onSubmitSuccess }: TeacherProfileFo
 
       // Handle teaching levels array
       formData.append("teachingLevel", JSON.stringify(data.teachingLevel))
-
       // Append photo file
       if (data.photo instanceof FileList && data.photo[0]) {
         formData.append("photo", data.photo[0])
@@ -98,14 +97,11 @@ export default function TeacherProfileForm({ onSubmitSuccess }: TeacherProfileFo
         formData.append("isCscAffiliated", "true")
       }
      
-
-      const response = await fetch("/api/profile/teacher", {
+      const response = await fetch("/api/profile/teacher/create", {
         method: "POST",
         body: formData
       })
-
       const responseData = await response.json()
-
       if (!response.ok) {
         throw new Error(responseData.message || "Failed to submit profile")
       }

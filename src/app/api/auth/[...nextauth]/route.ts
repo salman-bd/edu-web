@@ -19,5 +19,5 @@ const handler = NextAuth({
   // },
 })
 
-export { handler as GET, handler as POST, handler as PUT, handler as DELETE, handler as PETCH,}
+export { handler as GET, handler as POST, handler as PUT, handler as DELETE}
 
