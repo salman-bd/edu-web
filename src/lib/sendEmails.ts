@@ -8,16 +8,16 @@ import StudentApplicationConfirmationEmail from "@/emails/StudentApplicationConf
 import StudentApplicationAdminNotificationEmail from "@/emails/StudentApplicationAdminNotificationEmail"
 import TeacherApplicationConfirmationEmail from "@/emails/TeacherApplicationConfirmationEmail"
 import TeacherApplicationAdminNotificationEmail from "@/emails/TeacherApplicationAdminNotificationEmail"
-import { ApiResponse } from "@/types/ApiResponse"
+import type { ApiResponse } from "@/types/ApiResponse"
 import TeacherProfileConfirmationEmail from "@/emails/TeacherProfileConfirmationEmail"
 import TeacherProfileAdminNotificationEmail from "@/emails/TeacherProfileAdminNotificationEmail"
 import StudentProfileConfirmationEmail from "@/emails/StudentProfileConfirmationEmail"
 import StudentProfileAdminNotificationEmail from "@/emails/StudentProfileAdminNotificationEmail"
-
+import PasswordResetRequestEmail from "@/emails/PasswordResetRequestEmail"
+import PasswordResetSuccessEmail from "@/emails/PasswordResetSuccessEmail"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const adminEmail = process.env.ADMIN_EMAIL || "abusalman.sylhet@gmail.com"
-
 
 export async function sendVerificationEmail(email: string, name: string, verifyCode: string): Promise<ApiResponse> {
   try {
@@ -44,7 +44,6 @@ export async function sendWelcomeEmail(email: string, name: string): Promise<Api
       react: WelcomeEmail({ name }),
     })
     return { success: true, message: "Welcome email sent successfully" }
-
   } catch (error) {
     console.error("Error sending welcome email: ", error)
     return { success: false, message: "Failed to send welcome email" }
@@ -54,19 +53,17 @@ export async function sendWelcomeEmail(email: string, name: string): Promise<Api
 export async function sendContactConfirmationEmail(email: string, name: string): Promise<ApiResponse> {
   try {
     await resend.emails.send({
-      from: 'Classic School And College <contact@cscsylhet.com>',
+      from: "Classic School And College <contact@cscsylhet.com>",
       to: [email],
       subject: "We received your message",
       react: ContactConfirmationEmail({ name }),
     })
     return { success: true, message: "Contact confirmation email sent successfully" }
-
   } catch (error) {
     console.error("Error sending contact confirmaiton email: ", error)
     return { success: false, message: "Failed to send contact confirmaiton email" }
   }
 }
-
 
 export async function sendAdminContactNotificationEmail(
   email: string,
@@ -76,23 +73,52 @@ export async function sendAdminContactNotificationEmail(
 ): Promise<ApiResponse> {
   try {
     await resend.emails.send({
-      from: 'CSC Contact <contact@cscsylhet.com>',
+      from: "CSC Contact <contact@cscsylhet.com>",
       to: adminEmail,
       subject: `New contact form submission: ${subject}`,
       react: AdminContactNotificationEmail({ name, email, subject, message }),
     })
 
     return { success: true, message: "Contact notification email sent successfully" }
-
   } catch (error) {
     console.error("Error sending contact nofification email: ", error)
     return { success: false, message: "Failed to send contact notification email" }
   }
 }
 
+// Password reset request email
+export async function sendPasswordResetEmail(email: string, name: string, resetUrl: string): Promise<ApiResponse> {
+  try {
+    await resend.emails.send({
+      from: "Account@cscsylhet.com",
+      to: email,
+      subject: "Reset Your Password - Classic School And College",
+      react: PasswordResetRequestEmail({ name, resetUrl }),
+    })
 
+    return { success: true, message: "Password reset email sent successfully" }
+  } catch (error) {
+    console.error("Error sending password reset email: ", error)
+    return { success: false, message: "Failed to send password reset email" }
+  }
+}
 
+// Password reset success email
+export async function sendPasswordResetSuccessEmail(email: string, name: string): Promise<ApiResponse> {
+  try {
+    await resend.emails.send({
+      from: "Account@cscsylhet.com",
+      to: email,
+      subject: "Password Reset Successful - Classic School And College",
+      react: PasswordResetSuccessEmail({ name }),
+    })
 
+    return { success: true, message: "Password reset success email sent successfully" }
+  } catch (error) {
+    console.error("Error sending password reset success email: ", error)
+    return { success: false, message: "Failed to send password reset success email" }
+  }
+}
 
 // Student application confirmation email
 export async function sendStudentApplicationConfirmationEmail(
@@ -250,7 +276,6 @@ export async function sendStudentProfileAdminNotificationEmail(
   }
 }
 
-
 // Teacher profile confirmation email
 export async function sendTeacherProfileConfirmationEmail(email: string, name: string, profileId: string) {
   try {
@@ -300,3 +325,4 @@ export async function sendTeacherProfileAdminNotificationEmail(
     return { success: false, error }
   }
 }
+
