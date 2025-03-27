@@ -1,6 +1,9 @@
 import { Body, Container, Head, Heading, Html, Preview, Section, Text, Hr, Button, Img } from "@react-email/components"
 import { Tailwind } from "@react-email/tailwind"
 
+const logoUrl = process.env.WEBSITE_LOGO_URL
+
+
 interface StudentProfileAdminNotificationEmailProps {
   studentName: string
   studentEmail: string
@@ -40,9 +43,9 @@ export default function StudentProfileAdminNotificationEmail({
               {/* Header */}
               <Section className="bg-gradient-to-r from-indigo-700 to-indigo-500 p-6 text-center">
                 <Img
-                  src={`${process.env.NEXT_PUBLIC_APP_URL}/logo.png`}
+                  src={logoUrl}
                   width="100"
-                  height="32"
+                  height="100"
                   alt="Classic School And College"
                   className="mx-auto mb-2"
                 />

@@ -15,8 +15,8 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { ApiResponse } from "@/types/ApiResponse"
 import axios, { AxiosError } from "axios"
-import { toast } from "@/components/ui/use-toast"
 import { Card } from "../ui/card"
+import { toast, Toaster } from "react-hot-toast"
 
 
 const formSchema = z
@@ -50,40 +50,36 @@ function SignUp() {
   
   const onSubmit = async (data: z.infer<typeof formSchema>) => {  
     setIsSubmitting(true);  
-    
+  
     try {  
-        const response = await axios.post<ApiResponse>('/api/sign-up', data);
-        if (response.data.success) {
-          const succussMessage = "Please check your email to verify your account.";
-          toast({  
-            title: "Signup successfull",  
-            description: succussMessage,  
-            variant: "destructive",  
-        });  
-          // AlertDescription({
-          //   title: succussMessage,
-          // })
-          // Alert({variant: 'default'}) 
-        }  
-        router.replace(`/verify/${data.email}`);  
-
+      const response = await axios.post<ApiResponse>('/api/auth/sign-up', data);  
+      console.log("Sign up api request response: ", response);  
+  
+      if (!response.data.success) {  
+        // This catches non-400 errors but assumes non-success is in the response.  
+        throw new Error(response.data.message || "Unexpected error during sign up");  
+      }  
+  
+      // Handle successful signup  
+      toast.success("Please check your email to verify your account.", { duration: 4000 });  
+      router.replace(`/verify/${data.email}`);  
+  
     } catch (error) {  
-        const axiosError = error as AxiosError<ApiResponse>;  
-        const errorMessage = axiosError.response?.data.message || "An unexpected error occurred. Please try again.";  
-        
-        // If using a toast, it's already good  
-        toast({  
-            title: "Signup failed",  
-            description: errorMessage,  
-            variant: "destructive",  
-        });  
-        
-        // Optionally, you could also log the error to the console  
-
+      const axiosError = error as AxiosError<ApiResponse>;  
+  
+      if (axiosError.response?.status === 400) {  
+        // Handle specific case for existing verified user  
+        const errorMessage = axiosError.response.data.message || "An unexpected error occurred. Please try again.";  
+        toast.error(errorMessage, { duration: 4000 });  
+      } else {  
+        // Handle other potential errors  
+        const genericErrorMessage = "An unexpected error occurred. Please try again.";  
+        toast.error(genericErrorMessage, { duration: 4000 });  
+      }  
     } finally {  
-        setIsSubmitting(false);  
+      setIsSubmitting(false);  
     }  
-  }
+  }  
 
   return (
     <div className="space-y-6">
@@ -189,34 +185,38 @@ function SignUp() {
           </form>
         </Form>
 
-        <div className='flex flex-row gap-2 pt-4'>  
-          <p>Already have an account?</p>  
-          <Link href="/signin"><span className='text-indigo-700'>Sign In</span></Link>  
+        <div className="flex flex-col gap-4 pt-4">
+          <div className='flex flex-row gap-2 pt-4'>  
+            <p>Already have an account?</p>  
+            <Link href="/signin"><span className='text-indigo-700'>Sign In</span></Link>  
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <Button variant="outline" onClick={() => signIn("google", { callbackUrl: "/" })}>
+              <Image src="/icons/icons8-google.svg" width={24} height={24} alt="Google Icon" />
+              <span className="sr-only">Google</span>
+            </Button>
+            <Button variant="outline" onClick={() => signIn("facebook", { callbackUrl: "/" })}>
+              <Image src="/icons/icons8-facebook.svg" width={24} height={24} alt="Facebook Icon" />
+              <span className="sr-only">Facebook</span>
+            </Button>
+            <Button variant="outline" onClick={() => signIn("github", { callbackUrl: "/" })}>
+              <Image src="/icons/icons8-github.svg" width={24} height={24} alt="GitHub Icon" />
+              <span className="sr-only">GitHub</span>
+            </Button>
+          </div>
         </div>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">Or continue with</span>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-3 gap-3">
-          <Button variant="outline" onClick={() => signIn("google", { callbackUrl: "/" })}>
-            <Image src="/icons/icons8-google.svg" width={24} height={24} alt="Google Icon" />
-            <span className="sr-only">Google</span>
-          </Button>
-          <Button variant="outline" onClick={() => signIn("facebook", { callbackUrl: "/" })}>
-            <Image src="/icons/icons8-facebook.svg" width={24} height={24} alt="Facebook Icon" />
-            <span className="sr-only">Facebook</span>
-          </Button>
-          <Button variant="outline" onClick={() => signIn("github", { callbackUrl: "/" })}>
-            <Image src="/icons/icons8-github.svg" width={24} height={24} alt="GitHub Icon" />
-            <span className="sr-only">GitHub</span>
-          </Button>
-        </div>
       </Card>
 
     </div>

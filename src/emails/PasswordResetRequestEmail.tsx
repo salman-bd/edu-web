@@ -14,6 +14,8 @@ import {
 } from "@react-email/components"
 import { Tailwind } from "@react-email/tailwind"
 
+const logoUrl = process.env.WEBSITE_LOGO_URL
+
 interface PasswordResetRequestEmailProps {
   name: string
   resetUrl: string
@@ -34,9 +36,9 @@ export default function PasswordResetRequestEmail({ name, resetUrl }: PasswordRe
               {/* Header */}
               <Section className="bg-gradient-to-r from-indigo-700 to-indigo-500 p-8 text-center">
                 <Img
-                  src={`${process.env.NEXT_PUBLIC_APP_URL}/logo.png`}
+                  src={logoUrl}
                   width="120"
-                  height="40"
+                  height="120"
                   alt="Classic School And College"
                   className="mx-auto mb-4"
                 />

@@ -5,10 +5,10 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const { email, code } = await request.json();
-    console.log('\nEmail and Code: ', email, code);
+    // console.log('\nEmail and Code: ', email, code);
     
     const decodedEmail = decodeURIComponent(email);
-    console.log('Decoded email: ', decodedEmail);
+    // console.log('Decoded email: ', decodedEmail);
     
     const client = await clientPromise;  
     const db = client.db("education_app");  
