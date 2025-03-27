@@ -37,7 +37,7 @@ export default function TeacherApplicationAdminNotificationEmail({
           <Container className="mx-auto p-4 max-w-[600px]">
             <Section className="bg-white rounded-lg shadow-md overflow-hidden">
               {/* Header */}
-              <Section className="bg-gradient-to-r from-indigo-700 to-indigo-500 p-6 text-center">
+              <Section className=" text-center">
                 <Img
                   src={logoUrl}
                   width="100"
@@ -45,7 +45,7 @@ export default function TeacherApplicationAdminNotificationEmail({
                   alt="Classic School And College"
                   className="mx-auto mb-2"
                 />
-                <Heading className="text-white text-2xl font-bold m-0">New Teacher Application</Heading>
+                <Heading className="text-gray-600 text-2xl font-bold m-0">New Teacher Application</Heading>
               </Section>
 
               {/* Content */}

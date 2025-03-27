@@ -44,7 +44,7 @@ export default function StudentApplicationAdminNotificationEmail({
                   alt="Classic School And College"
                   className="mx-auto mb-2"
                 />
-                <Heading className="text-white text-2xl font-bold m-0">New Student Application</Heading>
+                <Heading className="text-gray-500 text-2xl font-bold m-0">New Student Application</Heading>
               </Section>
 
               {/* Content */}

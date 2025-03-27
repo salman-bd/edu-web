@@ -43,13 +43,13 @@ export default function TeacherApplicationConfirmationEmail({
               <Section className="bg-gradient-to-r from-indigo-700 to-indigo-500 p-8 text-center">
                 <Img
                   src={logoUrl}
-                  width="120"
-                  height="120"
+                  width="100"
+                  height="100"
                   alt="Classic School And College"
                   className="mx-auto mb-4"
                 />
-                <Heading className="text-white text-2xl font-bold m-0">Teaching Application Received</Heading>
-                <Text className="text-indigo-100 text-base mt-2">
+                <Heading className="text-gray-600 text-2xl font-bold m-0">Teaching Application Received</Heading>
+                <Text className="text-indigo-600 text-base mt-2">
                   Thank you for your interest in joining our teaching team
                 </Text>
               </Section>

@@ -23,7 +23,7 @@ export default function VerificationEmail({ name, otp }: VerificationEmailProps)
           <Container className="mx-auto p-4 max-w-[600px]">
             <Section className="bg-white rounded-lg shadow-md overflow-hidden">
               {/* Header */}
-              <Section className="bg-gradient-to-r from-indigo-700 to-indigo-500 p-8 text-center">
+              <Section className=" p-8 text-center">
                 <Img
                   src={logoUrl}
                   width="100"
@@ -32,7 +32,7 @@ export default function VerificationEmail({ name, otp }: VerificationEmailProps)
                   className="mx-auto mb-4"
                 />
                 <Heading className="text-gray-600 text-2xl font-bold m-0">Verify Your Email</Heading>
-                <Text className="text-600-100 text-base mt-2">Use the code below to verify your account</Text>
+                <Text className="text-indigo-600 text-base mt-2">Use the code below to verify your account</Text>
               </Section>
 
               {/* Content */}

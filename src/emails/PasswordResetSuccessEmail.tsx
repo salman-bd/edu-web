@@ -21,16 +21,16 @@ export default function PasswordResetSuccessEmail({ name }: PasswordResetSuccess
           <Container className="mx-auto p-4 max-w-[600px]">
             <Section className="bg-white rounded-lg shadow-md overflow-hidden">
               {/* Header */}
-              <Section className="bg-gradient-to-r from-indigo-700 to-indigo-500 p-8 text-center">
+              <Section className="p-8 text-center">
                 <Img
                   src={logoUrl}
-                  width="120"
-                  height="120"
+                  width="100"
+                  height="100"
                   alt="Classic School And College"
                   className="mx-auto mb-4"
                 />
-                <Heading className="text-white text-2xl font-bold m-0">Password Reset Successful</Heading>
-                <Text className="text-indigo-100 text-base mt-2">Your password has been updated</Text>
+                <Heading className="text-gray-600 text-2xl font-bold m-0">Password Reset Successful</Heading>
+                <Text className="text-indigo-600 text-base mt-2">Your password has been updated</Text>
               </Section>
 
               {/* Content */}
