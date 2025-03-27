@@ -7,8 +7,8 @@ export async function GET(request: NextRequest) {
     const type = request.nextUrl.searchParams.get('type');  
     const id = request.nextUrl.searchParams.get('id'); 
 
-    console.log("Type:", type);  
-    console.log("ID:", id);
+    // console.log("Type:", type);  
+    // console.log("ID:", id);
 
     // Validate application type
     if (type !== "teacher" && type !== "student") {
@@ -44,8 +44,8 @@ export async function PUT(request: Request) {
     const body = await request.json()
     const { id, type } = body
 
-    console.log("Type:", type);  
-    console.log("ID:", id);
+    // console.log("Type:", type);  
+    // console.log("ID:", id);
 
     // Validate application type
     if (type !== "teacher" && type !== "student") {
